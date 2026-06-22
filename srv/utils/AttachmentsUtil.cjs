@@ -7,7 +7,7 @@ const _localFileContentDestination = "LOCAL";
 const mime = require("mime-types");
 const cds = require("@sap/cds/libx/_runtime/cds");
 
-const LOG = cds.log("tg.claims");
+const LOG = cds.log("ls.claims");
 
 const supportedImageMediaTypes = async () => {
   let settings = await _loadRepositorySettings();

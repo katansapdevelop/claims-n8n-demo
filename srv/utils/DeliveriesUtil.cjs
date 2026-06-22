@@ -1,4 +1,4 @@
-const LOG = cds.log("tg.claims");
+const LOG = cds.log("ls.claims");
 const { create } = require("@sap/cds");
 const { parseQueryOptionsForFiltering } = require("./ODataUtil");
 const { calculateVirtualDeliveryDetails } = require("./ClaimsUtil");
@@ -27,7 +27,7 @@ const _handleExpandAppDelivery = async (deliveries) => {
     "Reading deliveries from the DB for " + deliveryIds.length + " deliveries"
   );
 
-  let appDeliveries = await SELECT.from("tg.claims.Deliveries")
+  let appDeliveries = await SELECT.from("ls.claims.Deliveries")
     .columns((delivery) => {
       delivery.ID,
         delivery.delivery_id,
@@ -369,7 +369,7 @@ const onHandleReadAppClaims = async (req) => {
   }
 
   if (deliveryIdViaNavigation) {
-    const dbClaims = await SELECT.from("tg.claims.Claims")
+    const dbClaims = await SELECT.from("ls.claims.Claims")
       .columns((claim) => {
         claim.delivery_id,
           claim.ID,
@@ -413,7 +413,7 @@ const onHandleReadAppClaims = async (req) => {
 /**
  * Sets the replication job running status.
  *
- * This method updates the status of the replication job in the AppConfig table of the tg.claims.config database.
+ * This method updates the status of the replication job in the AppConfig table of the ls.claims.config database.
  * If the AppConfig table does not contain a record for the replication job, a new record is created with the current date and time.
  *
  * @async
@@ -427,7 +427,7 @@ const _setReplicationJobRunning = async (running) => {
   let tomorrow = new Date();
   tomorrow.setDate(now.getDate() + 1);
 
-  let config = await SELECT.one.from("tg.claims.config.AppConfig").where({
+  let config = await SELECT.one.from("ls.claims.config.AppConfig").where({
     setting_id: "REP_JOB_R",
   });
 
@@ -446,13 +446,13 @@ const _setReplicationJobRunning = async (running) => {
   config.validFrom = now;
   config.validTo = tomorrow;
 
-  await UPSERT(config).into("tg.claims.config.AppConfig");
+  await UPSERT(config).into("ls.claims.config.AppConfig");
 };
 
 /**
  * Gets the running status of the replication job.
  *
- * This method fetches the running status of the replication job from the AppConfig table of the tg.claims.config database.
+ * This method fetches the running status of the replication job from the AppConfig table of the ls.claims.config database.
  * It logs the current running state and returns a boolean indicating whether the replication job is running.
  *
  * @async
@@ -479,7 +479,7 @@ const _getReplicationJobRunning = async () => {
 /**
  * Gets the configuration of the replication job.
  *
- * This method fetches the configuration of the replication job from the AppConfig table of the tg.claims.config database.
+ * This method fetches the configuration of the replication job from the AppConfig table of the ls.claims.config database.
  * It returns an object containing the configuration settings for the replication job.
  *
  * @async
@@ -661,7 +661,7 @@ const importDelivery = async (delivery_id, erpClaimsSrv) => {
   const { DeliverySet } = erpClaimsSrv.entities;
   LOG.info("Check to see if is already imported");
   let appDelivery = await SELECT.one
-    .from("tg.claims.Deliveries")
+    .from("ls.claims.Deliveries")
     .columns((delivery) => {
       delivery.ID,
         delivery.delivery_id,
@@ -700,13 +700,13 @@ const importDelivery = async (delivery_id, erpClaimsSrv) => {
   if (appDelivery == undefined) {
     //Insert the Delivery into the DB
     LOG.info("Importing Delivery Id " + delivery_id);
-    await INSERT.into("tg.claims.Deliveries").entries(delivery);
+    await INSERT.into("ls.claims.Deliveries").entries(delivery);
 
     logMessage = "Delivery Id " + delivery_id + " successfully imported";
   } else {
     //Update the Delivery into the DB
     LOG.info("Updating Delivery Id " + delivery_id);
-    await UPDATE("tg.claims.Deliveries", { ID: appDelivery.ID }).with(delivery);
+    await UPDATE("ls.claims.Deliveries", { ID: appDelivery.ID }).with(delivery);
 
     logMessage = "Delivery Id " + delivery_id + " successfully reimported";
   }

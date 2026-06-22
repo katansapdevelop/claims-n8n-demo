@@ -1,4 +1,4 @@
-using {tg.claims.config as db} from '../db/config';
+using {ls.claims.config as db} from '../db/config';
 
 service ConfigAppService @(path: '/app/config', ) {
     @odata.draft.enabled

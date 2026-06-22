@@ -1,4 +1,4 @@
-using {tg.claims as db} from '../db/schema';
+using {ls.claims as db} from '../db/schema';
 
 
 service ClaimAppService @(path: '/app/claim', ) {

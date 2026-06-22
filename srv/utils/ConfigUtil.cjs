@@ -1,10 +1,10 @@
-const LOG = cds.log("tg.claims");
+const LOG = cds.log("ls.claims");
 
 let validRates = null;
 
 getValidConfigSettingByIds = async (settingIds) => {
   const now = new Date().toISOString();
-  let settings = await SELECT.from("tg.claims.config.AppConfig")
+  let settings = await SELECT.from("ls.claims.config.AppConfig")
     .columns((setting) => {
       setting`.*`;
     })
@@ -24,7 +24,7 @@ getValidConfigSettingByIds = async (settingIds) => {
 
 getValidConfigSettings = async () => {
   const now = new Date().toISOString();
-  let settings = await SELECT.from("tg.claims.config.AppConfig")
+  let settings = await SELECT.from("ls.claims.config.AppConfig")
     .columns((setting) => {
       setting`.*`;
     })
@@ -43,7 +43,7 @@ getValidConfigSettings = async () => {
 };
 
 getAllConfigSettingsBySettingId = async (settingId) => {
-  let settings = await SELECT.from("tg.claims.config.AppConfig")
+  let settings = await SELECT.from("ls.claims.config.AppConfig")
     .columns((setting) => {
       setting`.*`;
     })
@@ -63,7 +63,7 @@ getAllConfigSettingsBySettingId = async (settingId) => {
 getConversionRatesByCurrency = async (fromCurrency, toCurrency) => {
   const now = new Date().toISOString();
 
-  const rates = await SELECT.from("tg.claims.config.CurrencyConversion")
+  const rates = await SELECT.from("ls.claims.config.CurrencyConversion")
     .columns((conversion) => {
       conversion`.*`;
     })
@@ -87,7 +87,7 @@ getConversionRatesByCurrency = async (fromCurrency, toCurrency) => {
 getValidConversionRateByCurrency = async (fromCurrency, toCurrency) => {
   const now = new Date().toISOString();
   if (!validRates) {
-    validRates = await SELECT.from("tg.claims.config.CurrencyConversion")
+    validRates = await SELECT.from("ls.claims.config.CurrencyConversion")
       .columns((conversion) => {
         conversion`.*`;
       })

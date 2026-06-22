@@ -1,6 +1,6 @@
 const { default: cds } = require("@sap/cds");
 const { loadDestination } = require("sap-cap-sdm-plugin/lib/util/index");
-const LOG = cds.log("tg.claims");
+const LOG = cds.log("ls.claims");
 const {
   validateAttachments,
   uploadAttachmentToRepository,
@@ -56,7 +56,7 @@ class ClaimAppService extends cds.ApplicationService {
       if (Costs.length > 0) {
         LOG.info("Read all claim currencies from the DB for costs");
         const costIds = Costs.map((cost) => cost.ID);
-        costClaims = await SELECT.from("tg.claims.Costs")
+        costClaims = await SELECT.from("ls.claims.Costs")
           .columns((cost) => {
             cost.ID,
               cost.claim((claim) => {
@@ -105,13 +105,13 @@ class ClaimAppService extends cds.ApplicationService {
       switch (claims.type_id) {
         case claim_types.quality:
           LOG.info("Creating Quality Claim Entity");
-          await INSERT.into("tg.claims.QualityClaims").entries({
+          await INSERT.into("ls.claims.QualityClaims").entries({
             claim_ID: claims.ID,
           });
           break;
         case claim_types.packaging:
           LOG.info("Creating Packaging Claim Entity");
-          await INSERT.into("tg.claims.PackagingClaims").entries({
+          await INSERT.into("ls.claims.PackagingClaims").entries({
             claim_ID: claims.ID,
           });
           break;
@@ -161,7 +161,7 @@ class ClaimAppService extends cds.ApplicationService {
       LOG.info("Reading delivery IDs for claims");
       let deliveries = [];
       if (deliveryIds.length > 0) {
-        deliveries = await SELECT.from("tg.claims.Deliveries").where({
+        deliveries = await SELECT.from("ls.claims.Deliveries").where({
           delivery_id: deliveryIds,
         });
       }
@@ -232,7 +232,7 @@ class ClaimAppService extends cds.ApplicationService {
 
       let deliveries = [];
       if (deliveryIds.length > 0) {
-        deliveries = await SELECT.from("tg.claims.Deliveries").where({
+        deliveries = await SELECT.from("ls.claims.Deliveries").where({
           delivery_id: deliveryIds,
         });
       }
@@ -409,7 +409,7 @@ class ClaimAppService extends cds.ApplicationService {
       let claimStatus = claim_statuses.WITH_FINANCE;
       if (req.params[0].ID) {
         const claim = await SELECT.one
-          .from("tg.claims.Claims")
+          .from("ls.claims.Claims")
           .columns((claim) => {
             claim.ID,
               claim.type((type) => {
@@ -458,7 +458,7 @@ class ClaimAppService extends cds.ApplicationService {
       if (marketAssistanceConversion) {
         LOG.info("Check claim type for conversion for claim " + claimId);
         const claim = await SELECT.one
-          .from("tg.claims.Claims")
+          .from("ls.claims.Claims")
           .columns((claim) => {
             claim.ID,
               claim.type((type) => {
@@ -489,7 +489,7 @@ class ClaimAppService extends cds.ApplicationService {
       );
 
       LOG.info("Updating the rejection reason for claim " + claimId);
-      await UPDATE("tg.claims.Claims", { ID: claimId }).with({
+      await UPDATE("ls.claims.Claims", { ID: claimId }).with({
         RejectionReason_id: rejectionReason,
       });
 
@@ -498,7 +498,7 @@ class ClaimAppService extends cds.ApplicationService {
         LOG.info(
           "Updating the converted claim id for claim to " + marketAssistClaim.ID
         );
-        await UPDATE("tg.claims.Claims", { ID: claimId }).with({
+        await UPDATE("ls.claims.Claims", { ID: claimId }).with({
           convertedClaim_ID: marketAssistClaim.ID,
         });
         LOG.info(
@@ -557,7 +557,7 @@ class ClaimAppService extends cds.ApplicationService {
 
       if (req.params[0].ID) {
         const claim = await SELECT.one
-          .from("tg.claims.Claims")
+          .from("ls.claims.Claims")
           .columns((claim) => {
             claim.ID,
               claim.credit_note_id,
@@ -697,7 +697,7 @@ class ClaimAppService extends cds.ApplicationService {
         // Read the attachment record and get the object ID
         LOG.info("Reading Object Id for attachment from DB");
         const attachmentRecord = await SELECT.one
-          .from("tg.claims.Attachments")
+          .from("ls.claims.Attachments")
           .columns((attachment) => {
             attachment.ID,
               attachment.objectId,
@@ -729,7 +729,7 @@ class ClaimAppService extends cds.ApplicationService {
       /*
       LOG.info("Reading claim details for claim id: " + draftPallet.claim_ID);
       const claim = await SELECT.one
-        .from("tg.claims.Claims")
+        .from("ls.claims.Claims")
         .columns((claim) => {
           claim.ID, claim.delivery_id, claim.rpin;
         })

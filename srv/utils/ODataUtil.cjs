@@ -1,5 +1,5 @@
 
-const LOG = cds.log("tg.claims");
+const LOG = cds.log("ls.claims");
 
 /**
  * Parses query options from the request object for filtering purposes.

@@ -1,5 +1,5 @@
 const { default: cds } = require("@sap/cds");
-const LOG = cds.log("tg.claims");
+const LOG = cds.log("ls.claims");
 
 const { getAllConfigSettingsBySettingId, getConversionRatesByCurrency } = require("./utils/ConfigUtil");
 

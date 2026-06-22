@@ -5,7 +5,7 @@ using {
   sap.common.CodeList,
 } from '@sap/cds/common';
 
-namespace tg.claims;
+namespace ls.claims;
 
 @Common.Label: 'Complaint Status'
 entity ComplaintStatus : CodeList {

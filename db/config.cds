@@ -5,7 +5,7 @@ using {
   sap.common.CodeList,
 } from '@sap/cds/common';
 
-namespace tg.claims.config;
+namespace ls.claims.config;
 
 @Common.Label: 'Settings Codes'
 entity SettingCodes : CodeList {

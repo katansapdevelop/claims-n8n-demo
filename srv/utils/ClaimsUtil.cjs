@@ -1,5 +1,5 @@
 const { getValidConversionRateByCurrency } = require("./ConfigUtil.cjs");
-const LOG = cds.log("tg.claims");
+const LOG = cds.log("ls.claims");
 
 const { uuid } = cds.utils;
 
@@ -38,7 +38,7 @@ const claimActions = {
 let _claimTypes = null;
 getClaimTypes = async () => {
   if (_claimTypes === null) {
-    _claimTypes = await SELECT.from("tg.claims.ClaimType");
+    _claimTypes = await SELECT.from("ls.claims.ClaimType");
   }
   return _claimTypes;
 };
@@ -82,7 +82,7 @@ const validateRepBeforeSave = async (req) => {
   const rep = req.data;
 
   const dbRep = await SELECT.one
-    .from("tg.claims.MarketRep")
+    .from("ls.claims.MarketRep")
     .where({ email: rep.email });
   if (dbRep && dbRep.ID !== rep.ID) {
     LOG.warn("Email address already exists for another representative");
@@ -298,7 +298,7 @@ updateClaimDetailsFromERP = async (claim, erpClaimsSrv) => {
       grower_name = growers[0].name;
     }
 
-    await UPDATE("tg.claims.Claims", { ID: claim.ID }).with({
+    await UPDATE("ls.claims.Claims", { ID: claim.ID }).with({
       grower_id: grower_id,
       grower_name: grower_name,
     });
@@ -321,7 +321,7 @@ updateClaimDetailsFromERP = async (claim, erpClaimsSrv) => {
 
     // Update Packer Name
     LOG.info("Updating Pack House Name for Claim " + claim.ID);
-    await UPDATE("tg.claims.PackagingClaims", { claim_ID: claim.ID }).with({
+    await UPDATE("ls.claims.PackagingClaims", { claim_ID: claim.ID }).with({
       pack_house_name: packers[0].packer_nm,
     });
     LOG.info("Successfully updated packaging claim details");
@@ -347,7 +347,7 @@ calculateVirtualDeliveryDetails = async (Deliveries) => {
     "Reading all claims for " + deliveryIds.length + " deliveries being read"
   );
 
-  let deliveryClaims = await SELECT.from("tg.claims.Deliveries")
+  let deliveryClaims = await SELECT.from("ls.claims.Deliveries")
     .columns((delivery) => {
       delivery.ID,
         delivery.claims((claim) => {
@@ -435,13 +435,13 @@ updateClaimsTotals = async (Claim_Header) => {
   let claims = null;
   if (!claimHeaders[0].hasOwnProperty("claim_value")) {
     readClaimCostsFromDb = true;
-    claims = await SELECT.from("tg.claims.Claims")
+    claims = await SELECT.from("ls.claims.Claims")
       .columns("ID", "claim_value", "claim_value_nzd")
       .where({ ID: { in: claimIds } });
   }
 
   // Read values of any additional costs for the claim
-  const costs = await SELECT.from("tg.claims.Costs")
+  const costs = await SELECT.from("ls.claims.Costs")
     .columns("claim_ID", "value", "value_nzd")
     .where({ claim_ID: { in: claimIds } });
 
@@ -465,7 +465,7 @@ updateClaimsTotals = async (Claim_Header) => {
     claim.total_claim_value_nzd.toFixed(2);
 
     LOG.info("Updating costs for claim " + claim.ID);
-    await UPDATE("tg.claims.Claims", { ID: claim.ID }).with({
+    await UPDATE("ls.claims.Claims", { ID: claim.ID }).with({
       total_claim_value: claim.total_claim_value,
       total_claim_value_nzd: claim.total_claim_value_nzd,
     });
@@ -497,7 +497,7 @@ calculateQualityClaimsValuesForQualityClaim = async (qualityClaims) => {
   // Get Additional Costs for all claims being read
   LOG.info("Reading costs for all claims being read");
   const claimIds = qualityClaims.map((claim) => claim.claim_ID);
-  const claims = await SELECT.from("tg.claims.Claims")
+  const claims = await SELECT.from("ls.claims.Claims")
     .columns("ID", "total_claim_value", "total_claim_value_nzd")
     .where({ ID: { in: claimIds } });
   LOG.info("Successfully read all costs from the DB");
@@ -520,7 +520,7 @@ _calculateQualityClaimValues = async (claim, claim_value, claim_value_nzd) => {
   let number_of_tce_out_of_spec = claim.number_of_tce_out_of_spec;
   if (!number_of_tce_out_of_spec) {
     LOG.info("Reading quality claim from the DB for " + claim.claim_ID);
-    const qualityClaim = await SELECT.from("tg.claims.QualityClaims")
+    const qualityClaim = await SELECT.from("ls.claims.QualityClaims")
       .columns("claim_ID", "number_of_tce_out_of_spec")
       .where({ claim_ID: claim.claim_ID });
     number_of_tce_out_of_spec = qualityClaim[0].number_of_tce_out_of_spec;
@@ -551,7 +551,7 @@ _generateClaimId = async (delivery_id, offsetForSelf) => {
   LOG.info("Generating claim ID for the claim");
 
   LOG.info("Reading claims for the delivery ID: " + delivery_id);
-  const claimsByDelivery = await SELECT("tg.claims.Claims").where({
+  const claimsByDelivery = await SELECT("ls.claims.Claims").where({
     delivery_id: delivery_id,
   });
   LOG.info(
@@ -583,7 +583,7 @@ updateExternalClaimId = async (ClaimHeader) => {
   LOG.info("Found Delivery Id: " + ClaimHeader.delivery_id);
   const claimId = await _generateClaimId(ClaimHeader.delivery_id);
   LOG.info("Updating the claim id of the claim to: " + claimId);
-  await UPDATE("tg.claims.Claims", { ID: ClaimHeader.ID }).with({
+  await UPDATE("ls.claims.Claims", { ID: ClaimHeader.ID }).with({
     claim_id: claimId,
   });
 };
@@ -617,7 +617,7 @@ updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
   try {
     // Read the claim status and check the status change is valid
     claims = await SELECT.one
-      .from("tg.claims.Claims")
+      .from("ls.claims.Claims")
       .columns((claim) => {
         claim.ID,
           claim.type((type) => {
@@ -678,7 +678,7 @@ updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
   try {
     // Update the claim status
     LOG.info("Updating the status of the claim to: " + statusText);
-    await UPDATE("tg.claims.Claims", { ID: claimId }).with({
+    await UPDATE("ls.claims.Claims", { ID: claimId }).with({
       status_id: statusId,
     });
     LOG.info("Status updated to " + statusText);
@@ -689,7 +689,7 @@ updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
     LOG.info(
       "Updating the audit log for the claim: " + JSON.stringify(auditLogRecord)
     );
-    await INSERT.into("tg.claims.AuditLogs").entries([auditLogRecord]);
+    await INSERT.into("ls.claims.AuditLogs").entries([auditLogRecord]);
     LOG.info("Audit Log successfully added");
   } catch (e) {
     LOG.error("Errors occured updating the claim status: " + e);
@@ -758,7 +758,7 @@ const convertToMarketAssistance = async (claimId) => {
 
   LOG.info("Reading all data from the DB for claim " + claimId);
   const qualityClaim = await SELECT.one
-    .from("tg.claims.Claims")
+    .from("ls.claims.Claims")
     .columns((claim) => {
       claim`.*`,
         claim.costs((cost) => {
@@ -781,7 +781,7 @@ const convertToMarketAssistance = async (claimId) => {
   let marketAssistClaim = await _mapQCtoMAClaim(qualityClaim);
 
   // Create a new Market Assistance Claim
-  await INSERT.into("tg.claims.Claims").entries([marketAssistClaim]);
+  await INSERT.into("ls.claims.Claims").entries([marketAssistClaim]);
 
   return marketAssistClaim;
 };
@@ -806,7 +806,7 @@ convertClaimAmountsToNZD = async (claim) => {
     );
     LOG.info("Converted claim amount to  " + claim.claim_value_nzd + " NZD");
 
-    await UPDATE("tg.claims.Claims", { ID: claim.ID }).with({
+    await UPDATE("ls.claims.Claims", { ID: claim.ID }).with({
       claim_value_nzd: claim.claim_value_nzd,
     });
   }
@@ -822,7 +822,7 @@ convertClaimAmountsToNZD = async (claim) => {
       cost.value_nzd = Number((cost.value * conversionRate).toFixed(2));
       LOG.info("Converted cost amount to  " + cost.value_nzd + " NZD");
 
-      await UPDATE("tg.claims.Costs", { ID: cost.ID }).with({
+      await UPDATE("ls.claims.Costs", { ID: cost.ID }).with({
         value_nzd: cost.value_nzd,
       });
     }
@@ -877,7 +877,7 @@ validateBeforeSubmitForReview = async (req) => {
   let claimID = req.params[0].ID;
   LOG.info("Reading claim details for claim id: " + claimID);
   const claim = await SELECT.one
-    .from("tg.claims.Claims")
+    .from("ls.claims.Claims")
     .columns((claim) => {
       claim.ID,
         claim.type_id,
@@ -933,7 +933,7 @@ const updateClaimDuetoTypeChange = async (req) => {
   // Read the claim to see if the type changed
   LOG.info("Reading claim " + claim.ID);
   const dbClaim = await SELECT.one
-    .from("tg.claims.Claims")
+    .from("ls.claims.Claims")
     .where({ ID: claim.ID });
   LOG.info("Successfully read claim " + JSON.stringify(dbClaim));
 
@@ -980,7 +980,7 @@ const updateClaimDueToRPINChange = async (req) => {
   // Read the claim to see if the RPIN changed
   LOG.info("Reading claim " + claim.ID);
   const dbClaim = await SELECT.one
-    .from("tg.claims.Claims")
+    .from("ls.claims.Claims")
     .where({ ID: claim.ID });
   LOG.info("Successfully read claim " + JSON.stringify(dbClaim));
 
