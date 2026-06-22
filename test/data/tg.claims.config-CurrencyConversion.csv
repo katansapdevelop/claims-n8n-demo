@@ -1,0 +1,2 @@
+fromCurrency_code,toCurrency_code,rate,validFrom,validTo
+USD,NZD,1.4,2024-04-01T13:00:00Z,2099-01-01T13:00:00Z

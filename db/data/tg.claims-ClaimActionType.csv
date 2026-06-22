@@ -1,0 +1,10 @@
+id,name,descr
+0,Created,Created
+1,Submit for Review,Submit for Review
+2,Approve Review, Approve Review
+3,Reject Review, Reject Review
+4,Request More Info,Request More Information
+5,Send To Grower,Send To Grower
+6,Grower Accepted,Grower Accepted
+7,Grower Rejected,Grower Rejected
+8,Complete,Complete

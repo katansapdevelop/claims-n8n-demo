@@ -1,0 +1,1057 @@
+const { getValidConversionRateByCurrency } = require("./ConfigUtil.cjs");
+const LOG = cds.log("tg.claims");
+
+const { uuid } = cds.utils;
+
+const claim_types = {
+  quality: "QC",
+  packaging: "PK",
+  shipping: "SH",
+  market: "MK",
+  complaint: "CP",
+};
+
+//TODO Replace this with the object based one below
+const claim_statuses = {
+  NEW: 1,
+  PENDING_REVIEW: 2,
+  INFO_REQ: 3,
+  REVIEW_APPROVED: 4,
+  REVIEW_REJECTED: 5,
+  SENT_TO_GROWER: 6,
+  WITH_FINANCE: 7,
+  COMPLETE: 8,
+};
+
+const claimActions = {
+  CREATED: 0,
+  SUBMIT_REVIEW: 1,
+  APPROVE_REVIEW: 2,
+  REJECT_REVIEW: 3,
+  REQUEST_INFO: 4,
+  SEND_GROWER: 5,
+  GROWER_ACCEPT: 6,
+  GROWER_REJECT: 7,
+  COMPLETE: 8,
+};
+
+let _claimTypes = null;
+getClaimTypes = async () => {
+  if (_claimTypes === null) {
+    _claimTypes = await SELECT.from("tg.claims.ClaimType");
+  }
+  return _claimTypes;
+};
+
+getClaimTypeById = async (claimTypeId) => {
+  const claimTypes = await getClaimTypes();
+  const claim = claimTypes.find((claimType) => claimType.id === claimTypeId);
+  return claim;
+};
+
+let _erpClaims = null;
+
+/**
+ * Initializes or retrieves the existing ERP Claims Service instance.
+ *
+ * This method checks if an instance of the ERP Claims Service already exists. If it does, it returns the existing instance.
+ * Otherwise, it creates a new instance of the ERP Claims Service, initializes it with necessary configurations, and returns it.
+ * This ensures a single instance is used throughout the application, following the singleton pattern.
+ *
+ * @returns {ERPClaimsService} The ERP Claims Service instance.
+ */
+const _getERPClaimsService = async () => {
+  if (_erpClaims === null)
+    _erpClaims = await cds.connect.to("Z_OCP_CLAIMS_SRV");
+  return _erpClaims;
+};
+
+/**
+ * This method checks if a given date is in the future.
+ *
+ * @param {Date} date - The date to check.
+ * @returns {boolean} Returns true if the date is in the future, false otherwise.
+ */
+_isDateInFuture = (date) => {
+  let tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return new Date(date) > tomorrow;
+};
+
+const validateRepBeforeSave = async (req) => {
+  const rep = req.data;
+
+  const dbRep = await SELECT.one
+    .from("tg.claims.MarketRep")
+    .where({ email: rep.email });
+  if (dbRep && dbRep.ID !== rep.ID) {
+    LOG.warn("Email address already exists for another representative");
+    req.reject(400, "Email address already exists for another representative");
+  }
+
+  if (
+    (rep.firstName === null || rep.firstName === "") &&
+    (rep.lastName === null || rep.lastName === "")
+  ) {
+    LOG.warn("A First Name or a Last Name is required for a Representative");
+    req.reject(
+      400,
+      "A First Name or a Last Name is required for a Representative"
+    );
+  }
+};
+
+/**
+ * This method validates a QC (Quality Control) claim before it is saved.
+ *
+ * @param {Object} req - The request object containing the QC claim data.
+ * @throws {Error} If the QC claim does not meet the above conditions, an error is thrown with a 400 status code.
+ * @returns {undefined} This function does not return a value. It either completes successfully or throws an error.
+ */
+const _validateQCClaimBeforeSave = async (req) => {
+  const claim = req.data;
+  if (claim.type_id !== claim_types.quality) {
+    return;
+  }
+
+  if (claim?.qualityClaim?.qc_inspection_date) {
+    if (_isDateInFuture(claim.qualityClaim.qc_inspection_date)) {
+      LOG.warn("Quality Claim Inspection Date cannot be in the future");
+      req.reject(400, "Quality Claim Inspection Date cannot be in the future");
+    }
+  }
+
+  if (!claim.primary_defect_code_id) {
+    LOG.warn("Primary Defect Code is mandatory for a Quality Claim");
+    req.reject(400, "Primary Defect Code is mandatory for a Quality Claim");
+  }
+
+  if (claim.rpin !== null && claim.rpin !== "" && claim.pallets.length > 0) {
+    LOG.info("Checking that the Pallets are under the RPIN in the claim");
+    // Read the delivery details from ERP
+    const erpClaims = await _getERPClaimsService();
+    const { DeliverySet } = erpClaims.entities;
+
+    const deliveries = await erpClaims.run(
+      SELECT.from(DeliverySet)
+        .columns((delivery) => {
+          delivery.DelToRpin((rpin) => {
+            rpin.pallet_id, rpin.delivery_id, rpin.rpin, rpin.id;
+          });
+        })
+        .where({
+          delivery_id: claim.delivery_id,
+        })
+    );
+
+    const validPalletsForRPIN = deliveries[0].DelToRpin.filter(
+      (palletRPIN) => palletRPIN.rpin === claim.rpin
+    );
+
+    // Check the impacted pallet is under the RPIN
+    for (let pallet of claim.pallets) {
+      const palletInRPIN = validPalletsForRPIN.find(
+        (palletRPIN) => palletRPIN.pallet_id === pallet.pallet_id
+      );
+      if (!palletInRPIN) {
+        LOG.warn("RPIN in claim and pallets do not match");
+        req.reject(400, "RPIN in claim and pallets do not match");
+      }
+    }
+  }
+};
+
+/**
+ * Validates a claim before creating/updating it
+ *
+ * @param {Object} req - The request object containing the claim data.
+ * @throws {Error} If the claim is not valid
+ */
+const validateClaimBeforeSave = async (req) => {
+  const claim = req.data;
+  LOG.info("Validating if the claim has value not $0 for a complaint");
+  if (claim.type_id == claim_types.complaint && claim.claim_value != 0) {
+    LOG.warn("Claim value for a complaint must be $0.00" + claim.claim_value);
+    req.reject(400, "Claim value for a complaint must be $0.00");
+  }
+
+  LOG.info("Validating if the claim has currency code");
+  if (
+    (claim.claim_currency_code === null || claim.claim_currency_code === "") &&
+    claim.claim_value > 0
+  ) {
+    LOG.warn(
+      "Currency code is mandatory for a claim with value " +
+        claim.claim_value +
+        " " +
+        claim.claim_currency_code
+    );
+    req.reject(400, "Currency code is mandatory for a claim with value");
+  }
+
+  LOG.info("Validating if the claim date is set in the future");
+
+  if (_isDateInFuture(claim.date_of_claim)) {
+    LOG.warn("Claim date cannot be in the future");
+    req.reject(400, "Claim date cannot be in the future");
+  }
+
+  LOG.info("Validating if the arrival date is set in the future");
+
+  if (_isDateInFuture(claim.arrival_date)) {
+    LOG.warn("Arrival date cannot be in the future");
+    req.reject(400, "Arrival date cannot be in the future");
+  }
+
+  LOG.info(
+    "Validating if the claim status is complete than no more changes are accepted"
+  );
+  if (!req.user.is("admin")) {
+    if (
+      claim.status_id == claim_statuses.COMPLETE ||
+      claim.status_id == claim_statuses.REVIEW_REJECTED
+    ) {
+      LOG.warn(
+        "Claim status is " + claim.status_id + ", no more changes are accepted"
+      );
+      req.reject(
+        400,
+        "Claim status is complete or rejected, no more changes are accepted"
+      );
+    }
+  }
+
+  LOG.info("Validating if the claim has duplicate pallet ids in the claim");
+  if (claim.pallets) {
+    const palletIds = claim.pallets.map((pallet) => pallet.pallet_id);
+    const uniquePalletIds = new Set(palletIds);
+    if (palletIds.length !== uniquePalletIds.size) {
+      LOG.warn("Duplicate pallet ids found for claim " + claim.ID);
+      req.reject(400, "Claim cannot have duplicate pallet ids");
+    }
+  }
+
+  LOG.info("Run claim type specific pre-save validations");
+  await _validateQCClaimBeforeSave(req);
+};
+
+updateClaimDetailsFromERP = async (claim, erpClaimsSrv) => {
+  if (!claim.delivery_id) {
+    LOG.warn(
+      "No delivery id found in claim " + claim.ID + " to update the claim"
+    );
+    return;
+  }
+
+  if (
+    !(
+      claim.type_id === claim_types.quality ||
+      claim.type_id === claim_types.packaging
+    )
+  ) {
+    LOG.info(
+      "Claim type " +
+        claim.type_id +
+        " for claim id " +
+        claim.ID +
+        " requires no ERP updates"
+    );
+    return;
+  }
+
+  const { DeliverySet } = erpClaimsSrv.entities;
+  LOG.info(
+    "Reading delivery details from ERP for delivery id " + claim.delivery_id
+  );
+  const deliveries = await erpClaimsSrv.run(
+    SELECT.from(DeliverySet)
+      .columns((delivery) => {
+        delivery.DelToRpin((rpin) => {
+          rpin.delivery_id,
+            rpin.pallet_id,
+            rpin.rpin,
+            rpin.id,
+            rpin.name,
+            rpin.packer,
+            rpin.packer_nm;
+        });
+      })
+      .where({
+        delivery_id: claim.delivery_id,
+      })
+  );
+  LOG.info("Successfully read Delivery details from ERP");
+
+  // Update Grower Details from ERP
+  if (claim.type_id === claim_types.quality && claim.rpin !== null) {
+    // Filter RPINs by RPIN
+    const growers = deliveries[0].DelToRpin.filter(
+      (rpin) => rpin.rpin === claim.rpin
+    );
+
+    LOG.info("Updating Grower Details for Claim " + claim.ID);
+
+    let grower_id = null;
+    let grower_name = null;
+    if (growers.length > 0) {
+      grower_id = growers[0].id;
+      grower_name = growers[0].name;
+    }
+
+    await UPDATE("tg.claims.Claims", { ID: claim.ID }).with({
+      grower_id: grower_id,
+      grower_name: grower_name,
+    });
+    LOG.info("Successfully updated claim details");
+  }
+
+  if (
+    claim.type_id === claim_types.packaging &&
+    claim.packagingClaim !== null &&
+    claim.packagingClaim.pack_house_id !== null
+  ) {
+    LOG.info(
+      "Filtering packers for pack house ID " +
+        claim.packagingClaim.pack_house_id
+    );
+    // Filter RPINs by Packer Id
+    const packers = deliveries[0].DelToRpin.filter(
+      (rpin) => rpin.packer === claim.packagingClaim.pack_house_id
+    );
+
+    // Update Packer Name
+    LOG.info("Updating Pack House Name for Claim " + claim.ID);
+    await UPDATE("tg.claims.PackagingClaims", { claim_ID: claim.ID }).with({
+      pack_house_name: packers[0].packer_nm,
+    });
+    LOG.info("Successfully updated packaging claim details");
+  }
+};
+
+/**
+ * Calculates the virtual delivery details for a given set of deliveries.
+ *
+ * @async
+ * @param {Array} Deliveries - An array of delivery objects. Each object should have an 'ID' property.
+ */
+calculateVirtualDeliveryDetails = async (Deliveries) => {
+  LOG.info("Calculating virtual details for deliveries");
+
+  if (Deliveries.length === 0) {
+    LOG.info("No deliveries found exiting routine");
+    return;
+  }
+
+  let deliveryIds = Deliveries.map((delivery) => delivery.ID);
+  LOG.info(
+    "Reading all claims for " + deliveryIds.length + " deliveries being read"
+  );
+
+  let deliveryClaims = await SELECT.from("tg.claims.Deliveries")
+    .columns((delivery) => {
+      delivery.ID,
+        delivery.claims((claim) => {
+          claim.ID,
+            claim.total_claim_value,
+            claim.total_claim_value_nzd,
+            claim.status((status) => {
+              status.id;
+            });
+        });
+    })
+    .where({ ID: { in: deliveryIds } });
+  LOG.info(
+    "Read " + deliveryClaims.length + " claims for all deliveries being read"
+  );
+
+  // Update the virtual attributes for each delivery found
+  for (delivery of Deliveries) {
+    // Dafault all the values
+    delivery.total_claims_value_nzd = Number(0.0);
+    //delivery.total_claims_value_usd = Number(0.0);
+    delivery.open_claims = false;
+
+    // Filter the claims for the specific delivery
+    let deliveryClaim = deliveryClaims.filter(
+      (deliveryClaim) => deliveryClaim.ID === delivery.ID
+    );
+
+    if (deliveryClaim.length > 0) {
+      // Calculate the total claim value for the delivery
+      for (claim of deliveryClaim[0].claims) {
+        delivery.total_claims_value_nzd += Number(
+          Number(claim.total_claim_value_nzd).toFixed(2)
+        );
+        /*
+        delivery.total_claims_value_usd += Number(
+          Number(claim.total_claim_value).toFixed(2)
+        );
+        */
+
+        // check if the claim is open
+        if (
+          !(
+            claim.status.id === claim_statuses.COMPLETE ||
+            claim.status.id === claim_statuses.REVIEW_REJECTED
+          )
+        ) {
+          delivery.open_claims = true;
+        }
+      }
+    }
+  }
+};
+
+/**
+ * Asynchronously calculates and updates the total claim value in USD/NZD for each claim in the provided array, including additional costs.
+ * If the claim values are not present in the claim headers, they are read from the database.
+ *
+ * @param {Array|Object} Claim_Header - An array of claims or a single claim. Each claim header should be an object with at least an 'ID' property.
+ * @returns {void} - This function does not return anything. It modifies the claim in place, adding 'total_claim_value' and 'total_claim_value_nzd' properties to each one.
+ * @throws {Error} - Throws an error if the database operations fail.
+ */
+updateClaimsTotals = async (Claim_Header) => {
+  LOG.info(
+    "Calculating the total claim value in USD/NZD including additional costs"
+  );
+
+  // Calculate the total claim value in USD/NZD including additional costs
+  let claimHeaders = Claim_Header;
+  if (!Array.isArray(Claim_Header)) {
+    claimHeaders = [Claim_Header];
+  }
+
+  if (claimHeaders.length === 0) {
+    LOG.info("No claims found exiting routine");
+    return;
+  }
+
+  // Get Additional Costs for all claims being read
+  LOG.info("Reading costs for all claims being read");
+  let claimIds = claimHeaders.map((claim) => claim.ID);
+
+  // If no claim value is present, then we need to read the claim cost values from the DB
+  let readClaimCostsFromDb = false;
+  let claims = null;
+  if (!claimHeaders[0].hasOwnProperty("claim_value")) {
+    readClaimCostsFromDb = true;
+    claims = await SELECT.from("tg.claims.Claims")
+      .columns("ID", "claim_value", "claim_value_nzd")
+      .where({ ID: { in: claimIds } });
+  }
+
+  // Read values of any additional costs for the claim
+  const costs = await SELECT.from("tg.claims.Costs")
+    .columns("claim_ID", "value", "value_nzd")
+    .where({ claim_ID: { in: claimIds } });
+
+  LOG.info("Updating costs for all claims being read");
+  for (let claim of claimHeaders) {
+    if (readClaimCostsFromDb === true && claims.length > 0) {
+      let claimCost = claims.filter((claimCost) => claimCost.ID === claim.ID);
+      claim.claim_value = Number(claimCost[0].claim_value.toFixed(2));
+      claim.claim_value_nzd = Number(claimCost[0].claim_value_nzd.toFixed(2));
+    }
+    claim.total_claim_value = claim.claim_value | 0;
+    claim.total_claim_value_nzd = claim.claim_value_nzd | 0;
+
+    // Add up all costs related to the claim
+    const claimCosts = costs.filter((cost) => cost.claim_ID === claim.ID);
+    for (let cost of claimCosts) {
+      claim.total_claim_value += Number(cost.value);
+      claim.total_claim_value_nzd += Number(cost.value_nzd);
+    }
+    claim.total_claim_value.toFixed(2);
+    claim.total_claim_value_nzd.toFixed(2);
+
+    LOG.info("Updating costs for claim " + claim.ID);
+    await UPDATE("tg.claims.Claims", { ID: claim.ID }).with({
+      total_claim_value: claim.total_claim_value,
+      total_claim_value_nzd: claim.total_claim_value_nzd,
+    });
+  }
+};
+
+/**
+ * Calculates the claim value per TCE (Total Cartons Effected) for each claim in the provided array
+ * Calculates the percentage claimed
+ * @param {Array} qualityClaims - An array of quality claims.
+ */
+calculateQualityClaimsValuesForClaim = async (claims) => {
+  for (let claim of claims) {
+    if (
+      claim.hasOwnProperty("qualityClaim") &&
+      claim.type_id === claim_types.quality &&
+      claim.qualityClaim !== null
+    ) {
+      await _calculateQualityClaimValues(
+        claim.qualityClaim,
+        claim.total_claim_value,
+        claim.total_claim_value_nzd
+      );
+    }
+  }
+};
+
+calculateQualityClaimsValuesForQualityClaim = async (qualityClaims) => {
+  // Get Additional Costs for all claims being read
+  LOG.info("Reading costs for all claims being read");
+  const claimIds = qualityClaims.map((claim) => claim.claim_ID);
+  const claims = await SELECT.from("tg.claims.Claims")
+    .columns("ID", "total_claim_value", "total_claim_value_nzd")
+    .where({ ID: { in: claimIds } });
+  LOG.info("Successfully read all costs from the DB");
+
+  LOG.info("Updating Claim values for all quality claims");
+  for (let qualityClaim of qualityClaims) {
+    const claim = claims.filter(
+      (claim) => claim.ID === qualityClaim.claim_ID
+    )[0];
+    await _calculateQualityClaimValues(
+      qualityClaim,
+      claim.total_claim_value,
+      claim.total_claim_value_nzd
+    );
+  }
+  LOG.info("Updated all claim values for all claims");
+};
+
+_calculateQualityClaimValues = async (claim, claim_value, claim_value_nzd) => {
+  let number_of_tce_out_of_spec = claim.number_of_tce_out_of_spec;
+  if (!number_of_tce_out_of_spec) {
+    LOG.info("Reading quality claim from the DB for " + claim.claim_ID);
+    const qualityClaim = await SELECT.from("tg.claims.QualityClaims")
+      .columns("claim_ID", "number_of_tce_out_of_spec")
+      .where({ claim_ID: claim.claim_ID });
+    number_of_tce_out_of_spec = qualityClaim[0].number_of_tce_out_of_spec;
+  }
+
+  LOG.info("Updating expanded quality claim data");
+  claim.claim_value_per_tce = 0;
+  claim.claim_value_per_tce_nzd = 0;
+  claim.percentage_claimed = 0;
+  if (number_of_tce_out_of_spec > 0) {
+    claim.claim_value_per_tce = calculateClaimValuePerTce(
+      claim_value,
+      number_of_tce_out_of_spec
+    );
+
+    claim.claim_value_per_tce_nzd = calculateClaimValuePerTce(
+      claim_value_nzd,
+      number_of_tce_out_of_spec
+    );
+
+    claim.percentage_claimed = Number(
+      ((Number(number_of_tce_out_of_spec) / _maxTceOnPallet) * 100).toFixed(2)
+    );
+  }
+};
+
+_generateClaimId = async (delivery_id, offsetForSelf) => {
+  LOG.info("Generating claim ID for the claim");
+
+  LOG.info("Reading claims for the delivery ID: " + delivery_id);
+  const claimsByDelivery = await SELECT("tg.claims.Claims").where({
+    delivery_id: delivery_id,
+  });
+  LOG.info(
+    "Successfully found " +
+      claimsByDelivery.length +
+      " claims for the delivery ID: " +
+      delivery_id
+  );
+  let claimIndex = 0;
+  if (claimsByDelivery.length) {
+    claimIndex = claimsByDelivery.length;
+  }
+
+  if (offsetForSelf) {
+    // When copying claims the copied claim has not been commit to the DB, so is not picked
+    // up by the delivery search above.  This ensures the copied claim is attributed
+    // the correct claim ID
+    claimIndex++;
+  }
+  claimIndex = claimIndex.toString().padStart(3, "0");
+  const claimId = delivery_id.slice(-7) + claimIndex;
+  LOG.info("Successfully generated Claim Id " + claimId);
+
+  return claimId;
+};
+
+updateExternalClaimId = async (ClaimHeader) => {
+  LOG.info("Updating claim ID for the claim");
+  LOG.info("Found Delivery Id: " + ClaimHeader.delivery_id);
+  const claimId = await _generateClaimId(ClaimHeader.delivery_id);
+  LOG.info("Updating the claim id of the claim to: " + claimId);
+  await UPDATE("tg.claims.Claims", { ID: ClaimHeader.ID }).with({
+    claim_id: claimId,
+  });
+};
+
+/**
+ * Asynchronously updates the status of a claim.
+ *
+ * @async
+ * @param {number|string} claimId - The ID of the claim to update.
+ * @param {number|string} statusId - The ID of the new status.
+ * @param {string} statusText - The text of the new status.
+ * @returns {Promise<Object>} A promise that resolves to an object containing the success status, message for the operation & the claim status
+ */
+updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
+  LOG.info("Updating claims status to " + statusText);
+  let response = {
+    success: false,
+    message: "",
+  };
+
+  let auditLogRecord = {
+    claim_ID: claimId,
+    claimAction_id:
+      claimAction !== undefined
+        ? claimAction.toString()
+        : claimActions.CREATED.toString(),
+    newStatus_id: statusId.toString(),
+    originalStatus_id: null,
+  };
+
+  try {
+    // Read the claim status and check the status change is valid
+    claims = await SELECT.one
+      .from("tg.claims.Claims")
+      .columns((claim) => {
+        claim.ID,
+          claim.type((type) => {
+            type.id;
+          }),
+          claim.status((status) => {
+            status.id;
+          });
+      })
+      .where({ ID: claimId });
+
+    // Hack to ensure the code is consistent for the new claim type as it is for the others
+    if (claims.status === null) {
+      claims.status = { id: null };
+    }
+
+    //Update the status for the audit log record
+    auditLogRecord.originalStatus_id =
+      claimAction !== undefined ? claims.status.id.toString() : null;
+
+    LOG.info(
+      "Read claim from DB with key " +
+        claimId +
+        " and found values: " +
+        JSON.stringify(claims)
+    );
+    response.claimType = claims.type.id; //Added claim type to avoid reading DB again from the calling function
+    previousValidStatusCodes = _claim_status_previous;
+    switch (claims.type.id) {
+      case claim_types.quality:
+        previousValidStatusCodes = _claim_status_previous_qc;
+        break;
+      case claim_types.complaint:
+        previousValidStatusCodes = _claim_status_previous_cp;
+        break;
+    }
+  } catch (e) {
+    LOG.error("Errors occured reading the claim status: " + e);
+    response.message = "Errors occured updating the claim";
+    return response;
+  }
+
+  if (!previousValidStatusCodes[statusId].includes(claims.status.id)) {
+    LOG.error(
+      "Trying to set status id " +
+        statusId +
+        " but no matching values for current status " +
+        claims.status.id +
+        " for claim ID " +
+        claimId
+    );
+    response.message =
+      "It is not possible to change the status from the current status to " +
+      statusText;
+    return response;
+  }
+
+  try {
+    // Update the claim status
+    LOG.info("Updating the status of the claim to: " + statusText);
+    await UPDATE("tg.claims.Claims", { ID: claimId }).with({
+      status_id: statusId,
+    });
+    LOG.info("Status updated to " + statusText);
+    response.success = true;
+    response.message = "Claim status updated to " + statusText;
+
+    // Update the audit log
+    LOG.info(
+      "Updating the audit log for the claim: " + JSON.stringify(auditLogRecord)
+    );
+    await INSERT.into("tg.claims.AuditLogs").entries([auditLogRecord]);
+    LOG.info("Audit Log successfully added");
+  } catch (e) {
+    LOG.error("Errors occured updating the claim status: " + e);
+    response.message = "Errors occured updating the claim";
+    return response;
+  }
+  return response;
+};
+
+const _mapQCtoMAClaim = async (qualityClaim) => {
+  LOG.info("Mapping Quality Claim to Market Assistance Claim");
+  let marketAssistClaim = qualityClaim;
+  marketAssistClaim.parentClaim_ID = qualityClaim.ID;
+  marketAssistClaim.ID = uuid();
+  marketAssistClaim.type_id = claim_types.market;
+  marketAssistClaim.RejectionReason_id = null;
+  marketAssistClaim.rpin = qualityClaim.rpin;
+  marketAssistClaim.grower_id = qualityClaim.grower_id;
+  marketAssistClaim.grower_name = qualityClaim.grower_name;
+  marketAssistClaim.primary_defect_code_id =
+    qualityClaim.primary_defect_code_id;
+  marketAssistClaim.credit_note_id = null;
+  marketAssistClaim.payment_deduction_doc_id = null;
+  marketAssistClaim.workflow_id = null;
+  marketAssistClaim.status_id = claim_statuses.NEW;
+  marketAssistClaim.claim_id = await _generateClaimId(
+    marketAssistClaim.delivery_id,
+    true
+  );
+
+  marketAssistClaim.costs = marketAssistClaim.costs.map((cost) => {
+    cost.claim_ID = marketAssistClaim.ID;
+    cost.ID = uuid();
+    return cost;
+  });
+
+  marketAssistClaim.defects = marketAssistClaim.defects.map((defect) => {
+    defect.claim_ID = marketAssistClaim.ID;
+    defect.ID = uuid();
+    return defect;
+  });
+
+  marketAssistClaim.attachments = marketAssistClaim.attachments.map(
+    (attachment) => {
+      attachment.claim_ID = marketAssistClaim.ID;
+      attachment.ID = uuid();
+      return attachment;
+    }
+  );
+
+  marketAssistClaim.pallets = marketAssistClaim.pallets.map(
+    (pallet) => {
+      pallet.claim_ID = marketAssistClaim.ID;
+      pallet.ID = uuid();
+      return pallet;
+    }
+  );
+
+
+
+  return marketAssistClaim;
+};
+
+const convertToMarketAssistance = async (claimId) => {
+  LOG.info("Converting claim " + claimId + " to Market Assistance");
+
+  LOG.info("Reading all data from the DB for claim " + claimId);
+  const qualityClaim = await SELECT.one
+    .from("tg.claims.Claims")
+    .columns((claim) => {
+      claim`.*`,
+        claim.costs((cost) => {
+          cost`.*`;
+        }),
+        claim.defects((defect) => {
+          defect`.*`;
+        }),
+        claim.pallets((pallet) => {
+          pallet`.*`;
+        }),
+        claim.attachments((attachment) => {
+          attachment`.*`;
+        });
+    })
+    .where({ ID: claimId });
+
+  LOG.info("Successfully read all data from the DB for claim " + claimId);
+
+  let marketAssistClaim = await _mapQCtoMAClaim(qualityClaim);
+
+  // Create a new Market Assistance Claim
+  await INSERT.into("tg.claims.Claims").entries([marketAssistClaim]);
+
+  return marketAssistClaim;
+};
+
+convertClaimAmountsToNZD = async (claim) => {
+  LOG.info("Converting claim amounts to NZD");
+
+  if (!claim.claim_currency_code) {
+    LOG.warn("Currency code has not been maintained for claim " + claim.ID);
+    return;
+  }
+
+  const conversionRate = await getValidConversionRateByCurrency(
+    claim.claim_currency_code,
+    "NZD"
+  );
+
+  if (claim.claim_value) {
+    LOG.info("Converting claim amount " + claim.claim_value + " to NZD");
+    claim.claim_value_nzd = Number(
+      (claim.claim_value * conversionRate).toFixed(2)
+    );
+    LOG.info("Converted claim amount to  " + claim.claim_value_nzd + " NZD");
+
+    await UPDATE("tg.claims.Claims", { ID: claim.ID }).with({
+      claim_value_nzd: claim.claim_value_nzd,
+    });
+  }
+
+  if (claim.costs) {
+    LOG.info("Found costs to convert to NZD");
+    for (let cost of claim.costs) {
+      LOG.info("Converting cost amount " + cost.value + " to NZD");
+      if (!cost.value) {
+        LOG.info("Skipping processing for undefined cost");
+        continue;
+      }
+      cost.value_nzd = Number((cost.value * conversionRate).toFixed(2));
+      LOG.info("Converted cost amount to  " + cost.value_nzd + " NZD");
+
+      await UPDATE("tg.claims.Costs", { ID: cost.ID }).with({
+        value_nzd: cost.value_nzd,
+      });
+    }
+  }
+};
+
+const _maxTceOnPallet = 56;
+
+// Complaint
+const _claim_status_previous_cp = {
+  1: [null], // New
+  8: [1], // Complete
+};
+
+// Quality Claim
+const _claim_status_previous_qc = {
+  1: [null], // New
+  2: [1, 6, 3], // Pending Review
+  3: [2], // Info Required
+  4: [2], // Review Approved
+  5: [2], // Review Rejected
+  6: [4], // Sent to Grower
+  7: [6], // With Finance
+  8: [7], // Complete
+};
+
+const _claim_status_previous = {
+  1: [null], // New
+  2: [1, 3], // Pending Review
+  3: [2], // Info Required
+  5: [2], // Review Rejected
+  7: [2], // With Finance
+  8: [7], // Complete
+};
+
+/**
+ * Calculates the claim value per TCE (Total Cartons Effected).
+ *
+ * @param {number} totalClaimValue - The total value of the claim.
+ * @param {number} totalCartonsEffected - The total number of effected cartons.
+ * @returns {Promise<number>} The calculated claim value per TCE.
+ */
+calculateClaimValuePerTce = (totalClaimValue, totalCartonsEffected) => {
+  return Number(
+    (
+      Number(totalClaimValue) / Number(Number(totalCartonsEffected)).toFixed(2)
+    ).toFixed(2)
+  );
+};
+
+validateBeforeSubmitForReview = async (req) => {
+  let claimID = req.params[0].ID;
+  LOG.info("Reading claim details for claim id: " + claimID);
+  const claim = await SELECT.one
+    .from("tg.claims.Claims")
+    .columns((claim) => {
+      claim.ID,
+        claim.type_id,
+        claim.rpin,
+        claim.qualityClaim((qualityClaim) => {
+          qualityClaim.claim_ID, qualityClaim.qc_inspection_date;
+        });
+    })
+    .where({ ID: claimID });
+  LOG.info("Read claim " + JSON.stringify(claim));
+
+  LOG.info("Validating if the claim requires RPIN");
+  if (
+    (claim.rpin === null || claim.rpin === "") &&
+    (claim.type_id === claim_types.quality ||
+      claim.type_id === claim_types.packaging)
+  ) {
+    LOG.warn("RPIN is mandatory for claim with type " + claim.type_id);
+    const claimType = await getClaimTypeById(claim.type_id);
+    req.error(400, "RPIN is mandatory for claim of type " + claimType.name);
+  }
+
+  LOG.info("Validating if the claim requires QC inspection date");
+  if (
+    claim.type_id === claim_types.quality &&
+    claim.qualityClaim.qc_inspection_date === null
+  ) {
+    LOG.warn(
+      "QC Inspection Date is mandatory for claim with type " + claim.type_id
+    );
+    const claimType = await getClaimTypeById(claim.type_id);
+    req.error(
+      400,
+      "QC Inspection Date is mandatory for claim of type " + claimType.name
+    );
+  }
+};
+
+/**
+ * Updates the claim due to a change in claim type.
+ *
+ * This function reads the claim from the database and checks if the claim type has changed.
+ * If the claim type has changed, it updates the claim type specific tables with the new type.
+ *
+ * @async
+ * @param {Object} req - The request object.
+ * @returns {Promise<void>} A promise that resolves when the function has completed.
+ */
+const updateClaimDuetoTypeChange = async (req) => {
+  const claim = req.data;
+  LOG.info("validating if claim type changed");
+
+  // Read the claim to see if the type changed
+  LOG.info("Reading claim " + claim.ID);
+  const dbClaim = await SELECT.one
+    .from("tg.claims.Claims")
+    .where({ ID: claim.ID });
+  LOG.info("Successfully read claim " + JSON.stringify(dbClaim));
+
+  if (claim.type_id === dbClaim.type_id) {
+    return;
+  }
+  LOG.info(
+    "Claim type has changed from " + dbClaim.type_id + " to " + claim.type_id
+  );
+
+  // Update the claim type specific tables with the new table
+  switch (claim.type_id) {
+    case claim_types.quality:
+      LOG.info("Creating Quality Claim Entity");
+      req.data.qualityClaim = { claim_ID: claim.ID };
+      break;
+    case claim_types.packaging:
+      LOG.info("Creating Packaging Claim Entity");
+      req.data.packagingClaim = { claim_ID: claim.ID, pack_house_id: null };
+      break;
+    default:
+      break;
+  }
+
+  // Delete the old claim type specific tables
+  switch (dbClaim.type_id) {
+    case claim_types.quality:
+      LOG.info("Deleting old Quality Claim Entity");
+      req.data.qualityClaim = null;
+      break;
+    case claim_types.packaging:
+      LOG.info("Deleting old Packaging Claim Entity");
+      req.data.packagingClaim = null;
+      break;
+    default:
+      break;
+  }
+};
+
+const updateClaimDueToRPINChange = async (req) => {
+  const claim = req.data;
+  LOG.info("validating if rpin changed");
+
+  // Read the claim to see if the RPIN changed
+  LOG.info("Reading claim " + claim.ID);
+  const dbClaim = await SELECT.one
+    .from("tg.claims.Claims")
+    .where({ ID: claim.ID });
+  LOG.info("Successfully read claim " + JSON.stringify(dbClaim));
+
+  if (claim.rpin === dbClaim.rpin) {
+    return;
+  }
+  LOG.info("Claim RPIN has changed from " + dbClaim.rpin + " to " + claim.rpin);
+  if (claim.rpin === null || claim.rpin === '') {
+    req.data.pallets.map((pallet) => {
+      pallet.batch_id = null;
+      pallet.pack_date = null;
+      pallet.region = null;
+      pallet.packer_name = null;
+    });
+  }
+};
+
+const getWeekNumber = async (d) => {
+  // Copy date so don't modify original
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  // Set to nearest Thursday: current date + 4 - current day number
+  // Make Sunday's day number 7
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+  // Get first day of year
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  // Calculate full weeks to nearest Thursday
+  var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+  // Return array of year and week number
+  return weekNo;
+};
+
+
+const calculateDaysFromArrival = async (claims) =>{
+  claims.map((claim) => {
+    LOG.info("Calculating days from arrival for " + claim.ID);
+    claim.days_from_arrival = null;
+    if (claim.arrival_date) {
+      const arrivalDate = new Date(claim.arrival_date);
+      const today = new Date();
+      const timeDiff = Math.abs(today.getTime() - arrivalDate.getTime());
+      claim.days_from_arrival = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    }
+
+    if(claim.days_from_arrival > 366){
+      LOG.info("Defaulting days from arrival to null as it is greater than 366 for claim " + claim.ID);
+      claim.days_from_arrival = null;
+    }
+  });
+};
+      
+
+module.exports = {
+  updateClaimsTotals: updateClaimsTotals,
+  calculateQualityClaimsValuesForClaim: calculateQualityClaimsValuesForClaim,
+  calculateVirtualDeliveryDetails: calculateVirtualDeliveryDetails,
+  updateClaimStatus: updateClaimStatus,
+  claim_types: claim_types,
+  claim_statuses: claim_statuses,
+  claimActions: claimActions,
+  calculateClaimValuePerTce: calculateClaimValuePerTce,
+  updateClaimDetailsFromERP: updateClaimDetailsFromERP,
+  validateClaimBeforeSave: validateClaimBeforeSave,
+  updateExternalClaimId: updateExternalClaimId,
+  calculateQualityClaimsValuesForQualityClaim:
+    calculateQualityClaimsValuesForQualityClaim,
+  convertToMarketAssistance: convertToMarketAssistance,
+  convertClaimAmountsToNZD: convertClaimAmountsToNZD,
+  validateBeforeSubmitForReview: validateBeforeSubmitForReview,
+  validateRepBeforeSave: validateRepBeforeSave,
+  updateClaimDuetoTypeChange: updateClaimDuetoTypeChange,
+  updateClaimDueToRPINChange: updateClaimDueToRPINChange,
+  getWeekNumber: getWeekNumber,
+  calculateDaysFromArrival:calculateDaysFromArrival
+};

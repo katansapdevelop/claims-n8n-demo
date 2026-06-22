@@ -1,0 +1,132 @@
+@host = http://localhost:4004
+@username = reviewer
+@password = reviewer
+@auth = {{username}}:{{password}}
+
+### Test GET for Deliveries with Basic Auth
+GET {{host}}/app/delivery/Deliveries HTTP/1.1
+Authorization: Basic {{auth}}
+
+###
+
+### Test GET for Single Delivery with Basic Auth
+GET {{host}}/app/delivery/Deliveries(ID=123e4567-e89b-12d3-a456-426614174000,IsActiveEntity=true) HTTP/1.1
+Authorization: Basic {{auth}}
+
+###
+
+
+### Test GET for Deliveries with Basic Auth + Claims
+GET {{host}}/app/delivery/Deliveries?$expand=claims HTTP/1.1
+Authorization: Basic {{auth}}
+
+###
+
+
+### Test GET for Claims with Basic Auth
+GET {{host}}/app/delivery/Claims HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+
+
+### Test GET for Delivery Search with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+### Test GET for DeliverySearch with expand on appDelivery & pallets with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch?$expand=appDelivery,pallets,rpins&$count=true HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+### Test GET for ErpPallets with Basic Auth
+GET {{host}}/app/delivery/ErpPallets HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+### Test GET for ErpPallets with Basic Auth
+GET {{host}}/app/delivery/ErpGrowerRPINs HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+
+### Test GET for DeliverySearch All with $top entity with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch?$top=2 HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+### Test GET for DeliverySearch single entity with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch('1980023157') HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+### Test GET for DeliverySearch single entity pallets with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch('1980023157')/pallets HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+
+### Test GET for DeliverySearch single entity pallets with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch('1980023157')/rpins HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+### Test GET for DeliverySearch single entity pallets with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch('1980023157')?$expand=appDelivery($select=ID,IsActiveEntity,market,market_representative_id) HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+### Test GET for DeliverySearch with navigation to single entity pallets with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch('1980023157')/pallets?$count=true&$select=delivery_id,grade,material_id,pack_type,pallet_id,size,storage_type,variety&$skip=0&$top=10 HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+
+### Test GET for DeliverySearch with navigationsingle entity rpins with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch('1980023157')/rpins?$count=true&$select=batch_id,delivery_id,id,name,pallet_id,region,rpin&$skip=0&$top=5 HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+
+### Test GET for DeliverySearch with navigation single rpins pallets with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch('1980023157')/rpins?$count=true&$select=batch_id,delivery_id,id,name,pallet_id,region,rpin&$skip=0&$top=5 HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+### Test GET for DeliverySearch with navigation single rpins pallets with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch('1980023157')?$select=container_id,customer_delivery_date,customer_id,customer_name,delivery_id,discharge_country,discharge_port,origin_country,shipment_id,shipped_date,type&$expand=appDelivery($select=ID,IsActiveEntity,market,market_representative_id,open_claims,total_claims_value_nzd) HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+
+### Test GET for DeliverySearch with navigation single rpins pallets with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch('1980023157')/claims HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+
+### Test GET for DeliverySearch with navigation claims with Basic Auth
+GET {{host}}/app/delivery/DeliverySearch('1980023157')?$select=appDelivery&$expand=appDelivery($select=ID,IsActiveEntity,total_claims_value_nzd) HTTP/1.1
+Authorization: Basic @auth
+
+###
+
+
+
+

@@ -1,0 +1,31 @@
+@host = http://localhost:4004
+@username = admin
+@password = admin
+@auth = {{username}}:{{password}}
+
+### Test GET for Config Settings with Basic Auth
+GET {{host}}/app/config/ConfigSettings HTTP/1.1
+Authorization: Basic {{auth}}
+
+###
+
+### Test GET for Config Settings with Basic Auth
+GET {{host}}/app/config/ConfigSettings HTTP/1.1
+Authorization: Basic {{auth}}
+
+###
+
+
+### Test GET for Config Settings with Basic Auth
+POST {{host}}/app/config/ConfigSettings HTTP/1.1
+Authorization: Basic {{auth}}
+content-type: application/json
+
+{
+    "setting_id":"SDM_DEST",
+    "value": "123121",
+    "validFrom":"2024-04-01T13:00:00Z",
+    "validTo":"2099-04-01T13:00:00Z"
+}
+
+###

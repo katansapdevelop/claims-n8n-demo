@@ -1,0 +1,111 @@
+{
+    "name": "claims-n8n-demo",
+    "version": "1.0.0",
+    "description": "",
+    "private": true,
+    "files": [
+        "app",
+        "srv",
+        "db"
+    ],
+    "engines": {
+        "node": ">=24"
+    },
+    "dependencies": {
+        "@sap/cds": "^9.7",
+        "helmet": "^8.2.0",
+        "mime-types": "^3.0.2",
+        "sap-cap-sdm-plugin": "^1.3.1"
+    },
+    "devDependencies": {
+        "@cap-js/sqlite": "^2.1.1",
+        "@sap/cds-compiler": "6.9.2",
+        "@sap/cds-dk": "9.9.2",
+        "@sap/ux-ui5-tooling": "^1.27.0",
+        "cds-launchpad-plugin": "^2.3.0",
+        "cds-plugin-ui5": "^0.17.0",
+        "cds-swagger-ui-express": "^0.11.0"
+    },
+    "scripts": {
+        "start": "cds-serve",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "watch-claims": "cds watch --open com.logicalstarconsulting.claims/index.html?sap-ui-xx-viewCache=false --livereload false"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devEngines": {
+        "packageManager": {
+            "name": "pnpm",
+            "version": "^11.7.0",
+            "onFail": "download"
+        }
+    },
+    "type": "module",
+    "workspaces": [
+        "app/*"
+    ],
+    "sapux": [
+        "app/claims"
+    ],
+    "cds": {
+        "requires": {
+            "auth": {
+                "kind": "mocked",
+                "users": {
+                    "operator": {
+                        "password": "operator",
+                        "roles": [
+                            "operator"
+                        ],
+                        "attr": {
+                            "claim_type": [
+                                "PK",
+                                "MK",
+                                "QC",
+                                "CP",
+                                "SH"
+                            ]
+                        }
+                    },
+                    "operator_pk": {
+                        "password": "operator",
+                        "roles": [
+                            "operator"
+                        ],
+                        "attr": {
+                            "claim_type": "PK"
+                        }
+                    },
+                    "admin": {
+                        "password": "admin",
+                        "roles": [
+                            "admin"
+                        ]
+                    },
+                    "reviewer": {
+                        "password": "reviewer",
+                        "roles": [
+                            "reviewer"
+                        ],
+                        "attr": {
+                            "claim_type": [
+                                "PK",
+                                "MK",
+                                "QC",
+                                "CP",
+                                "SH"
+                            ]
+                        }
+                    },
+                    "finance": {
+                        "password": "finance",
+                        "roles": [
+                            "finance"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

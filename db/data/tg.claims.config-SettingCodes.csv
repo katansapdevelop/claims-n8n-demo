@@ -1,0 +1,5 @@
+id,name,descr
+SDM_DEST,DMS Destination Id,Document Management Service Destination Id
+SDM_REP_ID,DMS Root Repository Id,Document Management Service Root Repository Id
+SDM_FILE_S,DMS Maximum File Size,Document Management Service Maximum File Size in MegaBytes (e.g. 10)
+SDM_FILE_T,DMS Supported Mime Types,"comma separated list of Mime Types (e.g. image/jpeg,image/png,application/pdf)"
