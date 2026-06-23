@@ -229,6 +229,8 @@ annotate service.Claims with @(
             },
         ],
     },
+    UI.UpdateHidden : (status.id = 8),
+    UI.DeleteHidden : (status.id = 8),
 );
 
 annotate service.Claims with {
