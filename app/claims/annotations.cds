@@ -90,6 +90,15 @@ annotate service.Claims with @(
                 $Type : 'UI.DataField',
                 Value : primary_defect_code_id,
             },
+            {
+                $Type : 'UI.DataField',
+                Value : payment_deduction_doc_id,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : RejectionReason_id,
+                @UI.Hidden : (RejectionReason.id != null or RejectionReason.id != '')
+            },
         ],
     },
     UI.HeaderInfo : {
@@ -142,50 +151,57 @@ annotate service.Claims with @(
             $Type : 'UI.DataFieldForAction',
             Action : 'ClaimAppService.submitForReview',
             Label : 'Submit For Review',
-            @UI.Hidden : ((status.id != 1 and status.id != 3)),
+            Determining : true,
+            @UI.Hidden: ((status.id != 1 and status.id != 3) or $draft.HasActiveEntity = true) ,
         },
         {
             $Type : 'UI.DataFieldForAction',
             Action : 'ClaimAppService.requestInfo',
             Label : 'Request Info',
-            @UI.Hidden : (status.id != 2),
+            Determining : true,
+            @UI.Hidden : ((status.id != 2) or $draft.HasActiveEntity = true),
         },
         {
             $Type : 'UI.DataFieldForAction',
             Action : 'ClaimAppService.submitReviewApprove',
             Label : 'Approve Review',
-            @UI.Hidden : (status.id != 2),
+            Determining : true,
+            @UI.Hidden : ((status.id != 2) or $draft.HasActiveEntity = true),
         },
         {
             $Type : 'UI.DataFieldForAction',
             Action : 'ClaimAppService.submitReviewReject',
             Label : 'Reject Review',
-            @UI.Hidden: (status.id != 2),
-            
+            Determining : true,
+            @UI.Hidden : ((status.id != 2) or $draft.HasActiveEntity = true),
         },
         {
             $Type : 'UI.DataFieldForAction',
             Action : 'ClaimAppService.submitSendToGrower',
             Label : 'Send To Grower',
-            @UI.Hidden : (status.id != 4),
+            Determining : true,
+            @UI.Hidden : ((status.id != 4) or $draft.HasActiveEntity = true)    ,
         },
         {
             $Type : 'UI.DataFieldForAction',
             Action : 'ClaimAppService.submitGrowerAccepted',
             Label : 'Grower Accepted',
-            @UI.Hidden : (status.id != 6 and type.id != 'qc'),
+            Determining : true,
+            @UI.Hidden : ((status.id != 6 and type.id != 'qc') or $draft.HasActiveEntity = true)    ,
         },
         {
             $Type : 'UI.DataFieldForAction',
             Action : 'ClaimAppService.submitGrowerRejected',
             Label : 'Grower Rejected',
-            @UI.Hidden : (status.id != 6 and type.id != 'qc'),
+            Determining : true,
+            @UI.Hidden : ((status.id != 6 and type.id != 'qc') or $draft.HasActiveEntity = true)    ,
         },
         {
             $Type : 'UI.DataFieldForAction',
             Action : 'ClaimAppService.submitFinanceComplete',
             Label : 'Finance Completed',
-            @UI.Hidden : (status.id != 7),
+            Determining : true,
+            @UI.Hidden: ((status.id != 7) or $draft.HasActiveEntity = true) ,
         },
     ],
     UI.HeaderFacets : [
@@ -202,6 +218,14 @@ annotate service.Claims with @(
             {
                 $Type : 'UI.DataField',
                 Value : status_id,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : total_claim_value,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : total_claim_value_nzd,
             },
         ],
     },
@@ -563,4 +587,26 @@ annotate service.Claims with {
         Common.Text : status.name,
         Common.Text.@UI.TextArrangement : #TextOnly,
 )};
+
+annotate service.Claims with {
+    RejectionReason @(
+        Common.ValueList : {
+            $Type : 'Common.ValueListType',
+            CollectionPath : 'RejectionReason',
+            Parameters : [
+                {
+                    $Type : 'Common.ValueListParameterInOut',
+                    LocalDataProperty : RejectionReason_id,
+                    ValueListProperty : 'id',
+                },
+            ],
+            Label : 'Rejection Reason',
+        },
+        Common.ValueListWithFixedValues : true,
+        Common.FieldControl : #ReadOnly,
+)};
+
+annotate service.RejectionReason with {
+    id @Common.Text : descr
+};
 

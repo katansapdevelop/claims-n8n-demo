@@ -65,8 +65,7 @@ class ClaimAppService extends cds.ApplicationService {
       PackHouseSearch,
       Costs,
     } = this.entities;
-    //const erpClaims = await cds.connect.to("Z_OCP_CLAIMS_SRV");
-    //const { DeliverySet } = erpClaims.entities;
+
 
     this.after("READ", [Costs, Costs.drafts], async (Costs) => {
       LOG.info("Reading Costs");
@@ -117,7 +116,6 @@ class ClaimAppService extends cds.ApplicationService {
 
       LOG.info("Updating Claims Totals");
       await updateClaimsTotals(claims);
-      await updateClaimDetailsFromERP(claims, erpClaims);
 
       LOG.info("Claim Type is " + claims.type_id);
       switch (claims.type_id) {
@@ -162,7 +160,7 @@ class ClaimAppService extends cds.ApplicationService {
 
       LOG.info("Updating claims data after save");
       await updateClaimsTotals(claims);
-      await updateClaimDetailsFromERP(claims, erpClaims);
+      
     });
 
     this.after("READ", Claims, async (claims) => {
@@ -643,118 +641,7 @@ class ClaimAppService extends cds.ApplicationService {
       }
     });
 
-    this.after("UPDATE", "ClaimPallets.drafts", async (pallet) => {
-      LOG.info("Claim Pallets Being Updated");
-
-      const draftPallets = await cds.run(
-        SELECT(ClaimPallets.drafts).where({ ID: pallet.ID })
-      );
-      const draftPallet = draftPallets[0];
-      LOG.info("Successfully read draft pallet details");
-
-      /*
-      LOG.info("Reading claim details for claim id: " + draftPallet.claim_ID);
-      const claim = await SELECT.one
-        .from("ls.claims.Claims")
-        .columns((claim) => {
-          claim.ID, claim.delivery_id, claim.rpin;
-        })
-        .where({ ID: draftPallet.claim_ID });
-      LOG.info("Successfully read claim details");
-      */
-      const claim = await cds.run(
-        SELECT.one(Claims.drafts).where({ ID: draftPallet.claim_ID })
-      );
-
-      // If pallet ID was updated
-      if (pallet.pallet_id) {
-        // Read ERP Pallets for the given Pallet ID & get pack type, storage type & variety
-        // Also Read ERP RPINS for the given Pallet ID/Batch Id & get pack date
-        // Get the delivery ID for the Claim Id (Note this is only required as the ERP Pallets entity is currently not filterable)
-        const deliveries = await erpClaims.run(
-          SELECT.from(DeliverySet)
-            .columns((delivery) => {
-              delivery.DelToPal((pallet) => {
-                pallet.pallet_id,
-                  //pallet.grade,
-                  pallet.size,
-                  pallet.pack_type,
-                  //pallet.material_id,
-                  pallet.variety,
-                  pallet.storage_type,
-                  pallet.delivery_id;
-              }),
-                delivery.DelToRpin((rpin) => {
-                  rpin.pallet_id,
-                    rpin.delivery_id,
-                    rpin.rpin,
-                    rpin.id,
-                    rpin.batch_id,
-                    rpin.pack_date,
-                    rpin.region,
-                    rpin.packer_nm;
-                });
-            })
-            .where({
-              delivery_id: claim.delivery_id,
-            })
-        );
-        LOG.info("Successfully read pallet details from ERP");
-        LOG.info("Filtering out pallet records");
-        // Filter out all pallets except the one matching the id we want
-        const erpPallet = deliveries[0].DelToPal.filter(
-          (p) => p.pallet_id === pallet.pallet_id
-        )[0];
-        LOG.info("Successfully filtered out pallet records");
-
-        LOG.info(
-          "Filtering out batch records and keeping the latest pack date"
-        );
-        let erpBatch = {
-          batch_id: null,
-          pack_date: null,
-          region: null,
-          packer_name: null,
-        };
-        for (let batch of deliveries[0].DelToRpin) {
-          if (
-            batch.pallet_id === pallet.pallet_id &&
-            batch.rpin === claim.rpin
-          ) {
-            // If the pack date is greater than the current pack date, update the pack date
-            if (
-              batch.pack_date > erpBatch.pack_date ||
-              erpBatch.pack_date === null
-            ) {
-              erpBatch = {
-                batch_id: batch.batch_id,
-                pack_date: batch.pack_date,
-                region: batch.region,
-                packer_nm: batch.packer_nm,
-              };
-            }
-          }
-        }
-        LOG.info("Successfully filtered batch records");
-
-        LOG.info("Updating Draft Pallet Record");
-        await cds.run(
-          UPDATE(ClaimPallets.drafts)
-            .set({
-              pack_type: erpPallet.pack_type,
-              variety: erpPallet.variety,
-              storage_type: erpPallet.storage_type,
-              batch_id: erpBatch.batch_id,
-              pack_date: erpBatch.pack_date,
-              region: erpBatch.region,
-              packer_name: erpBatch.packer_nm,
-              size: erpPallet.size,
-            })
-            .where({ ID: pallet.ID })
-        );
-        LOG.info("Successfully updated pallet draft details");
-      }
-    });
+    
 
     this.before("SAVE", "MarketRepresentative", async (req, next) => {
       const repId = req.data.ID;
