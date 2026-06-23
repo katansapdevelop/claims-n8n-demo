@@ -1,11 +1,28 @@
-const { default: cds } = require("@sap/cds");
-const { loadDestination } = require("sap-cap-sdm-plugin/lib/util/index");
+import cds from "@sap/cds";
+import { loadDestination } from "sap-cap-sdm-plugin/lib/util/index.js";
 const LOG = cds.log("ls.claims");
+import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.cjs";
+import claimsUtil from "./utils/ClaimsUtil.cjs";
+import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, convertToMarketAssistance, convertClaimAmountsToNZD, validateBeforeSubmitForReview, validateRepBeforeSave, updateClaimDuetoTypeChange, updateClaimDueToRPINChange, getWeekNumber, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
+import { parseQueryOptionsForFiltering } from "./utils/ODataUtil.cjs";
+import { onHandleReadErpRPINs, onHandleReadErpDelivery } from "./utils/DeliveriesUtil.cjs";
+//import { SELECT, UPDATE } from cds.ql;
+
+
+//const { default: cds } = require("@sap/cds");
+//const { loadDestination } = require("sap-cap-sdm-plugin/lib/util/index");
+//const LOG = cds.log("ls.claims");
+
+
+/*
 const {
   validateAttachments,
   uploadAttachmentToRepository,
   getAttachmentStream,
 } = require("./utils/AttachmentsUtil");
+*/
+
+/*
 const claimsUtil = require("./utils/ClaimsUtil");
 const {
   updateClaimsTotals,
@@ -36,6 +53,7 @@ const {
 } = require("./utils/DeliveriesUtil");
 const { SELECT, UPDATE } = require("@sap/cds").ql;
 
+*/
 class ClaimAppService extends cds.ApplicationService {
   async init() {
     const {
@@ -47,8 +65,8 @@ class ClaimAppService extends cds.ApplicationService {
       PackHouseSearch,
       Costs,
     } = this.entities;
-    const erpClaims = await cds.connect.to("Z_OCP_CLAIMS_SRV");
-    const { DeliverySet } = erpClaims.entities;
+    //const erpClaims = await cds.connect.to("Z_OCP_CLAIMS_SRV");
+    //const { DeliverySet } = erpClaims.entities;
 
     this.after("READ", [Costs, Costs.drafts], async (Costs) => {
       LOG.info("Reading Costs");
@@ -282,98 +300,6 @@ class ClaimAppService extends cds.ApplicationService {
       await validateClaimBeforeSave(req);
     });
 
-    this.on("READ", RPINSearch, async (req) => {
-      let rpins = await onHandleReadErpRPINs(req, erpClaims);
-
-      // Remove duplicates based on RPIN and update count
-      let uniqueRPINs = Array.from(new Set(rpins.map((r) => r.rpin))).map(
-        (rpin) => {
-          return rpins.find((r) => r.rpin === rpin);
-        }
-      );
-      uniqueRPINs.$count = uniqueRPINs.length;
-
-      return uniqueRPINs;
-    });
-
-    this.on("READ", PalletSearch, async (req) => {
-      LOG.info("Searching for pallets");
-      let { search, where } = req.query.SELECT;
-
-      let filterOptions = await parseQueryOptionsForFiltering(req);
-      let rpinFilter = null;
-      filterOptions.map((option) => {
-        switch (option.filter) {
-          case "delivery_id":
-            break;
-          case "rpin":
-            rpinFilter = option.value;
-            break;
-          default:
-            LOG.error("Unsupported filter property " + option.filter);
-            req.error("Unsupported filter property " + option.filter);
-            break;
-        }
-      });
-
-      let delivery = await onHandleReadErpDelivery(req, erpClaims);
-      let rpins = delivery.DelToRpin;
-
-      // Remove duplicates based on Pallet ID and filter on claim RPIN (if exists)
-      LOG.info("Removing duplicate pallets");
-      let uniqueRPINs = Array.from(new Set(rpins.map((r) => r.pallet_id))).map(
-        (pallet_id) => {
-          return rpins.find((r) => r.pallet_id === pallet_id);
-        }
-      );
-
-      // Filter based on claim RPIN if exists
-      if (rpinFilter) {
-        uniqueRPINs = uniqueRPINs.filter((rpin) => rpin.rpin === rpinFilter);
-      }
-
-      LOG.info("Amalgamating pallet details to list of pallets");
-      uniqueRPINs.map((r) => {
-        const pallet = delivery.DelToPal.find(
-          (p) => p.pallet_id === r.pallet_id
-        );
-        r.size = pallet.size;
-        r.variety = pallet.variety;
-        r.grade = pallet.grade;
-        r.pack_type = pallet.pack_type;
-        r.storage_type = pallet.storage_type;
-      });
-
-      // Handle Search Filters
-
-      if (search) {
-        const searchText = search[0].val;
-        LOG.info("Applying search filter for " + searchText);
-        uniqueRPINs = uniqueRPINs.filter((rpin) =>
-          Object.values(rpin).some((value) =>
-            value.toString().includes(searchText)
-          )
-        );
-      }
-
-      uniqueRPINs.$count = uniqueRPINs.length;
-
-      return uniqueRPINs;
-    });
-
-    this.on("READ", PackHouseSearch, async (req) => {
-      let rpins = await onHandleReadErpRPINs(req, erpClaims);
-
-      // Remove duplicates based on Pack House ID and update count
-      let uniqueRPINs = Array.from(new Set(rpins.map((r) => r.packer))).map(
-        (packer_id) => {
-          return rpins.find((r) => r.packer === packer_id);
-        }
-      );
-      uniqueRPINs.$count = uniqueRPINs.length;
-
-      return uniqueRPINs;
-    });
 
     // Handlers for all status change actions
 
@@ -657,7 +583,7 @@ class ClaimAppService extends cds.ApplicationService {
 
     this.on("READ", Attachments.drafts, async (req, next) => {
       LOG.info("Draft Attachment Record Read");
-      const baseUrl = cds.context.req.originalUrl.split("?")[0];
+      const baseUrl = cds.context.http.req.url.split("?")[0];
       if (!baseUrl.endsWith("/content")) {
         // skip handler if not reading attachment data
         return next(req);
@@ -687,7 +613,7 @@ class ClaimAppService extends cds.ApplicationService {
 
     this.after("READ", Attachments, async (attachments) => {
       LOG.info("Attachment Record Read");
-      const baseUrl = cds.context.req.originalUrl.split("?")[0];
+      const baseUrl =  cds.context.http.req.url.split("?")[0];
       if (!baseUrl.endsWith("/content")) {
         // skip handler if not reading attachment data
         return;
@@ -856,4 +782,6 @@ class ClaimAppService extends cds.ApplicationService {
     return super.init();
   }
 }
-module.exports = ClaimAppService;
+
+//module.exports = ClaimAppService;
+export default ClaimAppService;

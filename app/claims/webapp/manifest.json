@@ -152,6 +152,16 @@
                   "tableSettings": {
                     "type": "ResponsiveTable"
                   }
+                },
+                "auditLog/@com.sap.vocabularies.UI.v1.LineItem#AuditLog": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
+                },
+                "costs/@com.sap.vocabularies.UI.v1.LineItem#AdditionalCosts": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
                 }
               }
             }

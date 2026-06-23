@@ -1,8 +1,8 @@
 const LOG = cds.log("ls.claims");
 const { create } = require("@sap/cds");
-const { parseQueryOptionsForFiltering } = require("./ODataUtil");
-const { calculateVirtualDeliveryDetails } = require("./ClaimsUtil");
-const { getAllConfigSettingsBySettingId } = require("./ConfigUtil");
+const { parseQueryOptionsForFiltering } = require("./ODataUtil.cjs");
+const { calculateVirtualDeliveryDetails } = require("./ClaimsUtil.cjs");
+const { getAllConfigSettingsBySettingId } = require("./ConfigUtil.cjs");
 
 /**
  * Handles the expansion of claim deliveries.

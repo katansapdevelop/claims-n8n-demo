@@ -9,6 +9,10 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataField',
+            Value : type_id,
+        },
+        {
+            $Type : 'UI.DataField',
             Value : grower_name,
         },
         {
@@ -58,6 +62,18 @@ annotate service.Claims with @(
             ID : 'Defects',
             Target : 'defects/@UI.LineItem#Defects',
         },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Audit Log',
+            ID : 'AuditLog',
+            Target : 'auditLog/@UI.LineItem#AuditLog',
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Additional Costs',
+            ID : 'AdditionalCosts',
+            Target : 'costs/@UI.LineItem#AdditionalCosts',
+        },
     ],
     UI.FieldGroup #General : {
         $Type : 'UI.FieldGroupType',
@@ -65,6 +81,10 @@ annotate service.Claims with @(
             {
                 $Type : 'UI.DataField',
                 Value : delivery_id,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : type_id,
             },
             {
                 $Type : 'UI.DataField',
@@ -114,6 +134,74 @@ annotate service.Claims with @(
             {
                 $Type : 'UI.DataField',
                 Value : delivery.shipment_id,
+            },
+        ],
+    },
+    UI.Identification : [
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'ClaimAppService.submitForReview',
+            Label : 'Submit For Review',
+            @UI.Hidden : ((status.id != 1 and status.id != 3)),
+        },
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'ClaimAppService.requestInfo',
+            Label : 'Request Info',
+            @UI.Hidden : (status.id != 2),
+        },
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'ClaimAppService.submitReviewApprove',
+            Label : 'Approve Review',
+            @UI.Hidden : (status.id != 2),
+        },
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'ClaimAppService.submitReviewReject',
+            Label : 'Reject Review',
+            @UI.Hidden: (status.id != 2),
+            
+        },
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'ClaimAppService.submitSendToGrower',
+            Label : 'Send To Grower',
+            @UI.Hidden : (status.id != 4),
+        },
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'ClaimAppService.submitGrowerAccepted',
+            Label : 'Grower Accepted',
+            @UI.Hidden : (status.id != 6 and type.id != 'qc'),
+        },
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'ClaimAppService.submitGrowerRejected',
+            Label : 'Grower Rejected',
+            @UI.Hidden : (status.id != 6 and type.id != 'qc'),
+        },
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'ClaimAppService.submitFinanceComplete',
+            Label : 'Finance Completed',
+            @UI.Hidden : (status.id != 7),
+        },
+    ],
+    UI.HeaderFacets : [
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Info',
+            ID : 'Status',
+            Target : '@UI.FieldGroup#Status',
+        },
+    ],
+    UI.FieldGroup #Status : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : status_id,
             },
         ],
     },
@@ -353,4 +441,126 @@ annotate service.ClaimDefects with {
 annotate service.SecondaryDefectCodes with {
     id @Common.Text : name
 };
+
+annotate service.AuditLogs with @(
+    UI.LineItem #AuditLog : [
+        {
+            $Type : 'UI.DataField',
+            Value : claimAction_id,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : originalStatus_id,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : newStatus_id,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : createdBy,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : createdAt,
+        },
+    ]
+);
+
+annotate service.AllMarketRepresentatives with {
+    fullName @(
+        Common.Text : 'Full Name',
+        Common.Text.@UI.TextArrangement : #TextOnly,
+        Common.ExternalID : fullName,
+)};
+
+annotate service.AuditLogs with {
+    originalStatus @(
+        Common.Text : originalStatus.name,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+)};
+
+annotate service.AuditLogs with {
+    newStatus @(
+        Common.Text : newStatus.name,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+)};
+
+annotate service.AuditLogs with {
+    claimAction @(
+        Common.Text : claimAction.name,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+)};
+
+annotate service.Costs with @(
+    UI.LineItem #AdditionalCosts : [
+        {
+            $Type : 'UI.DataField',
+            Value : cost_type_id,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : value,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : value_nzd,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : createdAt,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : createdBy,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : modifiedAt,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : modifiedBy,
+        },
+    ]
+);
+
+annotate service.Costs with {
+    value @Measures.ISOCurrency : currency_code
+};
+
+annotate service.Costs with {
+    cost_type @(
+        Common.Text : cost_type.name,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+)};
+
+annotate service.Claims with {
+    type @(
+        Common.Text : type.name,
+        Common.ValueList : {
+            $Type : 'Common.ValueListType',
+            CollectionPath : 'ClaimType',
+            Parameters : [
+                {
+                    $Type : 'Common.ValueListParameterInOut',
+                    LocalDataProperty : type_id,
+                    ValueListProperty : 'id',
+                },
+            ],
+            Label : 'Claim Type',
+        },
+        Common.ValueListWithFixedValues : true,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+)};
+
+annotate service.ClaimType with {
+    id @Common.Text : name
+};
+
+annotate service.Claims with {
+    status @(
+        Common.Text : status.name,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+)};
 
