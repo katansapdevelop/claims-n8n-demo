@@ -64,15 +64,15 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Audit Log',
-            ID : 'AuditLog',
-            Target : 'auditLog/@UI.LineItem#AuditLog',
-        },
-        {
-            $Type : 'UI.ReferenceFacet',
             Label : 'Additional Costs',
             ID : 'AdditionalCosts',
             Target : 'costs/@UI.LineItem#AdditionalCosts',
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Audit Log',
+            ID : 'AuditLog',
+            Target : 'auditLog/@UI.LineItem#AuditLog',
         },
     ],
     UI.FieldGroup #General : {
@@ -92,12 +92,41 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
+                Value : claim_value,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : claim_value_nzd,
+            },
+            {
+                $Type : 'UI.DataField',
                 Value : payment_deduction_doc_id,
+                @UI.Hidden : (status.id != 7 and status.id != 8),
             },
             {
                 $Type : 'UI.DataField',
                 Value : RejectionReason_id,
                 @UI.Hidden : (RejectionReason.id != null or RejectionReason.id != '')
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : date_of_claim,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : days_from_arrival,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : days_to_claim,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : grower_id,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : grower_name,
             },
         ],
     },
@@ -167,6 +196,7 @@ annotate service.Claims with @(
             Label : 'Approve Review',
             Determining : true,
             @UI.Hidden : ((status.id != 2) or $draft.HasActiveEntity = true),
+            Criticality : #Positive,
         },
         {
             $Type : 'UI.DataFieldForAction',
@@ -174,6 +204,7 @@ annotate service.Claims with @(
             Label : 'Reject Review',
             Determining : true,
             @UI.Hidden : ((status.id != 2) or $draft.HasActiveEntity = true),
+            Criticality : #Negative,
         },
         {
             $Type : 'UI.DataFieldForAction',
@@ -188,6 +219,7 @@ annotate service.Claims with @(
             Label : 'Grower Accepted',
             Determining : true,
             @UI.Hidden : ((status.id != 6 and type.id != 'qc') or $draft.HasActiveEntity = true)    ,
+            Criticality : #Positive,
         },
         {
             $Type : 'UI.DataFieldForAction',
@@ -195,6 +227,7 @@ annotate service.Claims with @(
             Label : 'Grower Rejected',
             Determining : true,
             @UI.Hidden : ((status.id != 6 and type.id != 'qc') or $draft.HasActiveEntity = true)    ,
+            Criticality : #Negative,
         },
         {
             $Type : 'UI.DataFieldForAction',
@@ -211,6 +244,12 @@ annotate service.Claims with @(
             ID : 'Status',
             Target : '@UI.FieldGroup#Status',
         },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Total Value',
+            ID : 'TotalValue',
+            Target : '@UI.FieldGroup#TotalValue',
+        },
     ],
     UI.FieldGroup #Status : {
         $Type : 'UI.FieldGroupType',
@@ -218,19 +257,27 @@ annotate service.Claims with @(
             {
                 $Type : 'UI.DataField',
                 Value : status_id,
+                Criticality : status.criticality,
             },
+        ],
+    },
+    UI.UpdateHidden : (status.id != 1 and status.id != 3 and status.id != 7),
+    UI.DeleteHidden : (status.id = 8),
+    UI.FieldGroup #TotalValue : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
             {
                 $Type : 'UI.DataField',
                 Value : total_claim_value,
+                Label : 'Value',
             },
             {
                 $Type : 'UI.DataField',
                 Value : total_claim_value_nzd,
+                Label : 'Value (NZD)',
             },
         ],
     },
-    UI.UpdateHidden : (status.id = 8),
-    UI.DeleteHidden : (status.id = 8),
 );
 
 annotate service.Claims with {
@@ -329,16 +376,24 @@ annotate service.Claims with {
     primary_defect_code @(
         Common.ValueList : {
             $Type : 'Common.ValueListType',
-            CollectionPath : 'PrimaryDefectCodes',
+            CollectionPath : 'ClaimsToPrimaryDefectSearch',
             Parameters : [
                 {
                     $Type : 'Common.ValueListParameterInOut',
                     LocalDataProperty : primary_defect_code_id,
-                    ValueListProperty : 'id',
+                    ValueListProperty : 'primary_defect_code_id',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'primary_defect_code/name',
+                },
+                {
+                    $Type : 'Common.ValueListParameterIn',
+                    ValueListProperty : 'claim_type/id',
+                    LocalDataProperty : type_id,
                 },
             ],
             Label : 'Defect Code',
-            PresentationVariantQualifier : 'vh_Claims_primary_defect_code',
         },
         Common.ValueListWithFixedValues : true,
         Common.Text : primary_defect_code.name,
@@ -485,10 +540,12 @@ annotate service.AuditLogs with @(
         {
             $Type : 'UI.DataField',
             Value : createdBy,
+            Label : '{i18n>ActionedBy}',
         },
         {
             $Type : 'UI.DataField',
             Value : createdAt,
+            Label : '{i18n>ActionedOn}',
         },
     ]
 );
@@ -578,6 +635,8 @@ annotate service.Claims with {
         },
         Common.ValueListWithFixedValues : true,
         Common.Text.@UI.TextArrangement : #TextOnly,
+        Common.FieldControl : #Mandatory,
+        
 )};
 
 annotate service.ClaimType with {
@@ -610,5 +669,9 @@ annotate service.Claims with {
 
 annotate service.RejectionReason with {
     id @Common.Text : descr
+};
+
+annotate service.Claims with {
+    claim_value @Measures.ISOCurrency : claim_currency_code
 };
 

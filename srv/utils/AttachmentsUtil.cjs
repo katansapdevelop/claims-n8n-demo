@@ -246,11 +246,14 @@ const _uploadAttachmentLocally = async (attachment) => {
  * @param {Buffer} content - The content of the file to be uploaded.
  * @returns {Promise<Object>} A promise that resolves to the document object of the uploaded file.
  */
-const uploadAttachmentToRepository = async (attachment, content) => {
+const uploadAttachmentToRepository = async (attachment) => {
+
+  
+  const id = attachment.content.url.match(/attachments\(ID=([0-9a-fA-F-]{36})/)[1];
   LOG.info(
-    "Attempting to upload attachment for " + attachment.ID + " to repository"
+    "Attempting to upload attachment for " + id + " to repository"
   );
-  const fileName = attachment.ID + "." + mime.extension(attachment.contentType);
+  const fileName = id + "." + mime.extension(attachment.contentType);
   LOG.info("Attempting to upload file: " + fileName);
   let settings = await _loadRepositorySettings();
   LOG.info("Loaded Settings for Repository Details: " + + JSON.stringify(settings));
@@ -273,7 +276,7 @@ const uploadAttachmentToRepository = async (attachment, content) => {
     .createDocument(
       settings.repositoryId,
       fileName,
-      cds.context.query.UPDATE.data.content
+      attachment.content
     )
     .execute(destination);
   return document;

@@ -545,16 +545,21 @@ class ClaimAppService extends cds.ApplicationService {
 
     this.after("UPDATE", "Attachments.drafts", async (attachments) => {
       LOG.info("After Attachment Draft Record Updated Handling");
-      if (!cds.context.query.UPDATE.data.content) {
+      if (!attachments.contentType) {
         LOG.info("No attachment content was found to be created");
         LOG.info("Attachments Draft: " + JSON.stringify(attachments));
         return;
       }
 
       try {
+
+        
+        const filename = attachments.content.header('content-disposition').split("=")[1].replace(/"/g, '');
+
+        const id = attachments.content.url.match(/attachments\(ID=([0-9a-fA-F-]{36})/)[1];
+
         let document = await uploadAttachmentToRepository(
-          attachments,
-          cds.context.query.UPDATE.data.content
+          attachments
         );
         const documentObjectId = document.succinctProperties["cmis:objectId"];
         LOG.info(
@@ -562,12 +567,12 @@ class ClaimAppService extends cds.ApplicationService {
         );
 
         LOG.info(
-          "Saving Object Id to Draft Attachment Table for: " + attachments.ID
+          "Saving Object Id to Draft Attachment Table for: " + id
         );
         await cds.run(
           UPDATE(Attachments.drafts)
-            .set({ objectId: documentObjectId })
-            .where({ ID: attachments.ID })
+            .set({ objectId: documentObjectId, name: filename })
+            .where({ ID: id })
         );
       } catch (error) {
         LOG.error(

@@ -224,7 +224,6 @@ entity ClaimPallets : managed, cuid {
 
 entity ClaimDefects : managed, cuid {
   claim                 : Association to one Claims                @Common.Label: 'Claim Id'  @Common.Text             : claim.claim_id;
-  //primary_defect_code   : Association to one PrimaryDefectCodes    @Common.Label: 'Primary Defect Code'  @Common.Text  : primary_defect_code.name;
   secondary_defect_code : Association to one SecondaryDefectCodes  @Common.Label: 'Secondary Defect Code'  @Common.Text: secondary_defect_code.name;
 }
 
