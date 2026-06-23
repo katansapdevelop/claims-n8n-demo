@@ -52,7 +52,7 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Attachments',
+            Label : 'Evidence',
             ID : 'Attachment',
             Target : 'attachments/@UI.LineItem#Attachment',
         },
@@ -289,15 +289,17 @@ annotate service.Attachments with @(
         {
             $Type : 'UI.DataField',
             Value : claim.attachments.content,
-            Label : 'File Name',
+            Label : 'Attachment Name',
         },
         {
             $Type : 'UI.DataField',
             Value : createdAt,
+            Label : 'Uploaded On',
         },
         {
             $Type : 'UI.DataField',
             Value : createdBy,
+            Label : 'Uploaded By',
         },
     ]
 );
@@ -592,18 +594,22 @@ annotate service.Costs with @(
         {
             $Type : 'UI.DataField',
             Value : createdAt,
+            @UI.Hidden,
         },
         {
             $Type : 'UI.DataField',
             Value : createdBy,
+            @UI.Hidden,
         },
         {
             $Type : 'UI.DataField',
             Value : modifiedAt,
+            @UI.Hidden,
         },
         {
             $Type : 'UI.DataField',
             Value : modifiedBy,
+            @UI.Hidden,
         },
     ]
 );
