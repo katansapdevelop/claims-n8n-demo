@@ -6,54 +6,7 @@ import claimsUtil from "./utils/ClaimsUtil.cjs";
 import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, convertToMarketAssistance, convertClaimAmountsToNZD, validateBeforeSubmitForReview, validateRepBeforeSave, updateClaimDuetoTypeChange, updateClaimDueToRPINChange, getWeekNumber, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
 import { parseQueryOptionsForFiltering } from "./utils/ODataUtil.cjs";
 import { onHandleReadErpRPINs, onHandleReadErpDelivery } from "./utils/DeliveriesUtil.cjs";
-//import { SELECT, UPDATE } from cds.ql;
 
-
-//const { default: cds } = require("@sap/cds");
-//const { loadDestination } = require("sap-cap-sdm-plugin/lib/util/index");
-//const LOG = cds.log("ls.claims");
-
-
-/*
-const {
-  validateAttachments,
-  uploadAttachmentToRepository,
-  getAttachmentStream,
-} = require("./utils/AttachmentsUtil");
-*/
-
-/*
-const claimsUtil = require("./utils/ClaimsUtil");
-const {
-  updateClaimsTotals,
-  calculateQualityClaimsValuesForClaim,
-  updateClaimStatus,
-  claim_types,
-  claim_statuses,
-  claimActions,
-  updateClaimDetailsFromERP,
-  validateClaimBeforeSave,
-  updateExternalClaimId,
-  calculateQualityClaimsValuesForQualityClaim,
-  convertToMarketAssistance,
-  convertClaimAmountsToNZD,
-  validateBeforeSubmitForReview,
-  validateRepBeforeSave,
-  updateClaimDuetoTypeChange,
-  updateClaimDueToRPINChange,
-  getWeekNumber,
-  calculateDaysFromArrival,
-} = require("./utils/ClaimsUtil");
-
-const { parseQueryOptionsForFiltering } = require("./utils/ODataUtil");
-
-const {
-  onHandleReadErpRPINs,
-  onHandleReadErpDelivery,
-} = require("./utils/DeliveriesUtil");
-const { SELECT, UPDATE } = require("@sap/cds").ql;
-
-*/
 class ClaimAppService extends cds.ApplicationService {
   async init() {
     const {

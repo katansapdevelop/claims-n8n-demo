@@ -52,15 +52,21 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Evidence',
-            ID : 'Attachment',
-            Target : 'attachments/@UI.LineItem#Attachment',
+            Label : 'Defects',
+            ID : 'Defects1',
+            Target : '@UI.FieldGroup#Defects',
         },
         {
             $Type : 'UI.ReferenceFacet',
             Label : 'Secondary Defects',
             ID : 'Defects',
             Target : 'defects/@UI.LineItem#Defects',
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Evidence',
+            ID : 'Attachment',
+            Target : 'attachments/@UI.LineItem#Attachment',
         },
         {
             $Type : 'UI.ReferenceFacet',
@@ -80,15 +86,11 @@ annotate service.Claims with @(
         Data : [
             {
                 $Type : 'UI.DataField',
-                Value : delivery_id,
-            },
-            {
-                $Type : 'UI.DataField',
                 Value : type_id,
             },
             {
                 $Type : 'UI.DataField',
-                Value : primary_defect_code_id,
+                Value : delivery_id,
             },
             {
                 $Type : 'UI.DataField',
@@ -111,6 +113,10 @@ annotate service.Claims with @(
             {
                 $Type : 'UI.DataField',
                 Value : date_of_claim,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : arrival_date,
             },
             {
                 $Type : 'UI.DataField',
@@ -275,6 +281,15 @@ annotate service.Claims with @(
                 $Type : 'UI.DataField',
                 Value : total_claim_value_nzd,
                 Label : 'Value (NZD)',
+            },
+        ],
+    },
+    UI.FieldGroup #Defects : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : primary_defect_code_id,
             },
         ],
     },
@@ -679,5 +694,9 @@ annotate service.RejectionReason with {
 
 annotate service.Claims with {
     claim_value @Measures.ISOCurrency : claim_currency_code
+};
+
+annotate service.Claims with {
+    claim_value_nzd @Common.FieldControl : #ReadOnly
 };
 

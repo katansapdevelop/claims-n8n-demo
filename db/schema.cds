@@ -63,31 +63,26 @@ entity Complaints : cuid {
 // Deliveries
 @Common.Label: 'Delivery'
 entity Deliveries : managed, cuid {
-  delivery_id                    : String(10)            @Common.Label: 'Delivery Id'; // Will come from ECC
-  customer_id                    : String(10)            @Common.Label: 'Customer Id'; // Will come from ECC
-  shipment_id                    : String(10)            @Common.Label: 'Shipment Id'; // Will come from ECC
-  customer_name                  : String(200)           @Common.Label: 'Customer Name'; // Will come from ECC
-  virtual open_claims            : Boolean default false @Common.Label: 'Open Claims'; // Dynamic Property
+  delivery_id                    : String(10)            @Common.Label: 'Delivery Id'; 
+  customer_id                    : String(10)            @Common.Label: 'Customer Id'; 
+  shipment_id                    : String(10)            @Common.Label: 'Shipment Id'; 
+  customer_name                  : String(200)           @Common.Label: 'Customer Name'; 
+  virtual open_claims            : Boolean default false @Common.Label: 'Open Claims'; 
   description                    : String(300)           @Common.Label: 'Description';
   market_representative_id       : String(100)           @Common.Label: 'Market Representative Id';
   market                         : String(10)            @Common.Label: 'Market';
-  virtual total_claims_value_nzd : Decimal(15, 2)        @Common.Label: 'Total Claims Value (NZD)'; // Dynamic Property
-  container_id                   : String(50)            @Common.Label: 'Container Id'; // Will come from ECC
-  origin_country                 : String(2)             @Common.Label: 'Origin Country'; // Will come from ECC
-  sales_region                   : String(4)             @Common.Label: 'Sales Region'; // Will come from ECC
-  sales_region_desc              : String(40)            @Common.Label: 'Sales Region Description'; // Will come from ECC
-  delivery_date                  : Date                  @Common.Label: 'Delivery Date'; // Will come from ECC
-  discharge_country              : String(2)             @Common.Label: 'Discharge Country'; // Will come from ECC
-  /*
-  complaints                     : Composition of many Complaints
-                                     on complaints.delivery = $self;
-  */
+  virtual total_claims_value_nzd : Decimal(15, 2)        @Common.Label: 'Total Claims Value (NZD)'; 
+  container_id                   : String(50)            @Common.Label: 'Container Id'; 
+  origin_country                 : String(2)             @Common.Label: 'Origin Country'; 
+  sales_region                   : String(4)             @Common.Label: 'Sales Region'; 
+  sales_region_desc              : String(40)            @Common.Label: 'Sales Region Description'; 
+  delivery_date                  : Date                  @Common.Label: 'Delivery Date'; 
+  discharge_country              : String(2)             @Common.Label: 'Discharge Country';
   claims                         : Association to many Claims
                                      on claims.delivery_id = $self.delivery_id;
 }
 
 
-// !!! Claims  !!!!
 // Claims
 @Common.Label: 'Claims'
 entity Claims : managed, cuid {
