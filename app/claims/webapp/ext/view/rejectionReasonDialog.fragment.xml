@@ -1,0 +1,44 @@
+<c:FragmentDefinition xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:c="sap.ui.core">
+	<Dialog title="Enter a Rejection Reason" id="rejectionReasonDialog">
+		<VBox id="rejectionReasonHBox">
+			<f:SimpleForm id="SimpleFormChange354"
+				editable="true"
+				layout="ResponsiveGridLayout"
+				labelSpanXL="3"
+				labelSpanL="3"
+				labelSpanM="3"
+				labelSpanS="12"
+				adjustLabelSpan="false"
+				emptySpanXL="4"
+				emptySpanL="4"
+				emptySpanM="4"
+				emptySpanS="0"
+				columnsXL="1"
+				columnsL="1"
+				columnsM="1"
+				singleContainerFullSize="false">
+				<f:content>
+					<Label text="Reason" id="rejectionReasonLabel" labelFor="rejectionReasonInput" />
+					<Select
+						id="rejectionReasonInput"
+						showSecondaryValues="true"
+						selectedKey="{claimAppModel>/SelectedRejectionReason}"
+						items="{ path: '/RejectionReason' }">
+						<c:ListItem id="ReasonItem" key="{id}" text="{name}" />
+					</Select>
+				</f:content>
+			</f:SimpleForm>
+		</VBox>
+		<buttons>
+			<Button text="Submit + Convert" press=".submitRejectionReason" id="submitConvertRejectionReasonButton"
+				type="Attention" visible="{= ${path: 'type_id', targetType: 'any'} === 'QC' }"
+				/>
+			<Button text="Submit" press=".submitRejectionReason" id="submitRejectionReasonButton"
+				type="Accept" />
+			<Button text="Cancel" press=".closeDialog" id="closeDialogButton" type="Reject"/>
+		</buttons>
+	</Dialog>
+</c:FragmentDefinition>

@@ -206,14 +206,6 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataFieldForAction',
-            Action : 'ClaimAppService.submitReviewReject',
-            Label : 'Reject Review',
-            Determining : true,
-            @UI.Hidden : ((status.id != 2) or $draft.HasActiveEntity = true),
-            Criticality : #Negative,
-        },
-        {
-            $Type : 'UI.DataFieldForAction',
             Action : 'ClaimAppService.submitSendToGrower',
             Label : 'Send To Grower',
             Determining : true,

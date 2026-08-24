@@ -163,8 +163,33 @@
                     "type": "ResponsiveTable"
                   }
                 }
+              },
+              "content": {
+                "footer": {
+                  "actions": {
+                    "RejectReview": {
+                      "press": "com.logicalstarconsulting.claims.ext.controller.ClaimsObjectPageActions.onReviewerReject",
+                      "visible": true,
+                      "enabled": true,
+                      "text": "Reject Review",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "DataFieldForAction::ClaimAppService.submitReviewApprove"
+                      }
+                    }
+                  }
+                }
               }
             }
+          }
+        }
+      }
+    },
+    "extends": {
+      "extensions": {
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ObjectPage.ObjectPageController#com.logicalstarconsulting.claims::ClaimsObjectPage": {
+            "controllerName": "com.logicalstarconsulting.claims.ext.controller.ClaimsOPExtend"
           }
         }
       }
