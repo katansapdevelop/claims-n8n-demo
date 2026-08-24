@@ -197,6 +197,8 @@ class ClaimAppService extends cds.ApplicationService {
         // navigate to an association
         LOG.info("Updating claim specific property for container_id");
 
+        const draftClaim = draftClaims.find((d) => d.ID === claim.ID);
+
         if (draftClaim) {
           const delivery = deliveries.find(
             (d) => d.delivery_id === draftClaim.delivery_id
