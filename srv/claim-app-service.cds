@@ -6,7 +6,6 @@ service ClaimAppService @(path: '/app/claim', ) {
     entity Claims                        as
         projection on db.Claims {
             *,
-            null as hideRPIN     : Boolean  @readonly  @UI.Hidden,
             null as container_id : String   @readonly  @Common: {Label: 'Container Id'},
         }
         actions {
@@ -92,7 +91,6 @@ service ClaimAppService @(path: '/app/claim', ) {
             delivery_id
         ],
         TargetProperties: [
-            'hideRPIN',
             'container_id'
         ]
     }, SemanticKey: ['claim_id']}) {
@@ -146,9 +144,4 @@ service ClaimAppService @(path: '/app/claim', ) {
             active
         from db.MarketRep as rep;
 
-    @readonly
-    entity VarietySearch                 as select distinct key pallet.variety from db.ClaimPallets as pallet;
-
-    @readonly
-    entity RegionSearch                  as select distinct key pallet.region from db.ClaimPallets as pallet;
 }

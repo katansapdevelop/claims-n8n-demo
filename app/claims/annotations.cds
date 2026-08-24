@@ -13,7 +13,7 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : grower_name,
+            Value : brewer_name,
         },
         {
             $Type : 'UI.DataField',
@@ -122,11 +122,11 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : grower_id,
+                Value : brewer_id,
             },
             {
                 $Type : 'UI.DataField',
-                Value : grower_name,
+                Value : brewer_name,
             },
         ],
     },
@@ -583,10 +583,6 @@ annotate service.Costs with @(
         {
             $Type : 'UI.DataField',
             Value : value,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : value_nzd,
         },
         {
             $Type : 'UI.DataField',

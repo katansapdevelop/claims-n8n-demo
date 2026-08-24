@@ -4,7 +4,7 @@ id,name,descr
 2,Approve Review, Approve Review
 3,Reject Review, Reject Review
 4,Request More Info,Request More Information
-5,Send To Grower,Send To Grower
-6,Grower Accepted,Grower Accepted
-7,Grower Rejected,Grower Rejected
+5,Send To Brewer,Send To Brewer
+6,Brewer Accepted,Brewer Accepted
+7,Brewer Rejected,Brewer Rejected
 8,Complete,Complete

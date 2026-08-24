@@ -3,7 +3,7 @@ import { loadDestination } from "sap-cap-sdm-plugin/lib/util/index.js";
 const LOG = cds.log("ls.claims");
 import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.cjs";
 import claimsUtil from "./utils/ClaimsUtil.cjs";
-import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, convertToMarketAssistance, convertClaimAmountsToNZD, validateBeforeSubmitForReview, validateRepBeforeSave, updateClaimDuetoTypeChange, updateClaimDueToRPINChange, getWeekNumber, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
+import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, convertToMarketAssistance, validateBeforeSubmitForReview, validateRepBeforeSave, updateClaimDuetoTypeChange, updateClaimDueToRPINChange, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
 import { parseQueryOptionsForFiltering } from "./utils/ODataUtil.cjs";
 import { onHandleReadErpRPINs, onHandleReadErpDelivery } from "./utils/DeliveriesUtil.cjs";
 
@@ -64,8 +64,6 @@ class ClaimAppService extends cds.ApplicationService {
     });
 
     this.after("CREATE", "Claims", async (claims) => {
-      LOG.info("Convert Claim Amounts to NZD");
-      await convertClaimAmountsToNZD(claims);
 
       LOG.info("Updating Claims Totals");
       await updateClaimsTotals(claims);
@@ -87,18 +85,6 @@ class ClaimAppService extends cds.ApplicationService {
       }
     });
 
-    
-    this.on("SAVE", "Claims", async (req, next) => {
-      const claim = req.data;
-      LOG.info("Updating the week number for the claim");
-      if (claim.arrival_date) {
-        req.data.claim_date_week_number = await getWeekNumber(
-          new Date(claim.arrival_date)
-        );
-      }
-
-      await next(req);
-    });
 
     this.on("UPDATE", "Claims", async (req, next) => {
       await updateClaimDuetoTypeChange(req);
@@ -108,8 +94,7 @@ class ClaimAppService extends cds.ApplicationService {
     });
 
     this.after("UPDATE", "Claims", async (claims) => {
-      LOG.info("Convert Claim Amounts to NZD");
-      await convertClaimAmountsToNZD(claims);
+
 
       LOG.info("Updating claims data after save");
       await updateClaimsTotals(claims);
@@ -180,7 +165,6 @@ class ClaimAppService extends cds.ApplicationService {
       let claimIds = [];
       let deliveryIds = [];
       claims.map((claim) => {
-        claim.hideRPIN = true; // Default to hide
         claimIds.push(claim.ID);
       });
 
@@ -207,23 +191,7 @@ class ClaimAppService extends cds.ApplicationService {
       }
 
       claims.map((claim) => {
-        LOG.info("Updating hideRPIN property for claim " + claim.ID);
-        const draftClaim = draftClaims.find((d) => d.ID === claim.ID);
-
-        LOG.info("Found matching draft claim: " + JSON.stringify(draftClaim));
-
-        if (draftClaim) {
-          claim.hideRPIN =
-            (draftClaim.type_id === claim_types.quality ||
-              draftClaim.type_id === claim_types.market ||
-              draftClaim.type_id === claim_types.packaging) &&
-            draftClaim.delivery_id != null
-              ? false
-              : claim.hideRPIN;
-        } else {
-          claim.hideRPIN = true;
-        }
-
+      
         // This is a fix to update the claim specific property for container_id
         // to support auto update via a side effect as you can use a side effect to
         // navigate to an association
@@ -444,8 +412,7 @@ class ClaimAppService extends cds.ApplicationService {
           .where({ ID: req.params[0].ID });
         if (
           claim.credit_note_id === null &&
-          claim.payment_deduction_doc_id === null &&
-          claim.type_id !== claim_types.complaint
+          claim.payment_deduction_doc_id === null 
         ) {
           LOG.error(
             "Cannot complete the claim as payment details have not been maintained: " +

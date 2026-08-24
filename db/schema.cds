@@ -7,12 +7,6 @@ using {
 
 namespace ls.claims;
 
-@Common.Label: 'Complaint Status'
-entity ComplaintStatus : CodeList {
-  key id          : String(2);
-      criticality : Integer;
-}
-
 
 @Common.Label: 'Claim Type'
 entity ClaimType : CodeList {
@@ -51,13 +45,7 @@ entity PrimaryDefectCodes : CodeList {
   key id : String(10);
 }
 
-@Common.Label: 'Complaints'
-entity Complaints : cuid {
-  description : String(300) @Common.Label: 'Description';
-  // Associations
-  delivery    : Association to one Deliveries;
-  status      : Association to one ComplaintStatus  @Common.Label: 'Status'  @Common.Text: status.name;
-}
+
 
 
 // Deliveries
@@ -67,16 +55,12 @@ entity Deliveries : managed, cuid {
   customer_id                    : String(10)            @Common.Label: 'Customer Id'; 
   shipment_id                    : String(10)            @Common.Label: 'Shipment Id'; 
   customer_name                  : String(200)           @Common.Label: 'Customer Name'; 
-  virtual open_claims            : Boolean default false @Common.Label: 'Open Claims'; 
-  description                    : String(300)           @Common.Label: 'Description';
   container_id                   : String(50)            @Common.Label: 'Container Id'; 
   origin_country                 : String(2)             @Common.Label: 'Origin Country'; 
   sales_region                   : String(4)             @Common.Label: 'Sales Region'; 
   sales_region_desc              : String(40)            @Common.Label: 'Sales Region Description'; 
   delivery_date                  : Date                  @Common.Label: 'Delivery Date'; 
   discharge_country              : String(2)             @Common.Label: 'Discharge Country';
-  claims                         : Association to many Claims
-                                     on claims.delivery_id = $self.delivery_id;
 }
 
 
@@ -93,8 +77,8 @@ entity Claims : managed, cuid {
   days_to_claim            : Integer        @Common.Label: 'Days to Claim';
   credit_note_id           : String(10)     @Common.Label: 'Credit Note Id';
   payment_deduction_doc_id : String(10)     @Common.Label: 'Payment Deduction Doc Id';
-  grower_id                : String(10)     @Common.Label: 'Grower Id';
-  grower_name              : String(50)     @Common.Label: 'Grower Name';
+  brewer_id                : String(10)     @Common.Label: 'Brewer Id';
+  brewer_name              : String(50)     @Common.Label: 'Brewer Name';
   delivery_id              : String(40)     @Common.Label: 'Delivery Id';
   workflow_id              : UUID           @Common.Label: 'Workflow Id';
   arrival_date             : Date           @Common.Label: 'Actual Arrival Date';
@@ -148,7 +132,6 @@ entity Comments : managed, cuid {
 @Common.Label: 'Additional Costs'
 entity Costs : cuid, managed {
   value     : Decimal(15, 2) @Common.Label: 'Value';
-  value_nzd : Decimal(15, 2) @Common.Label: 'Value (NZD)';
   // Associations
   claim     : Association to one Claims;
   cost_type : Association to one CostType  @Common.Label: 'Cost Type'  @Common.Text: cost_type.name;

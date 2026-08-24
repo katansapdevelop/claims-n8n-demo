@@ -8,7 +8,6 @@ const claim_types = {
   packaging: "PK",
   shipping: "SH",
   market: "MK",
-  complaint: "CP",
 };
 
 //TODO Replace this with the object based one below
@@ -169,11 +168,7 @@ const _validateQCClaimBeforeSave = async (req) => {
  */
 const validateClaimBeforeSave = async (req) => {
   const claim = req.data;
-  LOG.info("Validating if the claim has value not $0 for a complaint");
-  if (claim.type_id == claim_types.complaint && claim.claim_value != 0) {
-    LOG.warn("Claim value for a complaint must be $0.00" + claim.claim_value);
-    req.reject(400, "Claim value for a complaint must be $0.00");
-  }
+  
 
   LOG.info("Validating if the claim has currency code");
   if (
@@ -291,16 +286,16 @@ updateClaimDetailsFromERP = async (claim, erpClaimsSrv) => {
 
     LOG.info("Updating Grower Details for Claim " + claim.ID);
 
-    let grower_id = null;
-    let grower_name = null;
+    let brewer_id = null;
+    let brewer_name = null;
     if (growers.length > 0) {
-      grower_id = growers[0].id;
-      grower_name = growers[0].name;
+      brewer_id = growers[0].id;
+      brewer_name = growers[0].name;
     }
 
     await UPDATE("ls.claims.Claims", { ID: claim.ID }).with({
-      grower_id: grower_id,
-      grower_name: grower_name,
+      brewer_id: brewer_id,
+      brewer_name: brewer_name,
     });
     LOG.info("Successfully updated claim details");
   }
@@ -353,7 +348,6 @@ calculateVirtualDeliveryDetails = async (Deliveries) => {
         delivery.claims((claim) => {
           claim.ID,
             claim.total_claim_value,
-            claim.total_claim_value_nzd,
             claim.status((status) => {
               status.id;
             });
@@ -367,8 +361,6 @@ calculateVirtualDeliveryDetails = async (Deliveries) => {
   // Update the virtual attributes for each delivery found
   for (delivery of Deliveries) {
     // Dafault all the values
-    delivery.total_claims_value_nzd = Number(0.0);
-    //delivery.total_claims_value_usd = Number(0.0);
     delivery.open_claims = false;
 
     // Filter the claims for the specific delivery
@@ -379,15 +371,7 @@ calculateVirtualDeliveryDetails = async (Deliveries) => {
     if (deliveryClaim.length > 0) {
       // Calculate the total claim value for the delivery
       for (claim of deliveryClaim[0].claims) {
-        delivery.total_claims_value_nzd += Number(
-          Number(claim.total_claim_value_nzd).toFixed(2)
-        );
-        /*
-        delivery.total_claims_value_usd += Number(
-          Number(claim.total_claim_value).toFixed(2)
-        );
-        */
-
+        
         // check if the claim is open
         if (
           !(
@@ -436,13 +420,13 @@ updateClaimsTotals = async (Claim_Header) => {
   if (!claimHeaders[0].hasOwnProperty("claim_value")) {
     readClaimCostsFromDb = true;
     claims = await SELECT.from("ls.claims.Claims")
-      .columns("ID", "claim_value", "claim_value_nzd")
+      .columns("ID", "claim_value")
       .where({ ID: { in: claimIds } });
   }
 
   // Read values of any additional costs for the claim
   const costs = await SELECT.from("ls.claims.Costs")
-    .columns("claim_ID", "value", "value_nzd")
+    .columns("claim_ID", "value")
     .where({ claim_ID: { in: claimIds } });
 
   LOG.info("Updating costs for all claims being read");
@@ -450,24 +434,19 @@ updateClaimsTotals = async (Claim_Header) => {
     if (readClaimCostsFromDb === true && claims.length > 0) {
       let claimCost = claims.filter((claimCost) => claimCost.ID === claim.ID);
       claim.claim_value = Number(claimCost[0].claim_value.toFixed(2));
-      claim.claim_value_nzd = Number(claimCost[0].claim_value_nzd.toFixed(2));
     }
     claim.total_claim_value = claim.claim_value | 0;
-    claim.total_claim_value_nzd = claim.claim_value_nzd | 0;
 
     // Add up all costs related to the claim
     const claimCosts = costs.filter((cost) => cost.claim_ID === claim.ID);
     for (let cost of claimCosts) {
       claim.total_claim_value += Number(cost.value);
-      claim.total_claim_value_nzd += Number(cost.value_nzd);
     }
     claim.total_claim_value.toFixed(2);
-    claim.total_claim_value_nzd.toFixed(2);
 
     LOG.info("Updating costs for claim " + claim.ID);
     await UPDATE("ls.claims.Claims", { ID: claim.ID }).with({
       total_claim_value: claim.total_claim_value,
-      total_claim_value_nzd: claim.total_claim_value_nzd,
     });
   }
 };
@@ -645,9 +624,6 @@ updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
       case claim_types.quality:
         previousValidStatusCodes = _claim_status_previous_qc;
         break;
-      case claim_types.complaint:
-        previousValidStatusCodes = _claim_status_previous_cp;
-        break;
     }
   } catch (e) {
     LOG.error("Errors occured reading the claim status: " + e);
@@ -702,8 +678,8 @@ const _mapQCtoMAClaim = async (qualityClaim) => {
   marketAssistClaim.type_id = claim_types.market;
   marketAssistClaim.RejectionReason_id = null;
   marketAssistClaim.rpin = qualityClaim.rpin;
-  marketAssistClaim.grower_id = qualityClaim.grower_id;
-  marketAssistClaim.grower_name = qualityClaim.grower_name;
+  marketAssistClaim.brewer_id = qualityClaim.brewer_id;
+  marketAssistClaim.brewer_name = qualityClaim.brewer_name;
   marketAssistClaim.primary_defect_code_id =
     qualityClaim.primary_defect_code_id;
   marketAssistClaim.credit_note_id = null;
@@ -781,56 +757,8 @@ const convertToMarketAssistance = async (claimId) => {
   return marketAssistClaim;
 };
 
-convertClaimAmountsToNZD = async (claim) => {
-  LOG.info("Converting claim amounts to NZD");
-
-  if (!claim.claim_currency_code) {
-    LOG.warn("Currency code has not been maintained for claim " + claim.ID);
-    return;
-  }
-
-  const conversionRate = await getValidConversionRateByCurrency(
-    claim.claim_currency_code,
-    "NZD"
-  );
-
-  if (claim.claim_value) {
-    LOG.info("Converting claim amount " + claim.claim_value + " to NZD");
-    claim.claim_value_nzd = Number(
-      (claim.claim_value * conversionRate).toFixed(2)
-    );
-    LOG.info("Converted claim amount to  " + claim.claim_value_nzd + " NZD");
-
-    await UPDATE("ls.claims.Claims", { ID: claim.ID }).with({
-      claim_value_nzd: claim.claim_value_nzd,
-    });
-  }
-
-  if (claim.costs) {
-    LOG.info("Found costs to convert to NZD");
-    for (let cost of claim.costs) {
-      LOG.info("Converting cost amount " + cost.value + " to NZD");
-      if (!cost.value) {
-        LOG.info("Skipping processing for undefined cost");
-        continue;
-      }
-      cost.value_nzd = Number((cost.value * conversionRate).toFixed(2));
-      LOG.info("Converted cost amount to  " + cost.value_nzd + " NZD");
-
-      await UPDATE("ls.claims.Costs", { ID: cost.ID }).with({
-        value_nzd: cost.value_nzd,
-      });
-    }
-  }
-};
-
 const _maxTceOnPallet = 56;
 
-// Complaint
-const _claim_status_previous_cp = {
-  1: [null], // New
-  8: [1], // Complete
-};
 
 // Quality Claim
 const _claim_status_previous_qc = {
@@ -993,20 +921,6 @@ const updateClaimDueToRPINChange = async (req) => {
   }
 };
 
-const getWeekNumber = async (d) => {
-  // Copy date so don't modify original
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  // Set to nearest Thursday: current date + 4 - current day number
-  // Make Sunday's day number 7
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-  // Get first day of year
-  var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-  // Calculate full weeks to nearest Thursday
-  var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-  // Return array of year and week number
-  return weekNo;
-};
-
 
 const calculateDaysFromArrival = async (claims) =>{
   claims.map((claim) => {
@@ -1042,11 +956,9 @@ module.exports = {
   calculateQualityClaimsValuesForQualityClaim:
     calculateQualityClaimsValuesForQualityClaim,
   convertToMarketAssistance: convertToMarketAssistance,
-  convertClaimAmountsToNZD: convertClaimAmountsToNZD,
   validateBeforeSubmitForReview: validateBeforeSubmitForReview,
   validateRepBeforeSave: validateRepBeforeSave,
   updateClaimDuetoTypeChange: updateClaimDuetoTypeChange,
   updateClaimDueToRPINChange: updateClaimDueToRPINChange,
-  getWeekNumber: getWeekNumber,
   calculateDaysFromArrival:calculateDaysFromArrival
 };

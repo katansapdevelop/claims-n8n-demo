@@ -1,4 +1,4 @@
-ID,claim_id,type_id,date_of_claim,description,claim_value,delivery_id,claim_date_week_number,days_to_claim,status_id,credit_note_id,payment_deduction_doc_id,total_claim_value,grower_id,grower_name,claim_currency_code,primary_defect_code_id,market_representative_id,arrival_date
+ID,claim_id,type_id,date_of_claim,description,claim_value,delivery_id,claim_date_week_number,days_to_claim,status_id,credit_note_id,payment_deduction_doc_id,total_claim_value,brewer_id,brewer_name,claim_currency_code,primary_defect_code_id,market_representative_id,arrival_date
 3b241101-e2bb-4255-8caf-4136c566a979,0023157001,QC,2026-01-01,"Claim 1",100.00,1980023157,40,46,2,,,200.00,4500003,Tollemache Orchards Ltd,USD,00023,1b5c4af6-f7f6-4b4a-b8df-5baf2cfd76ec,2026-05-01
 3b241101-e2bb-4255-8caf-4136c566a980,0023158001,SH,2026-02-01,"Claim 2",200.00,1980023158,44,14,1,,,400.00,,,USD,,5f4c1fe7-2e23-45a2-9bbc-dc094ce19243,2026-04-01
 3b241101-e2bb-4255-8caf-4136c566a981,0023159001,QC,2026-03-01,"Claim 3",300.00,1980023159,45,10,3,,,600.00,4500003,Tollemache Orchards Ltd,USD,00009,1b5c4af6-f7f6-4b4a-b8df-5baf2cfd76ec,2026-03-01
