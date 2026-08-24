@@ -19,10 +19,7 @@ annotate service.Claims with @(
             $Type : 'UI.DataField',
             Value : total_claim_value,
         },
-        {
-            $Type : 'UI.DataField',
-            Value : total_claim_value_nzd,
-        },
+        
         {
             $Type : 'UI.DataField',
             Value : delivery_id,
@@ -96,10 +93,7 @@ annotate service.Claims with @(
                 $Type : 'UI.DataField',
                 Value : claim_value,
             },
-            {
-                $Type : 'UI.DataField',
-                Value : claim_value_nzd,
-            },
+            
             {
                 $Type : 'UI.DataField',
                 Value : payment_deduction_doc_id,
@@ -269,11 +263,7 @@ annotate service.Claims with @(
                 Value : total_claim_value,
                 Label : 'Value',
             },
-            {
-                $Type : 'UI.DataField',
-                Value : total_claim_value_nzd,
-                Label : 'Value (NZD)',
-            },
+           
         ],
     },
     UI.FieldGroup #Defects : {
@@ -688,7 +678,4 @@ annotate service.Claims with {
     claim_value @Measures.ISOCurrency : claim_currency_code
 };
 
-annotate service.Claims with {
-    claim_value_nzd @Common.FieldControl : #ReadOnly
-};
 

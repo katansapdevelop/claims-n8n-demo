@@ -1,6 +1,6 @@
-ID,customer_id,customer_name,description,market_representative_id,market,shipment_id,delivery_id,container_id,origin_country,sales_region,sales_region_desc,delivery_date,discharge_country
-123e4567-e89b-12d3-a456-426614174000,2000112,Wellcome Company Limited,Suspected Hail Damage,Lottie Eglinton,CHK,1245362228,1980023157,CNTR1234,NZ,ASIA,Asia,2026-02-11,TH
-223e4567-e89b-12d3-a456-426614174000,2001524,Wismettac Foods Inc.,Suspected Hail Damage,Taro Fujita,JAP,4567236975,1980023158,CNTR1235,NZ,NZL,New Zealand,2026-02-17,HK
-323e4567-e89b-12d3-a456-426614174000,2002511,NGK Trading Company Pvt Limited,Suspected Hail Damage,Bradney Bould,INA,5987569843,1980023159,CNTR1236,NZ,NZL,New Zealand,2026-02-17,HK
-423e4567-e89b-12d3-a456-426614174000,4001168,The Oppenheimer Group,Suspected Hail Damage,Lottie Eglinton,NAM,5486987569,1980023165,NCNTR1237,NZ,NZL,New Zealand,2026-02-19,ID
-523e4567-e89b-12d3-a456-426614174000,2004474,Ha Chau Import Export Co.Ltd,Suspected Hail Damage,Tram Hoang,VIE,2456856785,1980023166,CNTR1238,NZ,NZL,New Zealand,2026-02-23,TH
+ID,customer_id,customer_name,description,shipment_id,delivery_id,container_id,origin_country,sales_region,sales_region_desc,delivery_date,discharge_country
+123e4567-e89b-12d3-a456-426614174000,2000112,Wellcome Company Limited,Suspected Hail Damage,1245362228,1980023157,CNTR1234,NZ,ASIA,Asia,2026-02-11,TH
+223e4567-e89b-12d3-a456-426614174000,2001524,Wismettac Foods Inc.,Suspected Hail Damage,4567236975,1980023158,CNTR1235,NZ,NZL,New Zealand,2026-02-17,HK
+323e4567-e89b-12d3-a456-426614174000,2002511,NGK Trading Company Pvt Limited,Suspected Hail Damage,5987569843,1980023159,CNTR1236,NZ,NZL,New Zealand,2026-02-17,HK
+423e4567-e89b-12d3-a456-426614174000,4001168,The Oppenheimer Group,Suspected Hail Damage,5486987569,1980023165,NCNTR1237,NZ,NZL,New Zealand,2026-02-19,ID
+523e4567-e89b-12d3-a456-426614174000,2004474,Ha Chau Import Export Co.Ltd,Suspected Hail Damage,2456856785,1980023166,CNTR1238,NZ,NZL,New Zealand,2026-02-23,TH

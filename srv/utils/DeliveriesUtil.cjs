@@ -381,7 +381,7 @@ const onHandleReadAppClaims = async (req) => {
         claim.status((status) => {
           status.name, status.criticality, status.id;
         }),
-          claim.total_claim_value_nzd,
+          
           claim.total_claim_value,
           claim.claim_currency_code;
       })

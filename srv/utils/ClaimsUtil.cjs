@@ -528,16 +528,11 @@ _calculateQualityClaimValues = async (claim, claim_value, claim_value_nzd) => {
 
   LOG.info("Updating expanded quality claim data");
   claim.claim_value_per_tce = 0;
-  claim.claim_value_per_tce_nzd = 0;
+  
   claim.percentage_claimed = 0;
   if (number_of_tce_out_of_spec > 0) {
     claim.claim_value_per_tce = calculateClaimValuePerTce(
       claim_value,
-      number_of_tce_out_of_spec
-    );
-
-    claim.claim_value_per_tce_nzd = calculateClaimValuePerTce(
-      claim_value_nzd,
       number_of_tce_out_of_spec
     );
 

@@ -69,9 +69,6 @@ entity Deliveries : managed, cuid {
   customer_name                  : String(200)           @Common.Label: 'Customer Name'; 
   virtual open_claims            : Boolean default false @Common.Label: 'Open Claims'; 
   description                    : String(300)           @Common.Label: 'Description';
-  market_representative_id       : String(100)           @Common.Label: 'Market Representative Id';
-  market                         : String(10)            @Common.Label: 'Market';
-  virtual total_claims_value_nzd : Decimal(15, 2)        @Common.Label: 'Total Claims Value (NZD)'; 
   container_id                   : String(50)            @Common.Label: 'Container Id'; 
   origin_country                 : String(2)             @Common.Label: 'Origin Country'; 
   sales_region                   : String(4)             @Common.Label: 'Sales Region'; 
@@ -89,16 +86,13 @@ entity Claims : managed, cuid {
   claim_id                 : String(10)     @Common.Label: 'Claim Id';
   date_of_claim            : Date           @Common.Label: 'Date of Claim';
   description              : String(300)    @Common.Label: 'Description';
-  total_claim_value_nzd    : Decimal(15, 2) @Common.Label: 'Total Claim Value (NZD)' default 0;
   total_claim_value        : Decimal(15, 2) @Common.Label: 'Total Claim Value' default 0;
   claim_value              : Decimal(15, 2) @Common.Label: 'Claim Value';
   claim_currency           : Currency       @Common.Label: 'Claim Currency'  @Common.IsCurrency;
-  claim_value_nzd          : Decimal(15, 2) @Common.Label: 'Claim Value (NZD)';
   claim_date_week_number   : Integer        @Common.Label: 'Claim Date Week Number';
   days_to_claim            : Integer        @Common.Label: 'Days to Claim';
   credit_note_id           : String(10)     @Common.Label: 'Credit Note Id';
   payment_deduction_doc_id : String(10)     @Common.Label: 'Payment Deduction Doc Id';
-  rpin                     : String(10)     @Common.Label: 'RPIN';
   grower_id                : String(10)     @Common.Label: 'Grower Id';
   grower_name              : String(50)     @Common.Label: 'Grower Name';
   delivery_id              : String(40)     @Common.Label: 'Delivery Id';
@@ -167,7 +161,6 @@ entity QualityClaims : managed {
   key claim                           : Association to one Claims;
       is_pool                         : Boolean        @Common.Label: 'Is Pool';
       virtual claim_value_per_tce     : Decimal(15, 2) @Common.Label: 'Claim Value per TCE';
-      virtual claim_value_per_tce_nzd : Decimal(15, 2) @Common.Label: 'Claim Value per TCE - NZD';
       qc_inspection_date              : Date           @Common.Label: 'QC Inspection Date';
       virtual percentage_claimed      : Decimal(15, 2) @Common.Label: 'Percentage Claimed';
       number_of_tce_out_of_spec       : Integer        @Common.Label: 'Number of TCE Out of Spec';
