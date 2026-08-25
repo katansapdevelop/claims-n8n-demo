@@ -254,27 +254,7 @@ updateClaimDetailsFromERP = async (claim, erpClaimsSrv) => {
     LOG.info("Successfully updated claim details");
   }
 
-  if (
-    claim.type_id === claim_types.packaging &&
-    claim.packagingClaim !== null &&
-    claim.packagingClaim.pack_house_id !== null
-  ) {
-    LOG.info(
-      "Filtering packers for pack house ID " +
-        claim.packagingClaim.pack_house_id
-    );
-    // Filter RPINs by Packer Id
-    const packers = deliveries[0].DelToRpin.filter(
-      (rpin) => rpin.packer === claim.packagingClaim.pack_house_id
-    );
-
-    // Update Packer Name
-    LOG.info("Updating Pack House Name for Claim " + claim.ID);
-    await UPDATE("ls.claims.PackagingClaims", { claim_ID: claim.ID }).with({
-      pack_house_name: packers[0].packer_nm,
-    });
-    LOG.info("Successfully updated packaging claim details");
-  }
+  
 };
 
 /**
@@ -670,7 +650,6 @@ validateBeforeSubmitForReview = async (req) => {
     .columns((claim) => {
       claim.ID,
         claim.type_id,
-        claim.rpin,
         claim.qualityClaim((qualityClaim) => {
           qualityClaim.claim_ID, qualityClaim.qc_inspection_date;
         });
@@ -678,16 +657,7 @@ validateBeforeSubmitForReview = async (req) => {
     .where({ ID: claimID });
   LOG.info("Read claim " + JSON.stringify(claim));
 
-  LOG.info("Validating if the claim requires RPIN");
-  if (
-    (claim.rpin === null || claim.rpin === "") &&
-    (claim.type_id === claim_types.quality ||
-      claim.type_id === claim_types.packaging)
-  ) {
-    LOG.warn("RPIN is mandatory for claim with type " + claim.type_id);
-    const claimType = await getClaimTypeById(claim.type_id);
-    req.error(400, "RPIN is mandatory for claim of type " + claimType.name);
-  }
+
 
   LOG.info("Validating if the claim requires QC inspection date");
   if (
@@ -762,30 +732,6 @@ const updateClaimDuetoTypeChange = async (req) => {
   }
 };
 
-const updateClaimDueToRPINChange = async (req) => {
-  const claim = req.data;
-  LOG.info("validating if rpin changed");
-
-  // Read the claim to see if the RPIN changed
-  LOG.info("Reading claim " + claim.ID);
-  const dbClaim = await SELECT.one
-    .from("ls.claims.Claims")
-    .where({ ID: claim.ID });
-  LOG.info("Successfully read claim " + JSON.stringify(dbClaim));
-
-  if (claim.rpin === dbClaim.rpin) {
-    return;
-  }
-  LOG.info("Claim RPIN has changed from " + dbClaim.rpin + " to " + claim.rpin);
-  if (claim.rpin === null || claim.rpin === '') {
-    req.data.pallets.map((pallet) => {
-      pallet.batch_id = null;
-      pallet.pack_date = null;
-      pallet.region = null;
-      pallet.packer_name = null;
-    });
-  }
-};
 
 
 const calculateDaysFromArrival = async (claims) =>{
@@ -824,6 +770,5 @@ module.exports = {
   validateBeforeSubmitForReview: validateBeforeSubmitForReview,
   validateRepBeforeSave: validateRepBeforeSave,
   updateClaimDuetoTypeChange: updateClaimDuetoTypeChange,
-  updateClaimDueToRPINChange: updateClaimDueToRPINChange,
   calculateDaysFromArrival:calculateDaysFromArrival
 };

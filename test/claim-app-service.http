@@ -154,13 +154,6 @@ content-type: application/json
 
 ###
 
-### Test GET for RPINSearch single entity pallets with Basic Auth
-GET {{host}}/app/claim/RPINSearch?$select=batch_id,delivery_id,id,name,pallet_id,region,rpin&$count=true&$orderby=rpin&$filter=delivery_id%20eq%20'1980023157'&$skip=0&$top=73 HTTP/1.1
-Authorization: Basic @auth
-
-###
-
-
 
 ### Test GET for Claims Quality Values
 GET {{host}}/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true)/qualityClaim?$select=IsActiveEntity,claim_ID,claim_value_per_tce,percentage_claimed HTTP/1.1
