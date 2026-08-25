@@ -87,7 +87,7 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : delivery_id,
+                Value : delivery.delivery_id,
             },
             {
                 $Type : 'UI.DataField',
@@ -132,6 +132,16 @@ annotate service.Claims with @(
                 $Type : 'UI.DataField',
                 Value : description,
             },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.customer.partner_id,
+                Label : 'Customer Id',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.customer.name,
+                Label : 'Customer Name',
+            },
         ],
     },
     UI.HeaderInfo : {
@@ -149,14 +159,6 @@ annotate service.Claims with @(
     UI.FieldGroup #Delivery : {
         $Type : 'UI.FieldGroupType',
         Data : [
-            {
-                $Type : 'UI.DataField',
-                Value : delivery.customer_id,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : delivery.customer_name,
-            },
             {
                 $Type : 'UI.DataField',
                 Value : delivery.delivery_date,
@@ -305,41 +307,7 @@ annotate service.Attachments with @(
     ]
 );
 
-annotate service.Claims with {
-    delivery_id @(
-        Common.FieldControl : #Mandatory,
-        Common.ValueList : {
-            $Type : 'Common.ValueListType',
-            CollectionPath : 'Deliveries',
-            Parameters : [
-                {
-                    $Type : 'Common.ValueListParameterInOut',
-                    LocalDataProperty : delivery_id,
-                    ValueListProperty : 'delivery_id',
-                },
-                {
-                    $Type : 'Common.ValueListParameterDisplayOnly',
-                    ValueListProperty : 'customer_id',
-                },
-                {
-                    $Type : 'Common.ValueListParameterDisplayOnly',
-                    ValueListProperty : 'customer_name',
-                },
-                {
-                    $Type : 'Common.ValueListParameterDisplayOnly',
-                    ValueListProperty : 'container_id',
-                },
-                {
-                    $Type : 'Common.ValueListParameterDisplayOnly',
-                    ValueListProperty : 'delivery_date',
-                },
-            ],
-            Label : 'Delivery Search',
-            PresentationVariantQualifier : 'vh_Claims_delivery_id',
-        },
-        Common.ValueListWithFixedValues : false,
-    )
-};
+
 
 annotate service.Deliveries with @(
     UI.PresentationVariant #vh_Claims_delivery_id : {

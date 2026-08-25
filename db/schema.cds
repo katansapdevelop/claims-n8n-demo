@@ -51,20 +51,37 @@ entity PartnerType : CodeList {
 }
 
 
+// Partners
+@Common.Label: 'Partners'
+entity Partners : managed, cuid {
+  partner_id            : String(10)   @Common.Label: 'Partner Id'; 
+  name                  : String(100)  @Common.Label: 'Partner Name';
+  street_address        : String(100)  @Common.Label: 'Street Address';
+  city                  : String(50)   @Common.Label: 'City';
+  state_province        : String(50)   @Common.Label: 'State/Province';
+  postal_code           : String(20)   @Common.Label: 'Postal Code';
+  country               : String(50)   @Common.Label: 'Country';
+  contact_person_name   : String(100)  @Common.Label: 'Contact Person Name';
+  contact_number        : String(20)   @Common.Label: 'Contact Number';
+  email_address         : String(254)  @Common.Label: 'Email Address'  @Communication.IsEmailAddress: true;
+  // Associations
+  type                  : Association to one PartnerType  @Common.Label: 'Partner Type'  @Common.Text: type.name;
+}
+
 
 // Deliveries
 @Common.Label: 'Delivery'
 entity Deliveries : managed, cuid {
-  delivery_id                    : String(10)            @Common.Label: 'Delivery Id'; 
-  customer_id                    : String(10)            @Common.Label: 'Customer Id'; 
+  delivery_id                    : String(10)            @Common.Label: 'Delivery Id';
   shipment_id                    : String(10)            @Common.Label: 'Shipment Id'; 
-  customer_name                  : String(200)           @Common.Label: 'Customer Name'; 
   container_id                   : String(50)            @Common.Label: 'Container Id'; 
   origin_country                 : String(2)             @Common.Label: 'Origin Country'; 
   sales_region                   : String(4)             @Common.Label: 'Sales Region'; 
   sales_region_desc              : String(40)            @Common.Label: 'Sales Region Description'; 
   delivery_date                  : Date                  @Common.Label: 'Delivery Date'; 
   discharge_country              : String(2)             @Common.Label: 'Discharge Country';
+  customer : Association to one Partners @Common.Label: 'Customer'  @Common.Text: customer.name;
+  shipping_partner : Association to one Partners @Common.Label: 'Shipping Partner'  @Common.Text: shipping_partner.name;
 }
 
 
@@ -83,7 +100,6 @@ entity Claims : managed, cuid {
   payment_deduction_doc_id : String(10)     @Common.Label: 'Payment Deduction Doc Id';
   brewer_id                : String(10)     @Common.Label: 'Brewer Id';
   brewer_name              : String(50)     @Common.Label: 'Brewer Name';
-  delivery_id              : String(40)     @Common.Label: 'Delivery Id';
   workflow_id              : UUID           @Common.Label: 'Workflow Id';
   arrival_date             : Date           @Common.Label: 'Actual Arrival Date';
   virtual days_from_arrival: Integer        @Common.Label: 'Days from Arrival';
@@ -106,8 +122,7 @@ entity Claims : managed, cuid {
   auditLog                 : Composition of many AuditLogs
                                on auditLog.claim = $self;
 
-  delivery                 : Association to one Deliveries
-                               on delivery.delivery_id = $self.delivery_id;
+  delivery                 : Association to one Deliveries                   @Common.Label: 'Delivery'  @Common.Text             : delivery.delivery_id;
 
   pallets                  : Composition of many ClaimPallets
                                on pallets.claim = $self;
