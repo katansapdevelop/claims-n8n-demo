@@ -123,40 +123,6 @@ const _validateQCClaimBeforeSave = async (req) => {
     LOG.warn("Primary Defect Code is mandatory for a Quality Claim");
     req.reject(400, "Primary Defect Code is mandatory for a Quality Claim");
   }
-
-  if (claim.rpin !== null && claim.rpin !== "" && claim.pallets.length > 0) {
-    LOG.info("Checking that the Pallets are under the RPIN in the claim");
-    // Read the delivery details from ERP
-    const erpClaims = await _getERPClaimsService();
-    const { DeliverySet } = erpClaims.entities;
-
-    const deliveries = await erpClaims.run(
-      SELECT.from(DeliverySet)
-        .columns((delivery) => {
-          delivery.DelToRpin((rpin) => {
-            rpin.pallet_id, rpin.delivery_id, rpin.rpin, rpin.id;
-          });
-        })
-        .where({
-          delivery_id: claim.delivery_id,
-        })
-    );
-
-    const validPalletsForRPIN = deliveries[0].DelToRpin.filter(
-      (palletRPIN) => palletRPIN.rpin === claim.rpin
-    );
-
-    // Check the impacted pallet is under the RPIN
-    for (let pallet of claim.pallets) {
-      const palletInRPIN = validPalletsForRPIN.find(
-        (palletRPIN) => palletRPIN.pallet_id === pallet.pallet_id
-      );
-      if (!palletInRPIN) {
-        LOG.warn("RPIN in claim and pallets do not match");
-        req.reject(400, "RPIN in claim and pallets do not match");
-      }
-    }
-  }
 };
 
 /**
@@ -260,15 +226,8 @@ updateClaimDetailsFromERP = async (claim, erpClaimsSrv) => {
   const deliveries = await erpClaimsSrv.run(
     SELECT.from(DeliverySet)
       .columns((delivery) => {
-        delivery.DelToRpin((rpin) => {
-          rpin.delivery_id,
-            rpin.pallet_id,
-            rpin.rpin,
-            rpin.id,
-            rpin.name,
-            rpin.packer,
-            rpin.packer_nm;
-        });
+        delivery.brewer_id,
+        delivery.brewer_name;
       })
       .where({
         delivery_id: claim.delivery_id,
@@ -276,20 +235,16 @@ updateClaimDetailsFromERP = async (claim, erpClaimsSrv) => {
   );
   LOG.info("Successfully read Delivery details from ERP");
 
-  // Update Grower Details from ERP
-  if (claim.type_id === claim_types.quality && claim.rpin !== null) {
-    // Filter RPINs by RPIN
-    const growers = deliveries[0].DelToRpin.filter(
-      (rpin) => rpin.rpin === claim.rpin
-    );
-
-    LOG.info("Updating Grower Details for Claim " + claim.ID);
+  // Update Brewer Details from ERP
+  if (claim.type_id === claim_types.quality ) {
+  
+    LOG.info("Updating Brewer Details for Claim " + claim.ID);
 
     let brewer_id = null;
     let brewer_name = null;
-    if (growers.length > 0) {
-      brewer_id = growers[0].id;
-      brewer_name = growers[0].name;
+    if (deliveries.length > 0) {
+      brewer_id = deliveries[0].brewer_id;
+      brewer_name = deliveries[0].brewer_name;
     }
 
     await UPDATE("ls.claims.Claims", { ID: claim.ID }).with({

@@ -462,10 +462,6 @@ annotate service.ClaimPallets with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : rpin,
-        },
-        {
-            $Type : 'UI.DataField',
             Value : size,
         },
         {

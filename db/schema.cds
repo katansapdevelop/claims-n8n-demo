@@ -175,7 +175,6 @@ entity AuditLogs : cuid, managed {
 entity ClaimPallets : managed, cuid {
   pallet_id    : String(20) @Common.Label: 'Pallet Id';
   batch_id     : String(20) @Common.Label: 'Batch Id';
-  rpin         : String(10) @Common.Label: 'RPIN';
   storage_type : String(50) @Common.Label: 'Storage Type';
   pack_date    : Date       @Common.Label: 'Pack Date';
   pack_type    : String(50) @Common.Label: 'Pack Type';
