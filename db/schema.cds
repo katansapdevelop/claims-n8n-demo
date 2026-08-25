@@ -45,6 +45,10 @@ entity PrimaryDefectCodes : CodeList {
   key id : String(10);
 }
 
+@Common.Label: 'Partner Type'
+entity PartnerType : CodeList {
+  key id : String(2);
+}
 
 
 
