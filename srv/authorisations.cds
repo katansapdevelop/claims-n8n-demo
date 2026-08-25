@@ -35,10 +35,6 @@ annotate ClaimAppService.ClaimType with @(restrict: [
     where: '$user.claim_type = id' }
 ]);
 
-annotate ClaimAppService.MarketRepresentative with @(restrict: [
-    { grant: '*', to: ['admin'] },
-    { grant: 'READ', to: ['finance','operator','reviewer'] }
-]);
 
 // Config App Service Auths
 annotate ConfigAppService.ConfigSettings with @(restrict: [

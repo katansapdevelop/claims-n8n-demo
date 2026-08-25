@@ -127,7 +127,6 @@ entity Claims : managed, cuid {
                                on defects.claim = $self;
           
   primary_defect_code      : Association to one PrimaryDefectCodes           @Common.Label: 'Primary Defect Code'  @Common.Text  : primary_defect_code.name;
-  market_representative    : Association to one MarketRep                    @Common.Label: 'Market Representative'  @Common.Text: market_representative.email;
 }
 
 
@@ -220,11 +219,3 @@ entity PrimaryToSecondaryDefectMap {
   key secondary_defect_code : Association to one SecondaryDefectCodes  @Common.Label: 'Secondary Defect Code'  @Common.Text: secondary_defect_code.name;
 }
 
-
-@Common.Label: 'Market Representatives'
-entity MarketRep : cuid, managed {
-  email     : String(254)  @Common.Label: 'Email'  @Communication.IsEmailAddress: true;
-  firstName : String(40)   @Common.Label: 'First Name';
-  lastName  : String(40)   @Common.Label: 'Last Name';
-  active    : Boolean      @Common.Label: 'Active';
-}

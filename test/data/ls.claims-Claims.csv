@@ -1,6 +1,6 @@
-ID,claim_id,type_id,date_of_claim,description,claim_value,delivery_id,claim_date_week_number,days_to_claim,status_id,credit_note_id,payment_deduction_doc_id,total_claim_value,claim_currency_code,primary_defect_code_id,market_representative_id,arrival_date
-3b241101-e2bb-4255-8caf-4136c566a979,2000000001,QC,2026-01-01,"Beer off-flavor and sour taste detected",100.00,123e4567-e89b-12d3-a456-426614174000,40,46,2,,,200.00,USD,00023,1b5c4af6-f7f6-4b4a-b8df-5baf2cfd76ec,2026-05-01
-3b241101-e2bb-4255-8caf-4136c566a980,2000000002,SH,2026-02-01,"Beer bottles cracked and leaking during transport",200.00,223e4567-e89b-12d3-a456-426614174000,44,14,1,,,400.00,USD,,5f4c1fe7-2e23-45a2-9bbc-dc094ce19243,2026-04-01
-3b241101-e2bb-4255-8caf-4136c566a981,2000000003,QC,2026-03-01,"Excessive sediment and haze in beer",300.00,323e4567-e89b-12d3-a456-426614174000,45,10,3,,,600.00,USD,00009,1b5c4af6-f7f6-4b4a-b8df-5baf2cfd76ec,2026-03-01
+ID,claim_id,type_id,date_of_claim,description,claim_value,delivery_id,claim_date_week_number,days_to_claim,status_id,credit_note_id,payment_deduction_doc_id,total_claim_value,claim_currency_code,primary_defect_code_id,arrival_date
+3b241101-e2bb-4255-8caf-4136c566a979,2000000001,QC,2026-01-01,"Beer off-flavor and sour taste detected",100.00,123e4567-e89b-12d3-a456-426614174000,40,46,2,,,200.00,USD,00023,2026-05-01
+3b241101-e2bb-4255-8caf-4136c566a980,2000000002,SH,2026-02-01,"Beer bottles cracked and leaking during transport",200.00,223e4567-e89b-12d3-a456-426614174000,44,14,1,,,400.00,USD,,2026-04-01
+3b241101-e2bb-4255-8caf-4136c566a981,2000000003,QC,2026-03-01,"Excessive sediment and haze in beer",300.00,323e4567-e89b-12d3-a456-426614174000,45,10,3,,,600.00,USD,00009,2026-03-01
 3b241101-e2bb-4255-8caf-4136c566a982,2000000004,SH,2026-04-01,"Cans exploded in transit",400.00,423e4567-e89b-12d3-a456-426614174000,44,15,7,,,800.00,USD,,,2026-02-01
 3b241101-e2bb-4255-8caf-4136c566a983,2000000005,PK,2026-05-01,"Damaged bottle labels and misaligned caps",500.00,523e4567-e89b-12d3-a456-426614174000,44,15,2,,,1500.00,USD,,,2026-01-01

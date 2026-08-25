@@ -76,28 +76,6 @@ _isDateInFuture = (date) => {
   return new Date(date) > tomorrow;
 };
 
-const validateRepBeforeSave = async (req) => {
-  const rep = req.data;
-
-  const dbRep = await SELECT.one
-    .from("ls.claims.MarketRep")
-    .where({ email: rep.email });
-  if (dbRep && dbRep.ID !== rep.ID) {
-    LOG.warn("Email address already exists for another representative");
-    req.reject(400, "Email address already exists for another representative");
-  }
-
-  if (
-    (rep.firstName === null || rep.firstName === "") &&
-    (rep.lastName === null || rep.lastName === "")
-  ) {
-    LOG.warn("A First Name or a Last Name is required for a Representative");
-    req.reject(
-      400,
-      "A First Name or a Last Name is required for a Representative"
-    );
-  }
-};
 
 /**
  * This method validates a QC (Quality Control) claim before it is saved.
@@ -754,7 +732,6 @@ module.exports = {
   calculateQualityClaimsValuesForQualityClaim:
     calculateQualityClaimsValuesForQualityClaim,
   validateBeforeSubmitForReview: validateBeforeSubmitForReview,
-  validateRepBeforeSave: validateRepBeforeSave,
   updateClaimDuetoTypeChange: updateClaimDuetoTypeChange,
   calculateDaysFromArrival:calculateDaysFromArrival
 };

@@ -542,12 +542,7 @@ annotate service.AuditLogs with @(
     ]
 );
 
-annotate service.AllMarketRepresentatives with {
-    fullName @(
-        Common.Text : 'Full Name',
-        Common.Text.@UI.TextArrangement : #TextOnly,
-        Common.ExternalID : fullName,
-)};
+
 
 annotate service.AuditLogs with {
     originalStatus @(

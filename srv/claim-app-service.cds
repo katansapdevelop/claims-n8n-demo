@@ -103,35 +103,5 @@ service ClaimAppService @(path: '/app/claim', ) {
     };
 
 
-    @odata.draft.enabled
-    entity MarketRepresentative          as projection on db.MarketRep;
-
-    @readonly
-    entity ActiveMarketRepresentatives   as
-        select
-            rep.ID,
-            rep.email,
-            concat(
-                concat(
-                    firstName, ' '
-                ), lastName
-            ) as fullName : String  @readonly  @Common: {Text: 'Full Name'}
-        from db.MarketRep as rep
-        where
-            active = true;
-
-    @readonly
-    @cds.redirection.target: 'MarketRepresentative'
-    entity AllMarketRepresentatives      as
-        select
-            rep.ID,
-            rep.email,
-            concat(
-                concat(
-                    firstName, ' '
-                ), lastName
-            ) as fullName : String  @readonly  @Common: {Text: 'Full Name'},
-            active
-        from db.MarketRep as rep;
-
+    
 }

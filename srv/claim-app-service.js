@@ -1,7 +1,7 @@
 import cds from "@sap/cds";
 const LOG = cds.log("ls.claims");
 import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.cjs";
-import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, validateBeforeSubmitForReview, validateRepBeforeSave, updateClaimDuetoTypeChange, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
+import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, validateBeforeSubmitForReview, updateClaimDuetoTypeChange, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
 
 
 
@@ -513,22 +513,6 @@ class ClaimAppService extends cds.ApplicationService {
     });
 
     
-
-    this.before("SAVE", "MarketRepresentative", async (req, next) => {
-      const repId = req.data.ID;
-      LOG.info("Before saving market rep: " + repId);
-      await validateRepBeforeSave(req);
-    });
-
-    this.before("DELETE", "MarketRepresentative", async (req, next) => {
-      const repId = req.data.ID;
-      LOG.info("Before deleting market rep: " + repId);
-      req.warn({
-        code: "WRN_DELETE",
-        message:
-          "Deleting a market representative that has been referenced in a claim could lead to data inconsistency (i.e. missing names)",
-      });
-    });
 
     this.on("error", Claims, (err, req) => {
       LOG.info("Custom Error Handling");
