@@ -5,8 +5,7 @@ service ClaimAppService @(path: '/app/claim', ) {
     @odata.draft.enabled
     entity Claims                        as
         projection on db.Claims {
-            *,
-            null as container_id : String   @readonly  @Common: {Label: 'Container Id'},
+            *
         }
         actions {
             @cds.odata.bindingparameter.name  : '_it'
@@ -87,18 +86,6 @@ service ClaimAppService @(path: '/app/claim', ) {
     @readonly
     entity ClaimsToPrimaryDefectSearch   as projection on db.DefectToClaimTypeMap;
 
-
-    annotate Claims with @(Common: {SideEffects #singleSourceProperty: {
-        SourceProperties: [
-            type_id,
-            delivery_id
-        ],
-        TargetProperties: [
-            'container_id'
-        ]
-    }, SemanticKey: ['claim_id']}) {
-
-    };
 
     annotate ClaimPallets with @(Common: {SideEffects #singleSourceProperty: {
         SourceProperties: [pallet_id],

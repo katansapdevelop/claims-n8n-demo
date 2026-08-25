@@ -118,16 +118,7 @@ class ClaimAppService extends cds.ApplicationService {
         });
       }
 
-      claims.map((claim) => {
-        const delivery = deliveries.find(
-          (d) => d.delivery_id === claim.delivery_id
-        );
-        if (delivery) {
-          claim.container_id = delivery.container_id
-            ? delivery.container_id
-            : null;
-        }
-      });
+      
 
       await calculateDaysFromArrival(claims);
     });
@@ -188,28 +179,6 @@ class ClaimAppService extends cds.ApplicationService {
         });
       }
 
-      claims.map((claim) => {
-      
-        // This is a fix to update the claim specific property for container_id
-        // to support auto update via a side effect as you can use a side effect to
-        // navigate to an association
-        LOG.info("Updating claim specific property for container_id");
-
-        const draftClaim = draftClaims.find((d) => d.ID === claim.ID);
-
-        if (draftClaim) {
-          const delivery = deliveries.find(
-            (d) => d.delivery_id === draftClaim.delivery_id
-          );
-          if (delivery) {
-            claim.container_id = delivery.container_id
-              ? delivery.container_id
-              : null;
-          }
-        } else {
-          claim.container_id = null;
-        }
-      });
       await calculateDaysFromArrival(claims);
     });
 

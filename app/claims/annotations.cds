@@ -122,25 +122,7 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : brewer_id,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : brewer_name,
-            },
-            {
-                $Type : 'UI.DataField',
                 Value : description,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : delivery.customer.partner_id,
-                Label : 'Customer Id',
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : delivery.customer.name,
-                Label : 'Customer Name',
             },
         ],
     },
@@ -165,19 +147,21 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : delivery.discharge_country,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : delivery.origin_country,
-            },
-            {
-                $Type : 'UI.DataField',
                 Value : delivery.sales_region_desc,
             },
             {
                 $Type : 'UI.DataField',
                 Value : delivery.shipment_id,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.brewer.country,
+                Label : 'Origin Country',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.customer.country,
+                Label : 'Discharge Country',
             },
         ],
     },
@@ -244,9 +228,15 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Total Value',
-            ID : 'TotalValue',
-            Target : '@UI.FieldGroup#TotalValue',
+            Label : 'Customer',
+            ID : 'Customer',
+            Target : '@UI.FieldGroup#Customer',
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Brewer',
+            ID : 'Brewer',
+            Target : '@UI.FieldGroup#Brewer',
         },
     ],
     UI.FieldGroup #Status : {
@@ -257,6 +247,11 @@ annotate service.Claims with @(
                 Value : status_id,
                 Criticality : status.criticality,
             },
+            {
+                $Type : 'UI.DataField',
+                Value : total_claim_value,
+                Label : 'Total Value',
+            },
         ],
     },
     UI.UpdateHidden : (status.id != 1 and status.id != 3 and status.id != 7),
@@ -264,11 +259,7 @@ annotate service.Claims with @(
     UI.FieldGroup #TotalValue : {
         $Type : 'UI.FieldGroupType',
         Data : [
-            {
-                $Type : 'UI.DataField',
-                Value : total_claim_value,
-                Label : 'Value',
-            },
+            
            
         ],
     },
@@ -278,6 +269,36 @@ annotate service.Claims with @(
             {
                 $Type : 'UI.DataField',
                 Value : primary_defect_code_id,
+            },
+        ],
+    },
+    UI.FieldGroup #Customer : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.customer.partner_id,
+                Label : 'Id',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.customer.name,
+                Label : 'Name',
+            },
+        ],
+    },
+    UI.FieldGroup #Brewer : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.brewer.partner_id,
+                Label : 'Id',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.brewer.name,
+                Label : 'Name',
             },
         ],
     },

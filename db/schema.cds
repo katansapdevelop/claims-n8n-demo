@@ -72,16 +72,14 @@ entity Partners : managed, cuid {
 // Deliveries
 @Common.Label: 'Delivery'
 entity Deliveries : managed, cuid {
-  delivery_id                    : String(10)            @Common.Label: 'Delivery Id';
-  shipment_id                    : String(10)            @Common.Label: 'Shipment Id'; 
-  container_id                   : String(50)            @Common.Label: 'Container Id'; 
-  origin_country                 : String(2)             @Common.Label: 'Origin Country'; 
-  sales_region                   : String(4)             @Common.Label: 'Sales Region'; 
-  sales_region_desc              : String(40)            @Common.Label: 'Sales Region Description'; 
-  delivery_date                  : Date                  @Common.Label: 'Delivery Date'; 
-  discharge_country              : String(2)             @Common.Label: 'Discharge Country';
-  customer : Association to one Partners @Common.Label: 'Customer'  @Common.Text: customer.name;
-  shipping_partner : Association to one Partners @Common.Label: 'Shipping Partner'  @Common.Text: shipping_partner.name;
+  delivery_id                    : String(10)                  @Common.Label: 'Delivery Id';
+  shipment_id                    : String(10)                  @Common.Label: 'Shipment Id'; 
+  sales_region                   : String(4)                   @Common.Label: 'Sales Region'; 
+  sales_region_desc              : String(40)                  @Common.Label: 'Sales Region Description'; 
+  delivery_date                  : Date                        @Common.Label: 'Delivery Date'; 
+  customer                       : Association to one Partners @Common.Label: 'Customer'  @Common.Text: customer.name;
+  shipping_partner               : Association to one Partners @Common.Label: 'Shipping Partner'  @Common.Text: shipping_partner.name;
+  brewer                         : Association to one Partners @Common.Label: 'Brewer'  @Common.Text: brewer.name;
 }
 
 
@@ -98,8 +96,6 @@ entity Claims : managed, cuid {
   days_to_claim            : Integer        @Common.Label: 'Days to Claim';
   credit_note_id           : String(10)     @Common.Label: 'Credit Note Id';
   payment_deduction_doc_id : String(10)     @Common.Label: 'Payment Deduction Doc Id';
-  brewer_id                : String(10)     @Common.Label: 'Brewer Id';
-  brewer_name              : String(50)     @Common.Label: 'Brewer Name';
   workflow_id              : UUID           @Common.Label: 'Workflow Id';
   arrival_date             : Date           @Common.Label: 'Actual Arrival Date';
   virtual days_from_arrival: Integer        @Common.Label: 'Days from Arrival';
