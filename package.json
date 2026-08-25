@@ -61,7 +61,6 @@
                         "attr": {
                             "claim_type": [
                                 "PK",
-                                "MK",
                                 "QC",
                                 "CP",
                                 "SH"
@@ -91,7 +90,6 @@
                         "attr": {
                             "claim_type": [
                                 "PK",
-                                "MK",
                                 "QC",
                                 "CP",
                                 "SH"

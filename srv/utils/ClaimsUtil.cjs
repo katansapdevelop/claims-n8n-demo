@@ -7,7 +7,6 @@ const claim_types = {
   quality: "QC",
   packaging: "PK",
   shipping: "SH",
-  market: "MK",
 };
 
 //TODO Replace this with the object based one below
@@ -668,92 +667,6 @@ updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
   return response;
 };
 
-const _mapQCtoMAClaim = async (qualityClaim) => {
-  LOG.info("Mapping Quality Claim to Market Assistance Claim");
-  let marketAssistClaim = qualityClaim;
-  marketAssistClaim.parentClaim_ID = qualityClaim.ID;
-  marketAssistClaim.ID = uuid();
-  marketAssistClaim.type_id = claim_types.market;
-  marketAssistClaim.RejectionReason_id = null;
-  marketAssistClaim.rpin = qualityClaim.rpin;
-  marketAssistClaim.brewer_id = qualityClaim.brewer_id;
-  marketAssistClaim.brewer_name = qualityClaim.brewer_name;
-  marketAssistClaim.primary_defect_code_id =
-    qualityClaim.primary_defect_code_id;
-  marketAssistClaim.credit_note_id = null;
-  marketAssistClaim.payment_deduction_doc_id = null;
-  marketAssistClaim.workflow_id = null;
-  marketAssistClaim.status_id = claim_statuses.NEW;
-  marketAssistClaim.claim_id = await _generateClaimId(
-    marketAssistClaim.delivery_id,
-    true
-  );
-
-  marketAssistClaim.costs = marketAssistClaim.costs.map((cost) => {
-    cost.claim_ID = marketAssistClaim.ID;
-    cost.ID = uuid();
-    return cost;
-  });
-
-  marketAssistClaim.defects = marketAssistClaim.defects.map((defect) => {
-    defect.claim_ID = marketAssistClaim.ID;
-    defect.ID = uuid();
-    return defect;
-  });
-
-  marketAssistClaim.attachments = marketAssistClaim.attachments.map(
-    (attachment) => {
-      attachment.claim_ID = marketAssistClaim.ID;
-      attachment.ID = uuid();
-      return attachment;
-    }
-  );
-
-  marketAssistClaim.pallets = marketAssistClaim.pallets.map(
-    (pallet) => {
-      pallet.claim_ID = marketAssistClaim.ID;
-      pallet.ID = uuid();
-      return pallet;
-    }
-  );
-
-
-
-  return marketAssistClaim;
-};
-
-const convertToMarketAssistance = async (claimId) => {
-  LOG.info("Converting claim " + claimId + " to Market Assistance");
-
-  LOG.info("Reading all data from the DB for claim " + claimId);
-  const qualityClaim = await SELECT.one
-    .from("ls.claims.Claims")
-    .columns((claim) => {
-      claim`.*`,
-        claim.costs((cost) => {
-          cost`.*`;
-        }),
-        claim.defects((defect) => {
-          defect`.*`;
-        }),
-        claim.pallets((pallet) => {
-          pallet`.*`;
-        }),
-        claim.attachments((attachment) => {
-          attachment`.*`;
-        });
-    })
-    .where({ ID: claimId });
-
-  LOG.info("Successfully read all data from the DB for claim " + claimId);
-
-  let marketAssistClaim = await _mapQCtoMAClaim(qualityClaim);
-
-  // Create a new Market Assistance Claim
-  await INSERT.into("ls.claims.Claims").entries([marketAssistClaim]);
-
-  return marketAssistClaim;
-};
 
 const _maxTceOnPallet = 56;
 
@@ -953,7 +866,6 @@ module.exports = {
   updateExternalClaimId: updateExternalClaimId,
   calculateQualityClaimsValuesForQualityClaim:
     calculateQualityClaimsValuesForQualityClaim,
-  convertToMarketAssistance: convertToMarketAssistance,
   validateBeforeSubmitForReview: validateBeforeSubmitForReview,
   validateRepBeforeSave: validateRepBeforeSave,
   updateClaimDuetoTypeChange: updateClaimDuetoTypeChange,

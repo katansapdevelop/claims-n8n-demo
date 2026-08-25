@@ -3,7 +3,7 @@ import { loadDestination } from "sap-cap-sdm-plugin/lib/util/index.js";
 const LOG = cds.log("ls.claims");
 import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.cjs";
 import claimsUtil from "./utils/ClaimsUtil.cjs";
-import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, convertToMarketAssistance, validateBeforeSubmitForReview, validateRepBeforeSave, updateClaimDuetoTypeChange, updateClaimDueToRPINChange, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
+import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, validateBeforeSubmitForReview, validateRepBeforeSave, updateClaimDuetoTypeChange, updateClaimDueToRPINChange, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
 
 
 
@@ -285,7 +285,7 @@ class ClaimAppService extends cds.ApplicationService {
       const claimId = req.params[0].ID;
       LOG.info("Validating Review Reject Action for claim " + claimId);
       const rejectionReason = req.data.reason;
-      const marketAssistanceConversion = req.data.convertToMarketAssistance;
+      
 
       switch (rejectionReason) {
         case "IE":
@@ -298,30 +298,7 @@ class ClaimAppService extends cds.ApplicationService {
           break;
       }
 
-      LOG.info(
-        "Convert to market assistance was found to be " +
-          marketAssistanceConversion
-      );
-      if (marketAssistanceConversion) {
-        LOG.info("Check claim type for conversion for claim " + claimId);
-        const claim = await SELECT.one
-          .from("ls.claims.Claims")
-          .columns((claim) => {
-            claim.ID,
-              claim.type((type) => {
-                type.id;
-              });
-          })
-          .where({ ID: claimId });
-        if (claim.type.id !== claim_types.quality) {
-          LOG.error(
-            "Cannot convert claim to market assistance for type" + claim.type.id
-          );
-          req.error(
-            "Only quality claims currently support conversion to market assistance claims"
-          );
-        }
-      }
+      
     });
 
     this.on("submitReviewReject", Claims, async (req) => {

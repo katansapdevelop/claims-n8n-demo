@@ -94,11 +94,7 @@ entity Claims : managed, cuid {
   RejectionReason          : Association to one RejectionReason              @Common.Label: 'Rejection Reason'  @Common.Text     : RejectionReason.name;
 
 
-  qualityClaim             : Composition of one QualityClaims
-                               on qualityClaim.claim = $self;
 
-  packagingClaim           : Composition of one PackagingClaims
-                               on packagingClaim.claim = $self;
 
   attachments              : Composition of many Attachments
                                on attachments.claim = $self;
@@ -114,8 +110,7 @@ entity Claims : managed, cuid {
 
   defects                  : Composition of many ClaimDefects
                                on defects.claim = $self;
-
-  parentClaim              : Association to one Claims                       @Common.Label: 'Parent Claim Id'  @Common.Text  : parentClaim.claim_id;             
+          
   primary_defect_code      : Association to one PrimaryDefectCodes           @Common.Label: 'Primary Defect Code'  @Common.Text  : primary_defect_code.name;
   market_representative    : Association to one MarketRep                    @Common.Label: 'Market Representative'  @Common.Text: market_representative.email;
 }
