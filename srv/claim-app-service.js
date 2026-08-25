@@ -1,8 +1,6 @@
 import cds from "@sap/cds";
-import { loadDestination } from "sap-cap-sdm-plugin/lib/util/index.js";
 const LOG = cds.log("ls.claims");
 import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.cjs";
-import claimsUtil from "./utils/ClaimsUtil.cjs";
 import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, validateBeforeSubmitForReview, validateRepBeforeSave, updateClaimDuetoTypeChange, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
 
 
