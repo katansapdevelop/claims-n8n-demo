@@ -30,15 +30,15 @@ service ClaimAppService @(path: '/app/claim', ) {
 
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
-            action submitSendToGrower();
+            action submitSendToBrewer();
 
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
-            action submitGrowerAccepted();
+            action submitBrewerAccepted();
 
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
-            action submitGrowerRejected();
+            action submitBrewerRejected();
 
             // TODO Rename this action to complete
             @cds.odata.bindingparameter.name  : '_it'

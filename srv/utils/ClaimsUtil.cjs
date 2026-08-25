@@ -456,43 +456,29 @@ _calculateQualityClaimValues = async (claim, claim_value) => {
 _generateClaimId = async (delivery_id, offsetForSelf) => {
   LOG.info("Generating claim ID for the claim");
 
-  LOG.info("Reading claims for the delivery ID: " + delivery_id);
-  const claimsByDelivery = await SELECT("ls.claims.Claims").where({
-    delivery_id: delivery_id,
-  });
-  LOG.info(
-    "Successfully found " +
-      claimsByDelivery.length +
-      " claims for the delivery ID: " +
-      delivery_id
-  );
-  let claimIndex = 0;
-  if (claimsByDelivery.length) {
-    claimIndex = claimsByDelivery.length;
-  }
-
-  if (offsetForSelf) {
-    // When copying claims the copied claim has not been commit to the DB, so is not picked
-    // up by the delivery search above.  This ensures the copied claim is attributed
-    // the correct claim ID
-    claimIndex++;
-  }
-  claimIndex = claimIndex.toString().padStart(3, "0");
-  const claimId = delivery_id.slice(-7) + claimIndex;
+  // Read the highest claim id
+  LOG.info("Reading the highest claims to generate claim id for delivery ID: " + delivery_id);
+  const latestClaim = await SELECT.one.from("ls.claims.Claims").orderBy('claim_id desc');
+  LOG.info( "Successfully found latest claim was " + latestClaim.claim_id);
+  
+  let claimId = latestClaim.claim_id;
+  claimId++;
+  claimId = claimId.toString();
   LOG.info("Successfully generated Claim Id " + claimId);
 
   return claimId;
 };
 
+
 updateExternalClaimId = async (ClaimHeader) => {
   LOG.info("Updating claim ID for the claim");
-  LOG.info("Found Delivery Id: " + ClaimHeader.delivery_id);
   const claimId = await _generateClaimId(ClaimHeader.delivery_id);
   LOG.info("Updating the claim id of the claim to: " + claimId);
   await UPDATE("ls.claims.Claims", { ID: ClaimHeader.ID }).with({
     claim_id: claimId,
   });
 };
+
 
 /**
  * Asynchronously updates the status of a claim.

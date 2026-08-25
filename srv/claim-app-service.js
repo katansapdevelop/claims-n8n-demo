@@ -99,6 +99,7 @@ class ClaimAppService extends cds.ApplicationService {
       
     });
 
+    
     this.after("READ", Claims, async (claims) => {
       LOG.info("Reading expanded claim data");
       await calculateQualityClaimsValuesForClaim(claims);
@@ -122,6 +123,7 @@ class ClaimAppService extends cds.ApplicationService {
 
       await calculateDaysFromArrival(claims);
     });
+    
 
     this.before("CREATE", "ClaimDefects.drafts", async (req) => {
       LOG.info("Validating Claim Defects Befor Create");

@@ -13,16 +13,16 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : brewer_name,
+            Value : delivery.brewer.name,
+            Label : 'Brewer Name',
         },
         {
             $Type : 'UI.DataField',
             Value : total_claim_value,
         },
-        
         {
             $Type : 'UI.DataField',
-            Value : delivery_id,
+            Value : delivery.delivery_id,
         },
         {
             $Type : 'UI.DataField',
@@ -87,7 +87,7 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : delivery.delivery_id,
+                Value : delivery_ID,
             },
             {
                 $Type : 'UI.DataField',
@@ -190,23 +190,23 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataFieldForAction',
-            Action : 'ClaimAppService.submitSendToGrower',
-            Label : 'Send To Grower',
+            Action : 'ClaimAppService.submitSendToBrewer',
+            Label : 'Send To Brewer',
             Determining : true,
             @UI.Hidden : ((status.id != 4) or $draft.HasActiveEntity = true)    ,
         },
         {
             $Type : 'UI.DataFieldForAction',
-            Action : 'ClaimAppService.submitGrowerAccepted',
-            Label : 'Grower Accepted',
+            Action : 'ClaimAppService.submitBrewerAccepted',
+            Label : 'Brewer Accepted',
             Determining : true,
             @UI.Hidden : ((status.id != 6 and type.id != 'qc') or $draft.HasActiveEntity = true)    ,
             Criticality : #Positive,
         },
         {
             $Type : 'UI.DataFieldForAction',
-            Action : 'ClaimAppService.submitGrowerRejected',
-            Label : 'Grower Rejected',
+            Action : 'ClaimAppService.submitBrewerRejected',
+            Label : 'Brewer Rejected',
             Determining : true,
             @UI.Hidden : ((status.id != 6 and type.id != 'qc') or $draft.HasActiveEntity = true)    ,
             Criticality : #Negative,
@@ -302,6 +302,10 @@ annotate service.Claims with @(
             },
         ],
     },
+    UI.SelectionFields : [
+        status_id,
+        total_claim_value,
+    ],
 );
 
 annotate service.Claims with {
@@ -666,5 +670,39 @@ annotate service.Claims with {
 
 annotate service.Claims with {
     description @UI.MultiLineText : true
+};
+
+annotate service.Claims with {
+    delivery @(
+        Common.ExternalID : delivery.delivery_id,
+        Common.ValueList : {
+            $Type : 'Common.ValueListType',
+            CollectionPath : 'Deliveries',
+            Parameters : [
+                {
+                    $Type : 'Common.ValueListParameterInOut',
+                    LocalDataProperty : delivery_ID,
+                    ValueListProperty : 'ID',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'customer/name',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'brewer/name',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'shipping_partner/name',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'shipment_id',
+                },
+            ],
+        },
+        Common.ValueListWithFixedValues : true,
+    )
 };
 
