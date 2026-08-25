@@ -128,6 +128,10 @@ annotate service.Claims with @(
                 $Type : 'UI.DataField',
                 Value : brewer_name,
             },
+            {
+                $Type : 'UI.DataField',
+                Value : description,
+            },
         ],
     },
     UI.HeaderInfo : {
@@ -674,4 +678,8 @@ annotate service.Claims with {
     claim_value @Measures.ISOCurrency : claim_currency_code
 };
 
+
+annotate service.Claims with {
+    description @UI.MultiLineText : true
+};
 

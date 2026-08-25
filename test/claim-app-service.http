@@ -163,7 +163,7 @@ Authorization: Basic @auth
 
 
 ### Test GET for Claims Quality Values
-GET {{host}}/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true)/qualityClaim?$select=IsActiveEntity,claim_ID,claim_value_per_tce_nzd,claim_value_per_tce,percentage_claimed HTTP/1.1
+GET {{host}}/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true)/qualityClaim?$select=IsActiveEntity,claim_ID,claim_value_per_tce,percentage_claimed HTTP/1.1
 Authorization: Basic {{auth}}
 content-type: application/json
 

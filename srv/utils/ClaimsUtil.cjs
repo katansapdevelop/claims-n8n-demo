@@ -387,19 +387,19 @@ calculateVirtualDeliveryDetails = async (Deliveries) => {
 };
 
 /**
- * Asynchronously calculates and updates the total claim value in USD/NZD for each claim in the provided array, including additional costs.
+ * Asynchronously calculates and updates the total claim value for each claim in the provided array, including additional costs.
  * If the claim values are not present in the claim headers, they are read from the database.
  *
  * @param {Array|Object} Claim_Header - An array of claims or a single claim. Each claim header should be an object with at least an 'ID' property.
- * @returns {void} - This function does not return anything. It modifies the claim in place, adding 'total_claim_value' and 'total_claim_value_nzd' properties to each one.
+ * @returns {void} - This function does not return anything. It modifies the claim in place, adding 'total_claim_value'  properties to each one.
  * @throws {Error} - Throws an error if the database operations fail.
  */
 updateClaimsTotals = async (Claim_Header) => {
   LOG.info(
-    "Calculating the total claim value in USD/NZD including additional costs"
+    "Calculating the total claim value including additional costs"
   );
 
-  // Calculate the total claim value in USD/NZD including additional costs
+  // Calculate the total claim value including additional costs
   let claimHeaders = Claim_Header;
   if (!Array.isArray(Claim_Header)) {
     claimHeaders = [Claim_Header];
@@ -465,8 +465,7 @@ calculateQualityClaimsValuesForClaim = async (claims) => {
     ) {
       await _calculateQualityClaimValues(
         claim.qualityClaim,
-        claim.total_claim_value,
-        claim.total_claim_value_nzd
+        claim.total_claim_value
       );
     }
   }
@@ -477,7 +476,7 @@ calculateQualityClaimsValuesForQualityClaim = async (qualityClaims) => {
   LOG.info("Reading costs for all claims being read");
   const claimIds = qualityClaims.map((claim) => claim.claim_ID);
   const claims = await SELECT.from("ls.claims.Claims")
-    .columns("ID", "total_claim_value", "total_claim_value_nzd")
+    .columns("ID", "total_claim_value")
     .where({ ID: { in: claimIds } });
   LOG.info("Successfully read all costs from the DB");
 
@@ -488,14 +487,13 @@ calculateQualityClaimsValuesForQualityClaim = async (qualityClaims) => {
     )[0];
     await _calculateQualityClaimValues(
       qualityClaim,
-      claim.total_claim_value,
-      claim.total_claim_value_nzd
+      claim.total_claim_value
     );
   }
   LOG.info("Updated all claim values for all claims");
 };
 
-_calculateQualityClaimValues = async (claim, claim_value, claim_value_nzd) => {
+_calculateQualityClaimValues = async (claim, claim_value) => {
   let number_of_tce_out_of_spec = claim.number_of_tce_out_of_spec;
   if (!number_of_tce_out_of_spec) {
     LOG.info("Reading quality claim from the DB for " + claim.claim_ID);
