@@ -1,36 +1,57 @@
 id,name,descr
-00009,Stem Puncture,Stem Puncture
-00010,Mechanical Damage / Cuts,Mechanical Damage / Cuts
-00011,Lenticil Blotch/Pits,Lenticil Blotch/Pits
-00014,Stem Split,Stem Split
-00017,Stem Pull,Stem Pull
-00018,Scald,Scald
-00019,Shrivel,Shrivel
-00022,Pest Damage ,Pest Damage 
-00023,Major Bruise,Major Bruise
-00025,Senescent Browning ,Senescent Browning 
-00029,Sunburn,Sunburn
-00030,Russet,Russet
-00035,Pink Lady Misshapen,Pink Lady Misshapen
-00037,Pest Interception,Pest Interception
-00038,Under Colour ,Under Colour 
-00040,Blush/Bleach,Blush/Bleach
-00044,Wrong Size,Wrong Size
-00049,Stem Mold,Stem Mold
-00050,Rots,Rots
-00052,Black Spot ,Black Spot 
-00053,Hail,Hail
-00055,Internal Browning Disorder,Internal Browning Disorder
-00057,Watercore,Watercore
-00058,Mouldy Core,Mouldy Core
-00059,FLESH FIRMNESS KG-F,FLESH FIRMNESS KG-F
-00063,Avg. Temperature (Celsius),Avg. Temperature (Celsius)
-00064,DP MIS-SIZED,DP MIS-SIZED
-00065,DP GROSS WEIGHT (in Kg),DP GROSS WEIGHT (in Kg)
-00066,DP NET-WEIGHT (in Kg),DP NET-WEIGHT (in Kg)
-00067,DP Fruit Label MISSING,DP Fruit Label MISSING
-00068,General Appearance,General Appearance
-00069,DP PACK PRESENT (NOK),DP PACK PRESENT (NOK)
-00070,DP ESP,DP ESP
-00071,General Pack & Label Issues,General Pack & Label Issues
-00073,Eating Texture,Eating Texture
+00101,Green Apple,Green apple aroma/flavor
+00102,Grass,Grass/Fresh-cut grass aroma
+00103,Latex Paint,Latex paint aroma
+00104,Spicy,Spicy aromatic sensation
+00105,Vinous,Vinous/Wine-like flavor
+00106,Warm/Ethanol,Warming sensation from ethanol
+00107,Mouth-puckering,Mouth-puckering sensation
+00108,Harshness,Lingering harsh sensation
+00109,Husk-like,Husk-like graininess
+00110,Butter,Butter flavor
+00111,Butterscotch,Butterscotch flavor
+00112,Popcorn,Movie popcorn aroma
+00113,Cooked Corn,Cooked corn flavor
+00114,Strawberry,Strawberry fruity flavor
+00115,Pear,Pear fruity flavor
+00116,Banana,Banana fruity flavor
+00117,Apple,Apple fruity flavor
+00118,Grape,Grape fruity flavor
+00119,Citrus,Citrus fruity flavor
+00120,Green Leaves,Green leaves aroma
+00121,Skunky,Skunky aroma
+00122,Catty,Catty flavor
+00123,Chloroseptic,Chloroseptic/Medicine flavor
+00124,Medicine Cabinet,Medicine cabinet aroma
+00125,Iron,Iron/Metallic flavor
+00126,Copper,Copper/Metallic flavor
+00127,Coins,Coins/Metallic flavor
+00128,Blood,Blood/Metallic flavor
+00129,Stale,Stale flavor/aroma
+00130,Moldy,Moldy flavor/aroma
+00131,Cellar,Cellar-like aroma
+00132,Papery,Papery flavor
+00133,Cardboard,Cardboard flavor
+00134,Band-aid,Band-aid flavor
+00135,Electrical Tape,Electrical tape aroma
+00136,Styrene,Styrene plastic aroma
+00137,Hot/Burning,Hot burning sensation on palate
+00138,Lactic Acid,Lactic acid sourness
+00139,Citric Acid,Citric acid sourness
+00140,Sharp Sourness,Sharp clean sourness
+00141,Smoke,Smoke aroma
+00142,Charcoal,Charcoal flavor
+00143,Burnt,Burnt flavor
+00144,Clove,Clove spice flavor
+00145,Pepper,Pepper spice flavor
+00146,Vanilla,Vanilla spice flavor
+00147,Rotten Eggs,Rotten eggs aroma
+00148,Burning Matches,Burning matches aroma
+00149,Cooked Vegetables,Cooked vegetable flavor
+00150,Canned Vegetables,Canned vegetable flavor
+00151,Rotten Vegetables,Rotten vegetable flavor
+00152,Acetic Acid,Acetic acid/Vinegar flavor
+00153,Vinegar,Vinegar-like sourness
+00154,Bready,Bready flavor
+00155,Sulfury,Sulfury/Yeasty aroma
+00156,Yeast-like,Yeast-like flavor

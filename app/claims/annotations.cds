@@ -9,7 +9,16 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataField',
+            Value : delivery.delivery_id,
+        },
+        {
+            $Type : 'UI.DataField',
             Value : type_id,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : delivery.customer.name,
+            Label : 'Customer Name',
         },
         {
             $Type : 'UI.DataField',
@@ -22,16 +31,16 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : delivery.delivery_id,
+            Value : status.descr,
+            Label : 'Status',
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : primary_defect_code_id,
         },
         {
             $Type : 'UI.DataField',
             Value : payment_deduction_doc_id,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : status.descr,
-            Label : 'Status',
         },
     ],
     UI.Facets : [
@@ -238,6 +247,12 @@ annotate service.Claims with @(
             ID : 'Brewer',
             Target : '@UI.FieldGroup#Brewer',
         },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Shipping Partner',
+            ID : 'ShippingPartner',
+            Target : '@UI.FieldGroup#ShippingPartner',
+        },
     ],
     UI.FieldGroup #Status : {
         $Type : 'UI.FieldGroupType',
@@ -306,6 +321,21 @@ annotate service.Claims with @(
         status_id,
         total_claim_value,
     ],
+    UI.FieldGroup #ShippingPartner : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.shipping_partner.partner_id,
+                Label : 'Id',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.shipping_partner.name,
+                Label : 'Name',
+            },
+        ],
+    },
 );
 
 annotate service.Claims with {
@@ -699,5 +729,9 @@ annotate service.Claims with {
         },
         Common.ValueListWithFixedValues : true,
     )
+};
+
+annotate service.Partners with {
+    ID @Common.ExternalID : partner_id
 };
 
