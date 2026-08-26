@@ -1,7 +1,7 @@
 import cds from "@sap/cds";
 const LOG = cds.log("ls.claims");
 import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.cjs";
-import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, validateBeforeSubmitForReview, updateClaimDuetoTypeChange, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
+import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, validateBeforeSubmitForReview, updateClaimDuetoTypeChange, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
 
 
 

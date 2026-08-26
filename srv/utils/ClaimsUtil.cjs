@@ -173,68 +173,6 @@ const validateClaimBeforeSave = async (req) => {
   await _validateQCClaimBeforeSave(req);
 };
 
-updateClaimDetailsFromERP = async (claim, erpClaimsSrv) => {
-  if (!claim.delivery_id) {
-    LOG.warn(
-      "No delivery id found in claim " + claim.ID + " to update the claim"
-    );
-    return;
-  }
-
-  if (
-    !(
-      claim.type_id === claim_types.quality ||
-      claim.type_id === claim_types.packaging
-    )
-  ) {
-    LOG.info(
-      "Claim type " +
-        claim.type_id +
-        " for claim id " +
-        claim.ID +
-        " requires no ERP updates"
-    );
-    return;
-  }
-
-  const { DeliverySet } = erpClaimsSrv.entities;
-  LOG.info(
-    "Reading delivery details from ERP for delivery id " + claim.delivery_id
-  );
-  const deliveries = await erpClaimsSrv.run(
-    SELECT.from(DeliverySet)
-      .columns((delivery) => {
-        delivery.brewer_id,
-        delivery.brewer_name;
-      })
-      .where({
-        delivery_id: claim.delivery_id,
-      })
-  );
-  LOG.info("Successfully read Delivery details from ERP");
-
-  // Update Brewer Details from ERP
-  if (claim.type_id === claim_types.quality ) {
-  
-    LOG.info("Updating Brewer Details for Claim " + claim.ID);
-
-    let brewer_id = null;
-    let brewer_name = null;
-    if (deliveries.length > 0) {
-      brewer_id = deliveries[0].brewer_id;
-      brewer_name = deliveries[0].brewer_name;
-    }
-
-    await UPDATE("ls.claims.Claims", { ID: claim.ID }).with({
-      brewer_id: brewer_id,
-      brewer_name: brewer_name,
-    });
-    LOG.info("Successfully updated claim details");
-  }
-
-  
-};
-
 /**
  * Calculates the virtual delivery details for a given set of deliveries.
  *
@@ -726,7 +664,6 @@ module.exports = {
   claim_statuses: claim_statuses,
   claimActions: claimActions,
   calculateClaimValuePerTce: calculateClaimValuePerTce,
-  updateClaimDetailsFromERP: updateClaimDetailsFromERP,
   validateClaimBeforeSave: validateClaimBeforeSave,
   updateExternalClaimId: updateExternalClaimId,
   calculateQualityClaimsValuesForQualityClaim:
