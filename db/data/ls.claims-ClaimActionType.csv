@@ -5,6 +5,6 @@ id,name,descr,Icon
 3,Reject Review, Reject Review,sap-icon://decline
 4,Request More Info,Request More Information,sap-icon://travel-request
 5,Send To Brewer,Send To Brewer,sap-icon://paper-plane
-6,Brewer Accepted,Brewer Accepted,sap-icon://accept
-7,Brewer Rejected,Brewer Rejected,sap-icon://decline
+6,Brewer Accepted,Brewer Accepted,sap-icon://employee-approvals
+7,Brewer Rejected,Brewer Rejected,sap-icon://employee-rejections
 8,Complete,Complete,sap-icon://complete
