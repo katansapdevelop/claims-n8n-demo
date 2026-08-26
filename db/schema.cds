@@ -22,6 +22,7 @@ entity ClaimStatus : CodeList {
 @Common.Label: 'Claim Action Type'
 entity ClaimActionType : CodeList {
   key id : String(2);
+  Icon     : String @(UI: {IsImageURL: true});
 }
 
 @Common.Label: 'Cost Type'
