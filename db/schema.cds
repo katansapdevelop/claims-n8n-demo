@@ -100,7 +100,7 @@ entity Claims : managed, cuid {
   virtual days_from_arrival: Integer        @Common.Label: 'Days from Arrival';
   agent_approval_outcome   : Decimal(3,0)   @Common.Label: 'Agent Assessment Outcome';
   agent_approval_report    : String         @Common.Label: 'Agent Approval Report';  
-  // Associations
+  // Associations & Compositions
   comments                 : Composition of many Comments
                                on comments.claim = $self;
   costs                    : Composition of many Costs
@@ -109,9 +109,6 @@ entity Claims : managed, cuid {
   status                   : Association to one ClaimStatus                  @Common.Label: 'Status'  @Common.Text               : status.name;
   type                     : Association to one ClaimType                    @Common.Label: 'Claim Type'  @Common.Text           : type.name;
   RejectionReason          : Association to one RejectionReason              @Common.Label: 'Rejection Reason'  @Common.Text     : RejectionReason.name;
-
-
-
 
   attachments              : Composition of many Attachments
                                on attachments.claim = $self;
