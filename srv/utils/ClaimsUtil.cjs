@@ -441,21 +441,6 @@ const _claim_status_previous = {
   8: [7], // Complete
 };
 
-/**
- * Calculates the claim value per TCE (Total Cartons Effected).
- *
- * @param {number} totalClaimValue - The total value of the claim.
- * @param {number} totalCartonsEffected - The total number of effected cartons.
- * @returns {Promise<number>} The calculated claim value per TCE.
- */
-calculateClaimValuePerTce = (totalClaimValue, totalCartonsEffected) => {
-  return Number(
-    (
-      Number(totalClaimValue) / Number(Number(totalCartonsEffected)).toFixed(2)
-    ).toFixed(2)
-  );
-};
-
 validateBeforeSubmitForReview = async (req) => {
   let claimID = req.params[0].ID;
   LOG.info("Reading claim details for claim id: " + claimID);
@@ -469,8 +454,6 @@ validateBeforeSubmitForReview = async (req) => {
   LOG.info("Read claim " + JSON.stringify(claim));
 
 };
-
-
 
 
 const calculateDaysFromArrival = async (claims) =>{
@@ -494,13 +477,11 @@ const calculateDaysFromArrival = async (claims) =>{
 
 module.exports = {
   updateClaimsTotals: updateClaimsTotals,
-
   calculateVirtualDeliveryDetails: calculateVirtualDeliveryDetails,
   updateClaimStatus: updateClaimStatus,
   claim_types: claim_types,
   claim_statuses: claim_statuses,
   claimActions: claimActions,
-  calculateClaimValuePerTce: calculateClaimValuePerTce,
   validateClaimBeforeSave: validateClaimBeforeSave,
   updateExternalClaimId: updateExternalClaimId,
   validateBeforeSubmitForReview: validateBeforeSubmitForReview,
