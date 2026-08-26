@@ -147,8 +147,9 @@ entity Costs : cuid, managed {
 @Common.Label: 'Attachments'
 entity Attachments : cuid, managed {
   name            : String(100)  @Common.Label : 'File Name';
-  virtual content : LargeBinary  @Core.Computed: false  @Core.MediaType: contentType  @Core.ContentDisposition.Filename: name ;
-  contentType     : String(20)   @Core.IsMediaType;
+  virtual content : LargeBinary  @Core.Computed: false  @Core.MediaType: contentType  @Core.ContentDisposition.Filename: name;
+  contentType     : String(20)   @Common.Label : 'Content Type' @Core.IsMediaType ;
+  contentLength   : Integer      @Common.Label : 'Content Length';
   objectId        : String(50)   @Common.Label : 'DMS Object Id';
   // Associations
   claim           : Association to one Claims;

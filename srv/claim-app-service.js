@@ -346,22 +346,6 @@ class ClaimAppService extends cds.ApplicationService {
       req.notify(message);
     });
 
-    // Handler for all actions in draft
-    this.before("requestInfo", "Claims.drafts", async (req) => {
-      LOG.error("Method requestInfo not allowed for records in draft");
-      req.error("You cannot perform this action on a draft record");
-    });
-
-    this.on("submitForReview", "Claims.drafts", async (req) => {
-      LOG.error("Method submitForReview not allowed for a record in draft");
-      req.error("You cannot perform this action on a draft record");
-    });
-
-    this.on("submitForApproval", "Claims.drafts", async (req) => {
-      LOG.error("Method submitForApproval not allowed for a record in draft");
-      req.error("You cannot perform this action on a draft record");
-    });
-
     this.before("UPDATE", "Attachments.drafts", async (req) => {
       LOG.info("Before Attachment Record Created");
       validateAttachments(req);
@@ -379,6 +363,8 @@ class ClaimAppService extends cds.ApplicationService {
 
         
         const filename = attachments.content.header('content-disposition').split("=")[1].replace(/"/g, '');
+        const contentType = attachments.content.header('content-type');
+        const contentLength = attachments.content.header('content-length');
 
         const id = attachments.content.url.match(/attachments\(ID=([0-9a-fA-F-]{36})/)[1];
 
@@ -395,7 +381,7 @@ class ClaimAppService extends cds.ApplicationService {
         );
         await cds.run(
           UPDATE(Attachments.drafts)
-            .set({ objectId: documentObjectId, name: filename })
+            .set({ objectId: documentObjectId, name: filename, contentType: contentType, contentLength: contentLength })
             .where({ ID: id })
         );
       } catch (error) {
@@ -471,18 +457,17 @@ class ClaimAppService extends cds.ApplicationService {
     });
 
     
-    /*
+    
     this.on("error", Claims, (err, req) => {
       LOG.info("Custom Error Handling");
       if (err.code === 403) {
         err.message = "You are not authorized to perform this action";
       }
     });
-    */
+    
 
     return super.init();
   }
 }
 
-//module.exports = ClaimAppService;
 export default ClaimAppService;

@@ -354,7 +354,16 @@ annotate service.Attachments with @(
         {
             $Type : 'UI.DataField',
             Value : claim.attachments.content,
-            Label : 'Attachment',
+            Label : 'File',
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : contentType,
+            Label : 'Content Type',
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : contentLength,
         },
         {
             $Type : 'UI.DataField',
@@ -764,5 +773,13 @@ annotate service.ClaimsToSecondaryDefectSearch with {
 
 annotate service.ClaimsToSecondaryDefectSearch with {
     secondary_defect_code @Common.Text : secondary_defect_name
+};
+
+annotate service.Attachments with {
+    contentType @Common.FieldControl : #ReadOnly
+};
+
+annotate service.Attachments with {
+    contentLength @Common.FieldControl : #ReadOnly
 };
 
