@@ -57,8 +57,6 @@ class ClaimAppService extends cds.ApplicationService {
       }
     });
 
-
-
     this.after("UPDATE", "Claims", async (claims) => {
 
 

@@ -97,6 +97,7 @@ entity Claims : managed, cuid {
   workflow_id              : UUID           @Common.Label: 'Workflow Id';
   arrival_date             : Date           @Common.Label: 'Actual Arrival Date';
   virtual days_from_arrival: Integer        @Common.Label: 'Days from Arrival';
+  approval_acceptance_rate : Decimal(3,0)   @Common.Label: 'Approval Acceptance Rate';
   // Associations
   comments                 : Composition of many Comments
                                on comments.claim = $self;

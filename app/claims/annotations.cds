@@ -243,6 +243,12 @@ annotate service.Claims with @(
             ID : 'ShippingPartner',
             Target : '@UI.FieldGroup#ShippingPartner',
         },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID : 'approval_acceptance_rate',
+            Target : '@UI.DataPoint#approval_acceptance_rate',
+            @UI.Hidden: (approval_acceptance_rate = 0),
+        },
     ],
     UI.FieldGroup #Status : {
         $Type : 'UI.FieldGroupType',
@@ -330,6 +336,13 @@ annotate service.Claims with @(
                 Label : 'Name',
             },
         ],
+    },
+    UI.DataPoint #approval_acceptance_rate : {
+        $Type : 'UI.DataPointType',
+        Value : approval_acceptance_rate,
+        TargetValue  : 100.0,
+        Title : 'Approval Acceptance',
+        Visualization : #Progress,
     },
 );
 
