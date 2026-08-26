@@ -150,10 +150,6 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : delivery.sales_region_desc,
-            },
-            {
-                $Type : 'UI.DataField',
                 Value : delivery.shipment_id,
             },
             {

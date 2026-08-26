@@ -74,8 +74,6 @@ entity Partners : managed, cuid {
 entity Deliveries : managed, cuid {
   delivery_id                    : String(10)                  @Common.Label: 'Delivery Id';
   shipment_id                    : String(10)                  @Common.Label: 'Shipment Id'; 
-  sales_region                   : String(4)                   @Common.Label: 'Sales Region'; 
-  sales_region_desc              : String(40)                  @Common.Label: 'Sales Region Description'; 
   delivery_date                  : Date                        @Common.Label: 'Delivery Date'; 
   customer                       : Association to one Partners @Common.Label: 'Customer'  @Common.Text: customer.name;
   shipping_partner               : Association to one Partners @Common.Label: 'Shipping Partner'  @Common.Text: shipping_partner.name;
