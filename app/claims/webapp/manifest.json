@@ -149,11 +149,6 @@
                     "type": "ResponsiveTable"
                   }
                 },
-                "defects/@com.sap.vocabularies.UI.v1.LineItem#Defects": {
-                  "tableSettings": {
-                    "type": "ResponsiveTable"
-                  }
-                },
                 "auditLog/@com.sap.vocabularies.UI.v1.LineItem#AuditLog": {
                   "tableSettings": {
                     "type": "ResponsiveTable"

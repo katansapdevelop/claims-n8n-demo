@@ -64,21 +64,15 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Secondary Defects',
-            ID : 'Defects',
-            Target : 'defects/@UI.LineItem#Defects',
+            Label : 'Additional Costs',
+            ID : 'AdditionalCosts',
+            Target : 'costs/@UI.LineItem#AdditionalCosts',
         },
         {
             $Type : 'UI.ReferenceFacet',
             Label : 'Evidence',
             ID : 'Attachment',
             Target : 'attachments/@UI.LineItem#Attachment',
-        },
-        {
-            $Type : 'UI.ReferenceFacet',
-            Label : 'Additional Costs',
-            ID : 'AdditionalCosts',
-            Target : 'costs/@UI.LineItem#AdditionalCosts',
         },
         {
             $Type : 'UI.ReferenceFacet',
@@ -284,6 +278,11 @@ annotate service.Claims with @(
             {
                 $Type : 'UI.DataField',
                 Value : primary_defect_code_id,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : defects.secondary_defect_code_id,
+                Label : 'Secondary Defect Codes',
             },
         ],
     },
@@ -528,17 +527,29 @@ annotate service.ClaimDefects with {
     secondary_defect_code @(
         Common.ValueList : {
             $Type : 'Common.ValueListType',
-            CollectionPath : 'SecondaryDefectCodes',
+            CollectionPath : 'ClaimsToSecondaryDefectSearch',
             Parameters : [
                 {
                     $Type : 'Common.ValueListParameterInOut',
                     LocalDataProperty : secondary_defect_code_id,
-                    ValueListProperty : 'id',
+                    ValueListProperty : 'secondary_defect_code_id',
+                },
+                {
+                    $Type : 'Common.ValueListParameterIn',
+                    ValueListProperty : 'primary_defect_code_id',
+                    LocalDataProperty : claim.primary_defect_code_id,
+                },
+                {
+                    $Type : 'Common.ValueListParameterIn',
+                    ValueListProperty : 'claim_type_id',
+                    LocalDataProperty : claim.type_id,
                 },
             ],
             Label : 'Secondary Defect Code',
         },
         Common.ValueListWithFixedValues : true,
+        Common.Text : secondary_defect_code.name,
+        Common.Text.@UI.TextArrangement : #TextOnly,
 )};
 
 annotate service.SecondaryDefectCodes with {
@@ -733,5 +744,17 @@ annotate service.Claims with {
 
 annotate service.Partners with {
     ID @Common.ExternalID : partner_id
+};
+
+annotate service.ClaimDefects with {
+    ID @Common.ExternalID : secondary_defect_code.name
+};
+
+annotate service.ClaimsToSecondaryDefectSearch with {
+    claim_type @Common.Text : secondary_defect_name
+};
+
+annotate service.ClaimsToSecondaryDefectSearch with {
+    secondary_defect_code @Common.Text : secondary_defect_name
 };
 
