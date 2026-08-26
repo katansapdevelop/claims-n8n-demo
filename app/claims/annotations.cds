@@ -78,6 +78,13 @@ annotate service.Claims with @(
             ID : 'Attachment',
             Target : 'attachments/@UI.LineItem#Attachment',
         },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Agent Assessment',
+            ID : 'AgentAssessment',
+            Target : '@UI.FieldGroup#AgentAssessment',
+            @UI.Hidden: (agent_approval_outcome = 0),
+        },
     ],
     UI.FieldGroup #General : {
         $Type : 'UI.FieldGroupType',
@@ -342,6 +349,15 @@ annotate service.Claims with @(
         Title : 'Approval',
         Visualization : #Progress,
         Description : '',
+    },
+    UI.FieldGroup #AgentAssessment : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : agent_approval_report,
+            },
+        ],
     },
 );
 
@@ -792,5 +808,9 @@ annotate service.Attachments with {
         Common.FieldControl : #ReadOnly,
         Measures.Unit : 'KB',
     )
+};
+
+annotate service.Claims with {
+    agent_approval_report @UI.MultiLineText : true
 };
 
