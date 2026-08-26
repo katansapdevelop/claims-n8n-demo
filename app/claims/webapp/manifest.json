@@ -149,11 +149,6 @@
                     "type": "ResponsiveTable"
                   }
                 },
-                "auditLog/@com.sap.vocabularies.UI.v1.LineItem#AuditLog": {
-                  "tableSettings": {
-                    "type": "ResponsiveTable"
-                  }
-                },
                 "costs/@com.sap.vocabularies.UI.v1.LineItem#AdditionalCosts": {
                   "tableSettings": {
                     "type": "ResponsiveTable"
@@ -172,6 +167,18 @@
                         "placement": "After",
                         "anchor": "DataFieldForAction::ClaimAppService.submitReviewApprove"
                       }
+                    }
+                  }
+                },
+                "body": {
+                  "sections": {
+                    "AuditLogTimeLine": {
+                      "template": "com.logicalstarconsulting.claims.ext.fragment.AuditLogTimeLine",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "Attachment"
+                      },
+                      "title": "Audit Log"
                     }
                   }
                 }

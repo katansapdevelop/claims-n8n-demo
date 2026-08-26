@@ -74,12 +74,6 @@ annotate service.Claims with @(
             ID : 'Attachment',
             Target : 'attachments/@UI.LineItem#Attachment',
         },
-        {
-            $Type : 'UI.ReferenceFacet',
-            Label : 'Audit Log',
-            ID : 'AuditLog',
-            Target : 'auditLog/@UI.LineItem#AuditLog',
-        },
     ],
     UI.FieldGroup #General : {
         $Type : 'UI.FieldGroupType',
