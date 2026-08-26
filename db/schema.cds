@@ -92,7 +92,6 @@ entity Claims : managed, cuid {
   claim_value              : Decimal(15, 2) @Common.Label: 'Claim Value';
   claim_currency           : Currency       @Common.Label: 'Claim Currency'  @Common.IsCurrency;
   claim_date_week_number   : Integer        @Common.Label: 'Claim Date Week Number';
-  days_to_claim            : Integer        @Common.Label: 'Days to Claim';
   credit_note_id           : String(10)     @Common.Label: 'Credit Note Id';
   payment_deduction_doc_id : String(10)     @Common.Label: 'Payment Deduction Doc Id';
   workflow_id              : UUID           @Common.Label: 'Workflow Id';

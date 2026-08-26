@@ -126,10 +126,6 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : days_to_claim,
-            },
-            {
-                $Type : 'UI.DataField',
                 Value : description,
             },
         ],
