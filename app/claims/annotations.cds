@@ -245,9 +245,9 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            ID : 'approval_acceptance_rate',
-            Target : '@UI.DataPoint#approval_acceptance_rate',
-            @UI.Hidden: (approval_acceptance_rate = 0),
+            ID : 'agent_approval_outcome',
+            Target : '@UI.DataPoint#agent_approval_outcome',
+            @UI.Hidden: (agent_approval_outcome = 0),
         },
     ],
     UI.FieldGroup #Status : {
@@ -337,12 +337,13 @@ annotate service.Claims with @(
             },
         ],
     },
-    UI.DataPoint #approval_acceptance_rate : {
+    UI.DataPoint #agent_approval_outcome : {
         $Type : 'UI.DataPointType',
-        Value : approval_acceptance_rate,
+        Value : agent_approval_outcome,
         TargetValue  : 100.0,
-        Title : 'Approval Acceptance',
+        Title : 'Approval',
         Visualization : #Progress,
+        Description : '',
     },
 );
 

@@ -1,4 +1,4 @@
-ID,claim_id,type_id,date_of_claim,description,claim_value,delivery_id,claim_date_week_number,days_to_claim,status_id,credit_note_id,payment_deduction_doc_id,total_claim_value,claim_currency_code,primary_defect_code_id,arrival_date,approval_acceptance_rate
+ID,claim_id,type_id,date_of_claim,description,claim_value,delivery_id,claim_date_week_number,days_to_claim,status_id,credit_note_id,payment_deduction_doc_id,total_claim_value,claim_currency_code,primary_defect_code_id,arrival_date,agent_approval_outcome
 3b241101-e2bb-4255-8caf-4136c566a979,2000000001,QC,2026-01-01,"Beer off-flavor and sour taste detected",100.00,123e4567-e89b-12d3-a456-426614174000,40,46,2,,,200.00,USD,00002,2026-05-01,90
 3b241101-e2bb-4255-8caf-4136c566a980,2000000002,SH,2026-02-01,"Beer bottles cracked and leaking during transport",200.00,223e4567-e89b-12d3-a456-426614174000,44,14,1,,,400.00,USD,88888,2026-04-01,85
 3b241101-e2bb-4255-8caf-4136c566a981,2000000003,QC,2026-03-01,"Excessive sediment and haze in beer",300.00,323e4567-e89b-12d3-a456-426614174000,45,10,3,,,600.00,USD,00001,2026-03-01,95
