@@ -40,7 +40,6 @@ service ClaimAppService @(path: '/app/claim', ) {
             @Common.SideEffects.TargetEntities: [_it]
             action submitBrewerRejected();
 
-            // TODO Rename this action to complete
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
             action submitFinanceComplete();
