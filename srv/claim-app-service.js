@@ -264,42 +264,42 @@ class ClaimAppService extends cds.ApplicationService {
       req.notify(message);
     });
 
-    this.on("submitSendToGrower", Claims, async (req) => {
+    this.on("submitSendToBrewer", Claims, async (req) => {
       const response = await updateClaimStatus(
         req.params[0].ID,
-        claim_statuses.SENT_TO_GROWER,
-        "Sent to Grower",
-        claimActions.SEND_GROWER
+        claim_statuses.SENT_TO_BREWER,
+        "Sent to Brewer",
+        claimActions.SEND_BREWER
       );
       const message = response.success
-        ? `The claim has been sent to the grower for review`
+        ? `The claim has been sent to the brewer for review`
         : response.message;
       req.notify(message);
     });
 
-    this.on("submitGrowerAccepted", Claims, async (req) => {
+    this.on("submitBrewerAccepted", Claims, async (req) => {
       const response = await updateClaimStatus(
         req.params[0].ID,
         claim_statuses.WITH_FINANCE,
         "With Finance",
-        claimActions.GROWER_ACCEPT
+        claimActions.BREWER_ACCEPT
       );
       const message = response.success
-        ? `The claim has been approved by the grower & is with finance to complete`
+        ? `The claim has been approved by the brewer & is with finance to complete`
         : response.message;
       req.notify(message);
     });
 
-    this.on("submitGrowerRejected", Claims, async (req) => {
+    this.on("submitBrewerRejected", Claims, async (req) => {
       const response = await updateClaimStatus(
         req.params[0].ID,
         claim_statuses.PENDING_REVIEW,
-        "Grower Rejected",
-        claimActions.GROWER_REJECT
+        "Brewer Rejected",
+        claimActions.BREWER_REJECT
       );
 
       const message = response.success
-        ? `The claim has been rejected by the grower`
+        ? `The claim has been rejected by the brewer`
         : response.message;
       req.notify(message);
     });

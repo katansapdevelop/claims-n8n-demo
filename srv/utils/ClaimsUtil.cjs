@@ -14,7 +14,7 @@ const claim_statuses = {
   INFO_REQ: 3,
   REVIEW_APPROVED: 4,
   REVIEW_REJECTED: 5,
-  SENT_TO_GROWER: 6,
+  SENT_TO_BREWER: 6,
   WITH_FINANCE: 7,
   COMPLETE: 8,
 };
@@ -25,9 +25,9 @@ const claimActions = {
   APPROVE_REVIEW: 2,
   REJECT_REVIEW: 3,
   REQUEST_INFO: 4,
-  SEND_GROWER: 5,
-  GROWER_ACCEPT: 6,
-  GROWER_REJECT: 7,
+  SEND_BREWER: 5,
+  BREWER_ACCEPT: 6,
+  BREWER_REJECT: 7,
   COMPLETE: 8,
 };
 
@@ -427,7 +427,7 @@ const _claim_status_previous_qc = {
   3: [2], // Info Required
   4: [2], // Review Approved
   5: [2], // Review Rejected
-  6: [4], // Sent to Grower
+  6: [4], // Sent to Brewer
   7: [6], // With Finance
   8: [7], // Complete
 };

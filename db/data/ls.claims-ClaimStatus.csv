@@ -4,6 +4,6 @@ id,name,descr,criticality
 3,Awaiting Info,Awaiting More Information,2
 4,Review Approved,Review Approved,3
 5,Review Rejected,Review Rejected,1
-6,Sent to Grower,Sent to Grower,2
+6,Sent to Brewer,Sent to Brewer,2
 7,With Finance,With Finance,2
 8,Complete,Complete,3

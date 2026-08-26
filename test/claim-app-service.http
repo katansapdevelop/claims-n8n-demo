@@ -109,7 +109,7 @@ content-type: application/json
     "id":"5b241101-e2bb-4255-8caf-4136c566a979",
     "name": "logo.png",
     "contentType": "image/png",
-    "createdBy": "patelka@tandg.global",
+    "createdBy": "admin@test.com",
     "creationDate": "2024-04-01",
     "claim_ID": "3b241101-e2bb-4255-8caf-4136c566a979"
 }
@@ -138,8 +138,8 @@ content-type: application/json
 ###
 
 
-### Test GET Growers Report with Basic Auth 
-GET http://localhost:4004/app/getGrowersReport?claimId=3b241101-e2bb-4255-8caf-4136c566a979 HTTP/1.1
+### Test GET Brewers Report with Basic Auth 
+GET http://localhost:4004/app/getBrewersReport?claimId=3b241101-e2bb-4255-8caf-4136c566a979 HTTP/1.1
 Authorization: Basic {{auth}}
 content-type: application/json
 

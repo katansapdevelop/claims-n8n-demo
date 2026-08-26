@@ -22,9 +22,9 @@ annotate ClaimAppService.Claims with @(restrict: [
     { grant: 'requestInfo', to: ['reviewer'] },
     { grant: 'submitReviewApprove', to: ['reviewer'] },
     { grant: 'submitReviewReject', to: ['reviewer'] },
-    { grant: 'submitSendToGrower', to: ['reviewer'] },
-    { grant: 'submitGrowerAccepted', to: ['reviewer'] },
-    { grant: 'submitGrowerRejected', to: ['reviewer'] },
+    { grant: 'submitSendToBrewer', to: ['reviewer'] },
+    { grant: 'submitBrewerAccepted', to: ['reviewer'] },
+    { grant: 'submitBrewerRejected', to: ['reviewer'] },
     { grant: 'submitFinanceComplete', to: ['finance'] }
     
 ]);

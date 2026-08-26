@@ -100,20 +100,20 @@ describe("Run Tests for Quality Claim Status Progression from new to complete", 
 
   });
 
-  it("should set the status from review approved to sent to grower", async () => {
-    const response = await POST`/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true)/ClaimAppService.submitSendToGrower`;
+  it("should set the status from review approved to sent to brewer", async () => {
+    const response = await POST`/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true)/ClaimAppService.submitSendToBrewer`;
     expect(response.status).to.equal(204);
     expect(response.headers['sap-messages']).to.be.an("string");
-    expect(JSON.parse(response.headers['sap-messages'])[0].message).to.equal("The claim has been sent to the grower for review");
+    expect(JSON.parse(response.headers['sap-messages'])[0].message).to.equal("The claim has been sent to the brewer for review");
 
   });
 
 
-  it("should set the status from sent to grower to with finance", async () => {
-    const response = await POST`/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true)/ClaimAppService.submitGrowerAccepted`;
+  it("should set the status from sent to brewer to with finance", async () => {
+    const response = await POST`/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true)/ClaimAppService.submitBrewerAccepted`;
     expect(response.status).to.equal(204);
     expect(response.headers['sap-messages']).to.be.an("string");
-    expect(JSON.parse(response.headers['sap-messages'])[0].message).to.equal("The claim has been approved by the grower & is with finance to complete");
+    expect(JSON.parse(response.headers['sap-messages'])[0].message).to.equal("The claim has been approved by the brewer & is with finance to complete");
 
   });
 

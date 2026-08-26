@@ -1,19 +1,24 @@
-<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.suite.ui.commons" xmlns:macros="sap.fe.macros">
-		<Timeline
-			id="idTimeline"
-			enableDoubleSided="true"
-			growingThreshold="0"
-			sortOldestFirst="true"
-			showHeaderBar="false"
-			content="{/AuditLogs}">
-		<content>
-			<TimelineItem
-					id="idTemplateTimelineItem"
-					dateTime="{modifiedAt}"
-					title="{claimAction/name}"
-					userName="{modifiedBy}"
-					>
-			</TimelineItem>
-		</content>
-	</Timeline>
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.suite.ui.commons" xmlns:macros="sap.fe.macros" xmlns:m="sap.m">
+		<m:VBox id="idVBoxTimeline" height="90%">
+				<Timeline
+					id="idTimeline"
+					enableDoubleSided="true"
+					growingThreshold="0"
+					sortOldestFirst="true"
+					showHeaderBar="false"
+					textHeight="automatic"
+					height="90%"
+					content="{auditLog}">
+				<content>
+					<TimelineItem
+							id="idTemplateTimelineItem"
+							dateTime="{modifiedAt}"
+							title="{claimAction/name}"
+							userName="{modifiedBy}"
+							>
+					</TimelineItem>
+				</content>
+			</Timeline>
+		</m:VBox>
+		
 </core:FragmentDefinition>
