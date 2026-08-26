@@ -1,24 +1,8 @@
 id,name,descr
 88888,Shipping,Shipping
 99999,Packing & Labelling,Packing & Labelling
-00001,Acetaldehyde,Acetaldehyde - Green Apple/Grass flavors
-00002,Alcoholic/Hot,Alcoholic/Hot - Spicy/Vinous flavors
-00003,Astringent,Astringent - Mouth-puckering harshness
-00004,Diacetyl,Diacetyl - Butter/Butterscotch flavors
-00005,DMS,DMS (Dimethyl Sulfide) - Cooked corn flavor
-00006,Estery/Fruity,Estery/Fruity - Fruit flavors
-00007,Grassy,Grassy - Fresh-cut grass flavor
-00008,Light-struck,Light-struck - Skunky flavor
-00009,Medicinal,Medicinal (Chlorophenolic) - Medicine/Chlorine flavor
-00010,Metallic,Metallic - Iron/Copper/Blood flavor
-00011,Musty,Musty - Stale/Moldy flavor
-00012,Oxidized,Oxidized - Stale/Papery/Cardboard flavor
-00013,Plastic,Plastic - Band-aid/Electrical tape flavor
-00014,Solvent/Fusel,Solvent/Fusel - Hot/Burning flavor
-00015,Sour/Acidic,Sour/Acidic - Lactic/Citric acid flavor
-00016,Smoky,Smoky (Phenolic) - Smoke/Charcoal flavor
-00017,Spicy,Spicy (Phenolic) - Clove/Pepper/Vanilla flavor
-00018,Sulfury,Sulfury - Rotten eggs/Burning matches flavor
-00019,Vegetal,Vegetal - Cooked/Rotten vegetables flavor
-00020,Vinegary,Vinegary - Acetic acid/Vinegar flavor
-00021,Yeasty,Yeasty - Bready/Yeast-like flavor
+00001,Appearance,"Discolouration, bruising, shot damage - Stress, poor handling, oxidation"
+00002,Odour,"Sour, gamey, rancid - Spoilage, rutting, contamination"
+00003,Flavour,"Gamey, metallic, bitter - Diet, bleeding, spoilage"
+00005,Hygiene,"Hair, dirt, gut content - Poor field dressing"
+00006,Processing,"Freezer burn, cold shortening - Incorrect chilling/packaging"
