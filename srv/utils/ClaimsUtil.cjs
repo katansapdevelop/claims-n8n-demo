@@ -1,7 +1,6 @@
 const { getValidConversionRateByCurrency } = require("./ConfigUtil.cjs");
 const LOG = cds.log("ls.claims");
-
-const { uuid } = cds.utils;
+const i18n = cds.i18n;
 
 const claim_types = {
   quality: "QC",
@@ -49,20 +48,6 @@ getClaimTypeById = async (claimTypeId) => {
 
 let _erpClaims = null;
 
-/**
- * Initializes or retrieves the existing ERP Claims Service instance.
- *
- * This method checks if an instance of the ERP Claims Service already exists. If it does, it returns the existing instance.
- * Otherwise, it creates a new instance of the ERP Claims Service, initializes it with necessary configurations, and returns it.
- * This ensures a single instance is used throughout the application, following the singleton pattern.
- *
- * @returns {ERPClaimsService} The ERP Claims Service instance.
- */
-const _getERPClaimsService = async () => {
-  if (_erpClaims === null)
-    _erpClaims = await cds.connect.to("Z_OCP_CLAIMS_SRV");
-  return _erpClaims;
-};
 
 /**
  * This method checks if a given date is in the future.
@@ -99,7 +84,8 @@ const _validateQCClaimBeforeSave = async (req) => {
 
   if (!claim.primary_defect_code_id) {
     LOG.warn("Primary Defect Code is mandatory for a Quality Claim");
-    req.reject(400, "Primary Defect Code is mandatory for a Quality Claim");
+    const ClaimType = "Quality Claim"  
+    req.reject(400, cds.i18n.labels.at('PRIMARY_DEFECT_REQUIRED_CLAIM_TYPE', {ClaimType}));
   }
 };
 

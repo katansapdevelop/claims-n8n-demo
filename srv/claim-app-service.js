@@ -31,11 +31,7 @@ class ClaimAppService extends cds.ApplicationService {
               });
           })
           .where({ ID: { in: costIds } });
-        LOG.info(
-          "Successfully read " +
-            costClaims.length +
-            " claim currencies from the DB for costs from the DB"
-        );
+        LOG.info("Successfully read " + costClaims.length + " claim currencies from the DB for costs from the DB");
       }
 
       for (let cost of Costs) {
@@ -116,9 +112,6 @@ class ClaimAppService extends cds.ApplicationService {
           delivery_id: deliveryIds,
         });
       }
-
-      
-
       await calculateDaysFromArrival(claims);
     });
     
@@ -139,7 +132,7 @@ class ClaimAppService extends cds.ApplicationService {
 
       if (draftClaim.primary_defect_code_id === null) {
         LOG.error("Primary Defect ID is required");
-        req.error("Primary Defect ID is required before assigning defects");
+        req.error(400, "PrimaryDefectRequired");
       }
     });
 
@@ -365,10 +358,7 @@ class ClaimAppService extends cds.ApplicationService {
               JSON.stringify(claim)
           );
 
-          req.error(
-            400,
-            "Cannot complete the claim as payment details have not been maintained"
-          );
+          req.error(400,"Cannot complete the claim as payment details have not been maintained");
 
           return;
         }
@@ -513,13 +503,14 @@ class ClaimAppService extends cds.ApplicationService {
     });
 
     
-
+    /*
     this.on("error", Claims, (err, req) => {
       LOG.info("Custom Error Handling");
       if (err.code === 403) {
         err.message = "You are not authorized to perform this action";
       }
     });
+    */
 
     return super.init();
   }
