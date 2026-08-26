@@ -40,11 +40,6 @@ Authorization: Basic {{auth}}
 
 ###
 
-### Test GET for Claims + Quality Claim with Basic Auth
-GET http://localhost:4004/app/claim/Claims?$expand=qualityClaim&$filter=type_id eq 'QC' HTTP/1.1
-Authorization: Basic {{auth}}
-
-###
 
 ### Test GET for Costs with Basic Auth
 GET http://localhost:4004/app/claim/Costs HTTP/1.1
@@ -59,11 +54,7 @@ Authorization: Basic {{auth}}
 
 ###
 
-### Test GET for QualityClaims with Basic Auth
-GET http://localhost:4004/app/claim/QualityClaims HTTP/1.1
-Authorization: Basic {{auth}}
 
-###
 
 ### Test GET for PackagingClaims with Basic Auth
 GET http://localhost:4004/app/claim/PackagingClaims HTTP/1.1
@@ -154,13 +145,6 @@ content-type: application/json
 
 ###
 
-
-### Test GET for Claims Quality Values
-GET {{host}}/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true)/qualityClaim?$select=IsActiveEntity,claim_ID,claim_value_per_tce,percentage_claimed HTTP/1.1
-Authorization: Basic {{auth}}
-content-type: application/json
-
-###
 
 ### Test GET for Claims Quality Values
 GET {{host}}/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true) HTTP/1.1

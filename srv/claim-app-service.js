@@ -1,7 +1,7 @@
 import cds from "@sap/cds";
 const LOG = cds.log("ls.claims");
 import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.cjs";
-import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, validateBeforeSubmitForReview, updateClaimDuetoTypeChange, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
+import { updateClaimsTotals, updateClaimStatus, claim_types, claim_statuses, claimActions, validateClaimBeforeSave, updateExternalClaimId, validateBeforeSubmitForReview, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
 
 
 
@@ -53,37 +53,11 @@ class ClaimAppService extends cds.ApplicationService {
         LOG.info("Defaulting the status of the claim to new");
         updateClaimStatus(Claim_Header.ID, claim_statuses.NEW, "New");
         await updateExternalClaimId(Claim_Header);
-      }
-    });
-
-    this.after("CREATE", "Claims", async (claims) => {
-
-      LOG.info("Updating Claims Totals");
-      await updateClaimsTotals(claims);
-
-      LOG.info("Claim Type is " + claims.type_id);
-      switch (claims.type_id) {
-        case claim_types.quality:
-          LOG.info("Creating Quality Claim Entity");
-          await INSERT.into("ls.claims.QualityClaims").entries({
-            claim_ID: claims.ID,
-          });
-          break;
-        case claim_types.packaging:
-          LOG.info("Creating Packaging Claim Entity");
-          await INSERT.into("ls.claims.PackagingClaims").entries({
-            claim_ID: claims.ID,
-          });
-          break;
+        await updateClaimsTotals(Claim_Header);
       }
     });
 
 
-    this.on("UPDATE", "Claims", async (req, next) => {
-      await updateClaimDuetoTypeChange(req);
-
-      await next(req);
-    });
 
     this.after("UPDATE", "Claims", async (claims) => {
 
@@ -96,7 +70,7 @@ class ClaimAppService extends cds.ApplicationService {
     
     this.after("READ", Claims, async (claims) => {
       LOG.info("Reading expanded claim data");
-      await calculateQualityClaimsValuesForClaim(claims);
+      
 
       let deliveryIds = [];
       claims.map((claim) => {
@@ -136,15 +110,11 @@ class ClaimAppService extends cds.ApplicationService {
       }
     });
 
-    this.after("READ", "QualityClaims", async (claims) => {
-      LOG.info("Updating expanded claim data");
-      await calculateQualityClaimsValuesForQualityClaim(claims);
-    });
+    
 
     this.after("READ", "Claims.drafts", async (claims) => {
       LOG.info("Updating expanded claim data");
-      await calculateQualityClaimsValuesForClaim(claims);
-      let claimIds = [];
+            let claimIds = [];
       let deliveryIds = [];
       claims.map((claim) => {
         claimIds.push(claim.ID);

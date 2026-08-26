@@ -54,8 +54,6 @@ service ClaimAppService @(path: '/app/claim', ) {
         };
 
     entity Comments                      as projection on db.Comments;
-    entity QualityClaims                 as projection on db.QualityClaims;
-    entity PackagingClaims               as projection on db.PackagingClaims;
     entity Attachments                   as projection on db.Attachments;
 
     @cds.redirection.target

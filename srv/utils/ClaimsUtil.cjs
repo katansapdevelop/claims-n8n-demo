@@ -1,6 +1,5 @@
 const { getValidConversionRateByCurrency } = require("./ConfigUtil.cjs");
 const LOG = cds.log("ls.claims");
-const i18n = cds.i18n;
 
 const claim_types = {
   quality: "QC",
@@ -73,13 +72,6 @@ const _validateQCClaimBeforeSave = async (req) => {
   const claim = req.data;
   if (claim.type_id !== claim_types.quality) {
     return;
-  }
-
-  if (claim?.qualityClaim?.qc_inspection_date) {
-    if (_isDateInFuture(claim.qualityClaim.qc_inspection_date)) {
-      LOG.warn("Quality Claim Inspection Date cannot be in the future");
-      req.reject(400, "Quality Claim Inspection Date cannot be in the future");
-    }
   }
 
   if (!claim.primary_defect_code_id) {
@@ -287,73 +279,7 @@ updateClaimsTotals = async (Claim_Header) => {
   }
 };
 
-/**
- * Calculates the claim value per TCE (Total Cartons Effected) for each claim in the provided array
- * Calculates the percentage claimed
- * @param {Array} qualityClaims - An array of quality claims.
- */
-calculateQualityClaimsValuesForClaim = async (claims) => {
-  for (let claim of claims) {
-    if (
-      claim.hasOwnProperty("qualityClaim") &&
-      claim.type_id === claim_types.quality &&
-      claim.qualityClaim !== null
-    ) {
-      await _calculateQualityClaimValues(
-        claim.qualityClaim,
-        claim.total_claim_value
-      );
-    }
-  }
-};
 
-calculateQualityClaimsValuesForQualityClaim = async (qualityClaims) => {
-  // Get Additional Costs for all claims being read
-  LOG.info("Reading costs for all claims being read");
-  const claimIds = qualityClaims.map((claim) => claim.claim_ID);
-  const claims = await SELECT.from("ls.claims.Claims")
-    .columns("ID", "total_claim_value")
-    .where({ ID: { in: claimIds } });
-  LOG.info("Successfully read all costs from the DB");
-
-  LOG.info("Updating Claim values for all quality claims");
-  for (let qualityClaim of qualityClaims) {
-    const claim = claims.filter(
-      (claim) => claim.ID === qualityClaim.claim_ID
-    )[0];
-    await _calculateQualityClaimValues(
-      qualityClaim,
-      claim.total_claim_value
-    );
-  }
-  LOG.info("Updated all claim values for all claims");
-};
-
-_calculateQualityClaimValues = async (claim, claim_value) => {
-  let number_of_tce_out_of_spec = claim.number_of_tce_out_of_spec;
-  if (!number_of_tce_out_of_spec) {
-    LOG.info("Reading quality claim from the DB for " + claim.claim_ID);
-    const qualityClaim = await SELECT.from("ls.claims.QualityClaims")
-      .columns("claim_ID", "number_of_tce_out_of_spec")
-      .where({ claim_ID: claim.claim_ID });
-    number_of_tce_out_of_spec = qualityClaim[0].number_of_tce_out_of_spec;
-  }
-
-  LOG.info("Updating expanded quality claim data");
-  claim.claim_value_per_tce = 0;
-  
-  claim.percentage_claimed = 0;
-  if (number_of_tce_out_of_spec > 0) {
-    claim.claim_value_per_tce = calculateClaimValuePerTce(
-      claim_value,
-      number_of_tce_out_of_spec
-    );
-
-    claim.percentage_claimed = Number(
-      ((Number(number_of_tce_out_of_spec) / _maxTceOnPallet) * 100).toFixed(2)
-    );
-  }
-};
 
 _generateClaimId = async (delivery_id, offsetForSelf) => {
   LOG.info("Generating claim ID for the claim");
@@ -537,88 +463,13 @@ validateBeforeSubmitForReview = async (req) => {
     .from("ls.claims.Claims")
     .columns((claim) => {
       claim.ID,
-        claim.type_id,
-        claim.qualityClaim((qualityClaim) => {
-          qualityClaim.claim_ID, qualityClaim.qc_inspection_date;
-        });
+        claim.type_id
     })
     .where({ ID: claimID });
   LOG.info("Read claim " + JSON.stringify(claim));
 
-
-
-  LOG.info("Validating if the claim requires QC inspection date");
-  if (
-    claim.type_id === claim_types.quality &&
-    claim.qualityClaim.qc_inspection_date === null
-  ) {
-    LOG.warn(
-      "QC Inspection Date is mandatory for claim with type " + claim.type_id
-    );
-    const claimType = await getClaimTypeById(claim.type_id);
-    req.error(
-      400,
-      "QC Inspection Date is mandatory for claim of type " + claimType.name
-    );
-  }
 };
 
-/**
- * Updates the claim due to a change in claim type.
- *
- * This function reads the claim from the database and checks if the claim type has changed.
- * If the claim type has changed, it updates the claim type specific tables with the new type.
- *
- * @async
- * @param {Object} req - The request object.
- * @returns {Promise<void>} A promise that resolves when the function has completed.
- */
-const updateClaimDuetoTypeChange = async (req) => {
-  const claim = req.data;
-  LOG.info("validating if claim type changed");
-
-  // Read the claim to see if the type changed
-  LOG.info("Reading claim " + claim.ID);
-  const dbClaim = await SELECT.one
-    .from("ls.claims.Claims")
-    .where({ ID: claim.ID });
-  LOG.info("Successfully read claim " + JSON.stringify(dbClaim));
-
-  if (claim.type_id === dbClaim.type_id) {
-    return;
-  }
-  LOG.info(
-    "Claim type has changed from " + dbClaim.type_id + " to " + claim.type_id
-  );
-
-  // Update the claim type specific tables with the new table
-  switch (claim.type_id) {
-    case claim_types.quality:
-      LOG.info("Creating Quality Claim Entity");
-      req.data.qualityClaim = { claim_ID: claim.ID };
-      break;
-    case claim_types.packaging:
-      LOG.info("Creating Packaging Claim Entity");
-      req.data.packagingClaim = { claim_ID: claim.ID, pack_house_id: null };
-      break;
-    default:
-      break;
-  }
-
-  // Delete the old claim type specific tables
-  switch (dbClaim.type_id) {
-    case claim_types.quality:
-      LOG.info("Deleting old Quality Claim Entity");
-      req.data.qualityClaim = null;
-      break;
-    case claim_types.packaging:
-      LOG.info("Deleting old Packaging Claim Entity");
-      req.data.packagingClaim = null;
-      break;
-    default:
-      break;
-  }
-};
 
 
 
@@ -643,7 +494,7 @@ const calculateDaysFromArrival = async (claims) =>{
 
 module.exports = {
   updateClaimsTotals: updateClaimsTotals,
-  calculateQualityClaimsValuesForClaim: calculateQualityClaimsValuesForClaim,
+
   calculateVirtualDeliveryDetails: calculateVirtualDeliveryDetails,
   updateClaimStatus: updateClaimStatus,
   claim_types: claim_types,
@@ -652,9 +503,6 @@ module.exports = {
   calculateClaimValuePerTce: calculateClaimValuePerTce,
   validateClaimBeforeSave: validateClaimBeforeSave,
   updateExternalClaimId: updateExternalClaimId,
-  calculateQualityClaimsValuesForQualityClaim:
-    calculateQualityClaimsValuesForQualityClaim,
   validateBeforeSubmitForReview: validateBeforeSubmitForReview,
-  updateClaimDuetoTypeChange: updateClaimDuetoTypeChange,
   calculateDaysFromArrival:calculateDaysFromArrival
 };

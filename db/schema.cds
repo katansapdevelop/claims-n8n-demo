@@ -146,26 +146,6 @@ entity Costs : cuid, managed {
   cost_type : Association to one CostType  @Common.Label: 'Cost Type'  @Common.Text: cost_type.name;
 }
 
-
-@Common.Label: 'Quality Claim'
-entity QualityClaims : managed {
-
-  key claim                           : Association to one Claims;
-      is_pool                         : Boolean        @Common.Label: 'Is Pool';
-      virtual claim_value_per_tce     : Decimal(15, 2) @Common.Label: 'Claim Value per TCE';
-      qc_inspection_date              : Date           @Common.Label: 'QC Inspection Date';
-      virtual percentage_claimed      : Decimal(15, 2) @Common.Label: 'Percentage Claimed';
-      number_of_tce_out_of_spec       : Integer        @Common.Label: 'Number of TCE Out of Spec';
-}
-
-
-@Common.Label: 'Packaging Claim'
-entity PackagingClaims : managed {
-  key claim           : Association to one Claims;
-      pack_house_id   : String(10) @Common.Label: 'Pack House Id';
-      pack_house_name : String(50) @Common.Label: 'Pack House Name';
-}
-
 @Common.Label: 'Attachments'
 entity Attachments : cuid, managed {
   name            : String(100)  @Common.Label : 'File Name';
