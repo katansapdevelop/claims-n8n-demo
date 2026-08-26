@@ -175,7 +175,7 @@ class ClaimAppService extends cds.ApplicationService {
         claimActions.REQUEST_INFO
       );
       const message = response.success
-        ? `An e-mail has been sent to the claimant to request further information to support the claim`
+        ? `A request for further information to support the claim has been sent to the claimant`
         : response.message;
       req.notify(message);
     });

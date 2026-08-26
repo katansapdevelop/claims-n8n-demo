@@ -768,7 +768,7 @@ annotate service.Claims with {
                 },
             ],
         },
-        Common.ValueListWithFixedValues : true,
+        Common.ValueListWithFixedValues : false,
     )
 };
 
@@ -807,6 +807,9 @@ annotate service.Attachments with {
 };
 
 annotate service.Claims with {
-    agent_approval_report @UI.MultiLineText : true
+    agent_approval_report @(
+        UI.MultiLineText : true,
+        Common.FieldControl : #ReadOnly,
+    )
 };
 
