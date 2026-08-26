@@ -6,19 +6,23 @@ annotate service.Claims with @(
         {
             $Type : 'UI.DataField',
             Value : claim_id,
+            @UI.Importance : #High,
         },
         {
             $Type : 'UI.DataField',
             Value : delivery.delivery_id,
+            @UI.Importance : #High,
         },
         {
             $Type : 'UI.DataField',
             Value : type_id,
+            @UI.Importance : #High,
         },
         {
             $Type : 'UI.DataField',
             Value : delivery.customer.name,
             Label : 'Customer Name',
+            @UI.Importance : #High,
         },
         {
             $Type : 'UI.DataField',

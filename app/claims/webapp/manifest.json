@@ -128,6 +128,11 @@
                   "tableSettings": {
                     "type": "ResponsiveTable",
                     "condensedTableLayout": false
+                  },
+                  "columns": {
+                    "DataField::type_id": {
+                      "width": "15rem"
+                    }
                   }
                 }
               },
