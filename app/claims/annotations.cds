@@ -354,7 +354,7 @@ annotate service.Attachments with @(
         {
             $Type : 'UI.DataField',
             Value : claim.attachments.content,
-            Label : 'Attachment Name',
+            Label : 'Attachment',
         },
         {
             $Type : 'UI.DataField',

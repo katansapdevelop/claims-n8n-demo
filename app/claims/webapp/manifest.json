@@ -151,7 +151,16 @@
               "controlConfiguration": {
                 "attachments/@com.sap.vocabularies.UI.v1.LineItem#Attachment": {
                   "tableSettings": {
-                    "type": "ResponsiveTable"
+                    "type": "ResponsiveTable",
+                    "disableCopyToClipboard": true,
+                    "enableExport": false,
+                    "personalization": false,
+                    "enablePaste": false
+                  },
+                  "columns": {
+                    "DataField::claim::attachments::content": {
+                      "width": "30rem"
+                    }
                   }
                 },
                 "costs/@com.sap.vocabularies.UI.v1.LineItem#AdditionalCosts": {
