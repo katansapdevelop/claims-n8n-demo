@@ -53,7 +53,11 @@ service ClaimAppService @(path: '/app/claim', ) {
         };
 
     entity Comments                      as projection on db.Comments;
-    entity Attachments                   as projection on db.Attachments;
+    entity Attachments                   as projection on db.Attachments {
+        *,
+        @title : 'Content Length (KB)'
+        contentLength / 1024 as contentLengthKB : Decimal(15, 2)
+    };
 
     @cds.redirection.target
     entity ClaimPallets                  as projection on db.ClaimPallets;

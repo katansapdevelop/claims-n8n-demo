@@ -74,7 +74,7 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Evidence',
+            Label : 'Supplementary Evidence',
             ID : 'Attachment',
             Target : 'attachments/@UI.LineItem#Attachment',
         },
@@ -363,7 +363,8 @@ annotate service.Attachments with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : contentLength,
+            Value : contentLengthKB,
+            Label : 'Content Length',
         },
         {
             $Type : 'UI.DataField',
@@ -780,6 +781,16 @@ annotate service.Attachments with {
 };
 
 annotate service.Attachments with {
-    contentLength @Common.FieldControl : #ReadOnly
+    contentLength @(
+        Common.FieldControl : #ReadOnly,
+        Measures.Unit : 'KB',
+    )
+};
+
+annotate service.Attachments with {
+    contentLengthKB @(
+        Common.FieldControl : #ReadOnly,
+        Measures.Unit : 'KB',
+    )
 };
 

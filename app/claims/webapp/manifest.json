@@ -158,8 +158,17 @@
                     "enablePaste": false
                   },
                   "columns": {
+                    "FilePreview": {
+                      "header": "Preview",
+                      "position": {
+                        "anchor": "DataField::claim::attachments::content",
+                        "placement": "After"
+                      },
+                      "template": "com.logicalstarconsulting.claims.ext.fragment.FilePreview",
+                      "width": "10rem"
+                    },
                     "DataField::claim::attachments::content": {
-                      "width": "30rem"
+                      "width": "20rem"
                     }
                   }
                 },
