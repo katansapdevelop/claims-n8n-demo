@@ -1,8 +1,24 @@
 using {ClaimAppService} from './claim-app-service';
 using {ConfigAppService} from './config-app-service';
+using {BeerAppService} from './beers-app-service';
 
 annotate ClaimAppService with @(requires: 'authenticated-user');
 annotate ConfigAppService with @(requires: 'authenticated-user');
+annotate BeerAppService with @(requires: 'authenticated-user');
+
+// Beer App Service Auths
+annotate BeerAppService.Beers with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'] },
+    { grant: 'CREATE', to: ['operator'] },
+    { grant: 'UPDATE', to: ['operator'] },
+    { grant: 'DELETE', to: ['operator'] }
+]);
+
+annotate BeerAppService.Partners with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'] }
+]);
 
 
 // Claims App Service Auths
@@ -46,10 +62,3 @@ annotate ConfigAppService.CurrencyConversion with @(restrict: [
     { grant: '*', to: ['admin'] },
     { grant: 'READ', to: ['finance','operator','reviewer'] }
 ]);
-
-
-
-
-
-
-

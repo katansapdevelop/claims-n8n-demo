@@ -37,6 +37,8 @@ annotate service.Claims with @(
             $Type : 'UI.DataField',
             Value : status.descr,
             Label : 'Status',
+            Criticality : status.criticality,
+            CriticalityRepresentation : #WithoutIcon,
         },
         {
             $Type : 'UI.DataField',

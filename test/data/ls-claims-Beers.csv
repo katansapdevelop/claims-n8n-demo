@@ -1,0 +1,26 @@
+ID,beer_id,name,description,abv,brewer_id,createdBy,modifiedBy
+660e8400-e29b-41d4-a716-446655440001,JS001,James Squire Amber Ale,A rich amber ale with complex malt flavors and a balanced hop finish,4.70,550e8400-e29b-41d4-a716-446655440003,admin,admin
+660e8400-e29b-41d4-a716-446655440002,JS002,James Squire Pale Ale,A classic pale ale with citrus notes and crisp finish,4.50,550e8400-e29b-41d4-a716-446655440003,admin,admin
+660e8400-e29b-41d4-a716-446655440003,JS003,James Squire Pilsner,A traditional Czech-style pilsner with floral and spicy hop character,5.10,550e8400-e29b-41d4-a716-446655440003,admin,admin
+660e8400-e29b-41d4-a716-446655440004,JS004,James Squire IPA,A bold India Pale Ale with pine and grapefruit aromas,6.20,550e8400-e29b-41d4-a716-446655440003,admin,admin
+660e8400-e29b-41d4-a716-446655440005,JS005,James Squire Porter,A dark and roasty porter with chocolate and coffee notes,5.40,550e8400-e29b-41d4-a716-446655440003,admin,admin
+660e8400-e29b-41d4-a716-446655440006,CB001,Coopers Pale Ale,A traditional pale ale brewed with pale and crystal malts and Australian hops,4.50,550e8400-e29b-41d4-a716-446655440005,admin,admin
+660e8400-e29b-41d4-a716-446655440007,CB002,Coopers Sparkling Ale,A golden ale with a unique bottle fermented character and subtle sweetness,5.80,550e8400-e29b-41d4-a716-446655440005,admin,admin
+660e8400-e29b-41d4-a716-446655440008,CB003,Coopers Dark Ale,A dark amber ale with rich malt complexity and smooth finish,4.30,550e8400-e29b-41d4-a716-446655440005,admin,admin
+660e8400-e29b-41d4-a716-446655440009,CB004,Coopers Lager,A light crisp lager with clean malt flavors,4.00,550e8400-e29b-41d4-a716-446655440005,admin,admin
+660e8400-e29b-41d4-a716-446655440010,CB005,Coopers Original Pale Ale,A premium pale ale with traditional brewing techniques,4.60,550e8400-e29b-41d4-a716-446655440005,admin,admin
+660e8400-e29b-41d4-a716-446655440011,SB001,Stockade Light Lager,A crisp and refreshing light lager with smooth malt character,3.50,550e8400-e29b-41d4-a716-446655440008,admin,admin
+660e8400-e29b-41d4-a716-446655440012,SB002,Stockade Premium Pilsner,A full-bodied pilsner with balanced hop bitterness,5.00,550e8400-e29b-41d4-a716-446655440008,admin,admin
+660e8400-e29b-41d4-a716-446655440013,SB003,Stockade Amber Lager,An amber lager with caramel malt sweetness and crisp finish,4.80,550e8400-e29b-41d4-a716-446655440008,admin,admin
+660e8400-e29b-41d4-a716-446655440014,SB004,Stockade IPA,An India Pale Ale with bold hop profile and citrus notes,6.50,550e8400-e29b-41d4-a716-446655440008,admin,admin
+660e8400-e29b-41d4-a716-446655440015,SB005,Stockade Stout,A rich dark stout with espresso and chocolate flavors,6.20,550e8400-e29b-41d4-a716-446655440008,admin,admin
+660e8400-e29b-41d4-a716-446655440016,WT001,Working Title Pale Ale,A balanced pale ale with citrus and floral hop characteristics,5.20,550e8400-e29b-41d4-a716-446655440009,admin,admin
+660e8400-e29b-41d4-a716-446655440017,WT002,Working Title IPA,An assertive IPA with pine and tropical fruit aromas,6.80,550e8400-e29b-41d4-a716-446655440009,admin,admin
+660e8400-e29b-41d4-a716-446655440018,WT003,Working Title Lager,A crisp and clean lager with subtle malt sweetness,4.20,550e8400-e29b-41d4-a716-446655440009,admin,admin
+660e8400-e29b-41d4-a716-446655440019,WT004,Working Title Porter,A dark and silky porter with roasted grain complexity,5.50,550e8400-e29b-41d4-a716-446655440009,admin,admin
+660e8400-e29b-41d4-a716-446655440020,WT005,Working Title Amber,A smooth amber ale with caramel and toffee notes,4.90,550e8400-e29b-41d4-a716-446655440009,admin,admin
+660e8400-e29b-41d4-a716-446655440021,NB001,Newstead IPA,A bold India Pale Ale with strong hop bitterness and tropical fruit notes,6.80,550e8400-e29b-41d4-a716-446655440010,admin,admin
+660e8400-e29b-41d4-a716-446655440022,NB002,Newstead Pale Ale,A premium pale ale with balanced malt and hop profile,5.40,550e8400-e29b-41d4-a716-446655440010,admin,admin
+660e8400-e29b-41d4-a716-446655440023,NB003,Newstead Lager,A clean and crisp lager with smooth finish,4.10,550e8400-e29b-41d4-a716-446655440010,admin,admin
+660e8400-e29b-41d4-a716-446655440024,NB004,Newstead Porter,A full-bodied porter with dark roasted flavors,5.80,550e8400-e29b-41d4-a716-446655440010,admin,admin
+660e8400-e29b-41d4-a716-446655440025,NB005,Newstead Wheat Beer,A light and refreshing wheat beer with fruity and spicy notes,5.00,550e8400-e29b-41d4-a716-446655440010,admin,admin
