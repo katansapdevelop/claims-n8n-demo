@@ -6,3 +6,4 @@ id,name,descr
 00003,Flavour,"Gamey, metallic, bitter - Diet, bleeding, spoilage"
 00005,Hygiene,"Hair, dirt, gut content - Poor field dressing"
 00006,Processing,"Freezer burn, cold shortening - Incorrect chilling/packaging"
+00007,Expiry,"Past expiry date or outdated product"
