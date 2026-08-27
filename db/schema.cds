@@ -52,6 +52,11 @@ entity PartnerType : CodeList {
 }
 
 
+@Common.Label: 'Unit of Measure'
+entity UnitofMeasure : CodeList {
+  key id : String(2);
+}
+
 // Partners
 @Common.Label: 'Partners'
 entity Partners : managed, cuid {
@@ -69,6 +74,13 @@ entity Partners : managed, cuid {
   type                  : Association to one PartnerType  @Common.Label: 'Partner Type'  @Common.Text: type.name;
 }
 
+entity Beers : managed, cuid {
+  beer_id       : String(10)    @Common.Label: 'Beer Id';
+  name          : String(100)   @Common.Label: 'Beer Name';
+  description   : String(300)   @Common.Label: 'Description';
+  abv           : Decimal(5, 2) @Common.Label: 'Alcohol by Volume';
+  brewer        : Association to one Partners @Common.Label: 'Brewer'  @Common.Text: brewer.name;
+}
 
 // Deliveries
 @Common.Label: 'Delivery'
@@ -79,8 +91,16 @@ entity Deliveries : managed, cuid {
   customer                       : Association to one Partners @Common.Label: 'Customer'  @Common.Text: customer.name;
   shipping_partner               : Association to one Partners @Common.Label: 'Shipping Partner'  @Common.Text: shipping_partner.name;
   brewer                         : Association to one Partners @Common.Label: 'Brewer'  @Common.Text: brewer.name;
+  pallets                        : Association to many Pallets @Common.Label: 'Pallets'  @Common.Text: pallets.pallet_id;
 }
 
+entity Pallets : managed, cuid {
+  pallet_id       : String(10)   @Common.Label: 'Pallet Id';
+  delivery        : Association to one Deliveries @Common.Label: 'Delivery'  @Common.Text: delivery.delivery_id;
+  quantity        : Integer      @Common.Label: 'Quantity';
+  uom             : Association to one UnitofMeasure @Common.Label: 'Unit of Measure' @Common.IsUnit;
+  beer            : Association to one Beers @Common.Label: 'Beer'  @Common.Text: beer.name;
+}
 
 // Claims
 @Common.Label: 'Claims'
@@ -166,14 +186,7 @@ entity AuditLogs : cuid, managed {
 @Common.Label: 'Impacted Claim Pallets'
 entity ClaimPallets : managed, cuid {
   pallet_id    : String(20) @Common.Label: 'Pallet Id';
-  batch_id     : String(20) @Common.Label: 'Batch Id';
-  storage_type : String(50) @Common.Label: 'Storage Type';
-  pack_date    : Date       @Common.Label: 'Pack Date';
-  pack_type    : String(50) @Common.Label: 'Pack Type';
-  variety      : String(50) @Common.Label: 'Variety';
-  region       : String(20) @Common.Label: 'Region';
-  packer_name  : String(35) @Common.Label: 'Packer Name';
-  size         : String(50) @Common.Label: 'Size';
+  
   // Associations
   claim        : Association to one Claims;
 }
