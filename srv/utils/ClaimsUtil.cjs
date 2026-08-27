@@ -1,4 +1,4 @@
-const { getValidConversionRateByCurrency } = require("./ConfigUtil.cjs");
+
 const LOG = cds.log("ls.claims");
 
 const claim_types = {
@@ -7,7 +7,6 @@ const claim_types = {
   shipping: "SH",
 };
 
-//TODO Replace this with the object based one below
 const claim_statuses = {
   NEW: 1,
   PENDING_REVIEW: 2,

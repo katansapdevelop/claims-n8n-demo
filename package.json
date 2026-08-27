@@ -59,12 +59,7 @@
                             "operator"
                         ],
                         "attr": {
-                            "claim_type": [
-                                "PK",
-                                "QC",
-                                "CP",
-                                "SH"
-                            ]
+                            "claim_type": ["PK","QC","SH"]
                         }
                     },
                     "operator_pk": {
@@ -88,12 +83,7 @@
                             "reviewer"
                         ],
                         "attr": {
-                            "claim_type": [
-                                "PK",
-                                "QC",
-                                "CP",
-                                "SH"
-                            ]
+                            "claim_type": ["PK","QC","SH"]
                         }
                     },
                     "finance": {
