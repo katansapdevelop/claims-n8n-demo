@@ -30,6 +30,7 @@
         "beer-manage": {
           "semanticObject": "beer",
           "action": "manage",
+          "icon": "sap-icon://blur",
           "title": "{{beer-manage.flpTitle}}",
           "signature": {
             "parameters": {},

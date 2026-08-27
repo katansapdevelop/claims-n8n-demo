@@ -30,6 +30,7 @@
         "claim-manage": {
           "semanticObject": "claim",
           "action": "manage",
+          "icon": "sap-icon://customer-financial-fact-sheet",
           "title": "{{claim-manage.flpTitle}}",
           "signature": {
             "parameters": {},
