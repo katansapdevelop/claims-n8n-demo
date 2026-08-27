@@ -13,7 +13,6 @@ service BeerAppService @(path: '/app/beer', ) {
         select 
         key brewery.ID,
         brewery.partner_id,
-        @title : 'Name'
         brewery.name,
         brewery.street_address,
         brewery.city,
