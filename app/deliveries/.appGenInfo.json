@@ -1,0 +1,32 @@
+{
+  "generationParameters": {
+    "generationDate": "Fri Aug 28 2026 00:13:53 GMT+0000 (Coordinated Universal Time)",
+    "generatorPlatform": "Visual Studio Code",
+    "serviceType": "Local CAP",
+    "metadataFilename": "",
+    "serviceUrl": "http://localhost:4004/app/delivery/",
+    "appName": "deliveries",
+    "appTitle": "Deliveries",
+    "appDescription": "Deliveries",
+    "appNamespace": "com.logicalstarconsulting.claims",
+    "ui5Theme": "sap_horizon",
+    "ui5Version": "1.151.0",
+    "enableEslint": true,
+    "enableTypeScript": false,
+    "showMockDataInfo": false,
+    "generatorVersion": "1.27.0",
+    "template": "List Report Page V4",
+    "generatorName": "SAP Fiori Application Generator",
+    "entityRelatedConfig": [
+      {
+        "type": "Main Entity",
+        "value": "Deliveries"
+      },
+      {
+        "type": "Navigation Entity",
+        "value": "None"
+      }
+    ],
+    "launchText": "To launch the generated app, start your CAP project:  and navigate to the following location in your browser:\n\nhttp://localhost:4004/com.logicalstarconsulting.claims.deliveries/index.html"
+  }
+}

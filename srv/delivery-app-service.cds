@@ -5,6 +5,8 @@ service DeliveryAppService @(path: '/app/delivery', ) {
     entity Deliveries as projection on db.Deliveries;
 
     entity Pallets as projection on db.Pallets;
+    @readonly
+    entity Beer as projection on db.Beers;
 
     @readonly
     @cds.redirection.target

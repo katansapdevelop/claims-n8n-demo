@@ -30,7 +30,8 @@
     "start": "cds-serve",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch-claims": "cds watch --open com.logicalstarconsulting.claims/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-beers": "cds watch --open com.logicalstarconsulting.claims.beers/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-beers": "cds watch --open com.logicalstarconsulting.claims.beers/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-deliveries": "cds watch --open com.logicalstarconsulting.claims.deliveries/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "keywords": [],
   "author": "",
@@ -48,7 +49,8 @@
   ],
   "sapux": [
     "app/claims",
-    "app/beers"
+    "app/beers",
+    "app/deliveries"
   ],
   "cds": {
     "requires": {
