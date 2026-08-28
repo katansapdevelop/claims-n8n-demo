@@ -5,13 +5,13 @@ annotate service.Claims with @(
     UI.LineItem : [
         {
             $Type : 'UI.DataField',
-            Value : claim_id,
-            @UI.Importance : #High,
+            Value : delivery_ID,
+            Label : 'Delivery Id',
         },
         {
             $Type : 'UI.DataField',
-            Value : delivery_ID,
-            Label : 'Delivery Id',
+            Value : claim_id,
+            @UI.Importance : #High,
         },
         {
             $Type : 'UI.DataField',
@@ -770,14 +770,6 @@ annotate service.Claims with {
             ],
         },
         Common.ValueListWithFixedValues : false,
-        Common.SemanticObject : 'delivery',
-        Common.SemanticObjectMapping : [
-            {
-                $Type : 'Common.SemanticObjectMappingType',
-                LocalProperty : delivery_ID,
-                SemanticObjectProperty : 'ID',
-            },
-        ],
         Common.Text : delivery.delivery_id,
         Common.Text.@UI.TextArrangement : #TextOnly,
     )

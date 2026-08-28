@@ -257,7 +257,6 @@ annotate service.ShipperSearch with {
 
 annotate service.Pallets with {
     beer @(
-        Common.ExternalID : beer.beer_id,
         Common.ValueList : {
             $Type : 'Common.ValueListType',
             CollectionPath : 'Beer',
@@ -279,6 +278,16 @@ annotate service.Pallets with {
             ],
         },
         Common.ValueListWithFixedValues : false,
+        Common.SemanticObject : 'beer',
+        Common.Text : beer.name,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+        Common.SemanticObjectMapping : [
+            {
+                $Type : 'Common.SemanticObjectMappingType',
+                LocalProperty : beer_ID,
+                SemanticObjectProperty : 'ID',
+            },
+        ],
     )
 };
 
