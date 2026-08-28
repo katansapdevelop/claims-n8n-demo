@@ -10,8 +10,8 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : delivery.delivery_id,
-            @UI.Importance : #High,
+            Value : delivery_ID,
+            Label : 'Delivery Id',
         },
         {
             $Type : 'UI.DataField',
@@ -742,7 +742,6 @@ annotate service.Claims with {
 
 annotate service.Claims with {
     delivery @(
-        Common.ExternalID : delivery.delivery_id,
         Common.ValueList : {
             $Type : 'Common.ValueListType',
             CollectionPath : 'Deliveries',
@@ -771,6 +770,16 @@ annotate service.Claims with {
             ],
         },
         Common.ValueListWithFixedValues : false,
+        Common.SemanticObject : 'delivery',
+        Common.SemanticObjectMapping : [
+            {
+                $Type : 'Common.SemanticObjectMappingType',
+                LocalProperty : delivery_ID,
+                SemanticObjectProperty : 'ID',
+            },
+        ],
+        Common.Text : delivery.delivery_id,
+        Common.Text.@UI.TextArrangement : #TextOnly,
     )
 };
 
@@ -812,6 +821,19 @@ annotate service.Claims with {
     agent_approval_report @(
         UI.MultiLineText : true,
         Common.FieldControl : #ReadOnly,
+    )
+};
+
+annotate service.Deliveries with {
+    delivery_id @(
+        Common.SemanticObject : 'delivery',
+        Common.SemanticObjectMapping : [
+            {
+                $Type : 'Common.SemanticObjectMappingType',
+                LocalProperty : delivery_id,
+                SemanticObjectProperty : 'delivery_id',
+            },
+        ],
     )
 };
 
