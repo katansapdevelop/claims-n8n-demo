@@ -1,10 +1,29 @@
 using {ClaimAppService} from './claim-app-service';
 using {ConfigAppService} from './config-app-service';
 using {BeerAppService} from './beers-app-service';
+using {DeliveryAppService} from './delivery-app-service';
 
 annotate ClaimAppService with @(requires: 'authenticated-user');
 annotate ConfigAppService with @(requires: 'authenticated-user');
 annotate BeerAppService with @(requires: 'authenticated-user');
+annotate DeliveryAppService with @(requires: 'authenticated-user');
+
+// Delivery App Service Auths
+annotate DeliveryAppService.Deliveries with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'] },
+    { grant: 'CREATE', to: ['operator'] },
+    { grant: 'UPDATE', to: ['operator'] },
+    { grant: 'DELETE', to: ['operator'] }
+]);
+
+annotate DeliveryAppService.Pallets with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'] },
+    { grant: 'CREATE', to: ['operator'] },
+    { grant: 'UPDATE', to: ['operator'] },
+    { grant: 'DELETE', to: ['operator'] }
+]);
 
 // Beer App Service Auths
 annotate BeerAppService.Beers with @(restrict: [

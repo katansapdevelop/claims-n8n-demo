@@ -91,7 +91,7 @@ entity Deliveries : managed, cuid {
   customer                       : Association to one Partners @Common.Label: 'Customer'  @Common.Text: customer.name;
   shipping_partner               : Association to one Partners @Common.Label: 'Shipping Partner'  @Common.Text: shipping_partner.name;
   brewer                         : Association to one Partners @Common.Label: 'Brewer'  @Common.Text: brewer.name;
-  pallets                        : Association to many Pallets @Common.Label: 'Pallets'  @Common.Text: pallets.pallet_id;
+  pallets                        : Composition of many Pallets @Common.Label: 'Pallets'  @Common.Text: pallets.pallet_id;
 }
 
 entity Pallets : managed, cuid {
