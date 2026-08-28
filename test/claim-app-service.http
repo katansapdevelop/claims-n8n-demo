@@ -40,11 +40,6 @@ Authorization: Basic {{auth}}
 
 ###
 
-### Test GET for Claims + Quality Claim with Basic Auth
-GET http://localhost:4004/app/claim/Claims?$expand=qualityClaim&$filter=type_id eq 'QC' HTTP/1.1
-Authorization: Basic {{auth}}
-
-###
 
 ### Test GET for Costs with Basic Auth
 GET http://localhost:4004/app/claim/Costs HTTP/1.1
@@ -59,11 +54,7 @@ Authorization: Basic {{auth}}
 
 ###
 
-### Test GET for QualityClaims with Basic Auth
-GET http://localhost:4004/app/claim/QualityClaims HTTP/1.1
-Authorization: Basic {{auth}}
 
-###
 
 ### Test GET for PackagingClaims with Basic Auth
 GET http://localhost:4004/app/claim/PackagingClaims HTTP/1.1
@@ -118,7 +109,7 @@ content-type: application/json
     "id":"5b241101-e2bb-4255-8caf-4136c566a979",
     "name": "logo.png",
     "contentType": "image/png",
-    "createdBy": "patelka@tandg.global",
+    "createdBy": "admin@test.com",
     "creationDate": "2024-04-01",
     "claim_ID": "3b241101-e2bb-4255-8caf-4136c566a979"
 }
@@ -147,27 +138,13 @@ content-type: application/json
 ###
 
 
-### Test GET Growers Report with Basic Auth 
-GET http://localhost:4004/app/getGrowersReport?claimId=3b241101-e2bb-4255-8caf-4136c566a979 HTTP/1.1
+### Test GET Brewers Report with Basic Auth 
+GET http://localhost:4004/app/getBrewersReport?claimId=3b241101-e2bb-4255-8caf-4136c566a979 HTTP/1.1
 Authorization: Basic {{auth}}
 content-type: application/json
 
 ###
 
-### Test GET for RPINSearch single entity pallets with Basic Auth
-GET {{host}}/app/claim/RPINSearch?$select=batch_id,delivery_id,id,name,pallet_id,region,rpin&$count=true&$orderby=rpin&$filter=delivery_id%20eq%20'1980023157'&$skip=0&$top=73 HTTP/1.1
-Authorization: Basic @auth
-
-###
-
-
-
-### Test GET for Claims Quality Values
-GET {{host}}/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true)/qualityClaim?$select=IsActiveEntity,claim_ID,claim_value_per_tce_nzd,claim_value_per_tce,percentage_claimed HTTP/1.1
-Authorization: Basic {{auth}}
-content-type: application/json
-
-###
 
 ### Test GET for Claims Quality Values
 GET {{host}}/app/claim/Claims(ID=3b241101-e2bb-4255-8caf-4136c566a979,IsActiveEntity=true) HTTP/1.1

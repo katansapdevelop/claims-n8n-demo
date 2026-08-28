@@ -1,36 +1,21 @@
 id,name,descr
-00009,Stem Puncture,Stem Puncture
-00010,Mechanical Damage / Cuts,Mechanical Damage / Cuts
-00011,Lenticil Blotch/Pits,Lenticil Blotch/Pits
-00014,Stem Split,Stem Split
-00017,Stem Pull,Stem Pull
-00018,Scald,Scald
-00019,Shrivel,Shrivel
-00022,Pest Damage ,Pest Damage 
-00023,Major Bruise,Major Bruise
-00025,Senescent Browning ,Senescent Browning 
-00029,Sunburn,Sunburn
-00030,Russet,Russet
-00035,Pink Lady Misshapen,Pink Lady Misshapen
-00037,Pest Interception,Pest Interception
-00038,Under Colour ,Under Colour 
-00040,Blush/Bleach,Blush/Bleach
-00044,Wrong Size,Wrong Size
-00049,Stem Mold,Stem Mold
-00050,Rots,Rots
-00052,Black Spot ,Black Spot 
-00053,Hail,Hail
-00055,Internal Browning Disorder,Internal Browning Disorder
-00057,Watercore,Watercore
-00058,Mouldy Core,Mouldy Core
-00059,FLESH FIRMNESS KG-F,FLESH FIRMNESS KG-F
-00063,Avg. Temperature (Celsius),Avg. Temperature (Celsius)
-00064,DP MIS-SIZED,DP MIS-SIZED
-00065,DP GROSS WEIGHT (in Kg),DP GROSS WEIGHT (in Kg)
-00066,DP NET-WEIGHT (in Kg),DP NET-WEIGHT (in Kg)
-00067,DP Fruit Label MISSING,DP Fruit Label MISSING
-00068,General Appearance,General Appearance
-00069,DP PACK PRESENT (NOK),DP PACK PRESENT (NOK)
-00070,DP ESP,DP ESP
-00071,General Pack & Label Issues,General Pack & Label Issues
-00073,Eating Texture,Eating Texture
+80001,Damaged in Transit,Bottles/cases damaged during shipping
+80002,Broken Glass,Glass bottles broken or shattered during transport
+80003,Leaking Bottles,Bottles leaking during transport
+80004,Crushed Cases,Cases crushed or compressed
+80005,Temperature Damage,Exposure to improper temperatures
+80006,Container Damage,Shipping container compromised
+80007,Wet/Moisture Damage,Water damage or excessive moisture
+80008,Label Damage,Labels damaged or illegible
+90001,Missing Contents,Partial or missing shipment contents
+90002,Improper Packaging,Inadequate protective packaging
+10003,Discolouration,Color abnormality or discoloration
+10004,Poor Carbonation,Insufficient or uneven carbonation in the beverage
+10005,Pungent,Pungent or strong odour
+10006,Past Expiry,Past expiry date or outdated product
+10008,Sour,Sour or acidic taste
+10009,Bitter,Bitter or unpleasant taste
+10010,Weak,Lacking flavour or intensity
+10014,Metallic,Metallic or iron flavor
+10021,Dirt,Dirt or fibre contamination
+10025,Incorrect Chilling,Improper chilling process

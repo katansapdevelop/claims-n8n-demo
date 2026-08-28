@@ -1,7 +1,8 @@
-const { default: cds } = require("@sap/cds");
+import cds from "@sap/cds";
+
 const LOG = cds.log("ls.claims");
 
-const { getAllConfigSettingsBySettingId, getConversionRatesByCurrency } = require("./utils/ConfigUtil");
+import { getAllConfigSettingsBySettingId, getConversionRatesByCurrency } from "./utils/ConfigUtil.cjs";
 
 class ConfigAppService extends cds.ApplicationService {
   async init() {
@@ -111,4 +112,4 @@ class ConfigAppService extends cds.ApplicationService {
   }
 }
 
-module.exports = ConfigAppService;
+export default ConfigAppService;

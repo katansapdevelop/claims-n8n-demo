@@ -30,6 +30,7 @@
         "claim-manage": {
           "semanticObject": "claim",
           "action": "manage",
+          "icon": "sap-icon://customer-financial-fact-sheet",
           "title": "{{claim-manage.flpTitle}}",
           "signature": {
             "parameters": {},
@@ -126,7 +127,13 @@
               "controlConfiguration": {
                 "@com.sap.vocabularies.UI.v1.LineItem": {
                   "tableSettings": {
-                    "type": "ResponsiveTable"
+                    "type": "ResponsiveTable",
+                    "condensedTableLayout": false
+                  },
+                  "columns": {
+                    "DataField::type_id": {
+                      "width": "15rem"
+                    }
                   }
                 }
               },
@@ -145,17 +152,25 @@
               "controlConfiguration": {
                 "attachments/@com.sap.vocabularies.UI.v1.LineItem#Attachment": {
                   "tableSettings": {
-                    "type": "ResponsiveTable"
-                  }
-                },
-                "defects/@com.sap.vocabularies.UI.v1.LineItem#Defects": {
-                  "tableSettings": {
-                    "type": "ResponsiveTable"
-                  }
-                },
-                "auditLog/@com.sap.vocabularies.UI.v1.LineItem#AuditLog": {
-                  "tableSettings": {
-                    "type": "ResponsiveTable"
+                    "type": "ResponsiveTable",
+                    "disableCopyToClipboard": true,
+                    "enableExport": false,
+                    "personalization": false,
+                    "enablePaste": false
+                  },
+                  "columns": {
+                    "FilePreview": {
+                      "header": "Preview",
+                      "position": {
+                        "anchor": "DataField::claim::attachments::content",
+                        "placement": "After"
+                      },
+                      "template": "com.logicalstarconsulting.claims.ext.fragment.FilePreview",
+                      "width": "10rem"
+                    },
+                    "DataField::claim::attachments::content": {
+                      "width": "20rem"
+                    }
                   }
                 },
                 "costs/@com.sap.vocabularies.UI.v1.LineItem#AdditionalCosts": {
@@ -176,6 +191,18 @@
                         "placement": "After",
                         "anchor": "DataFieldForAction::ClaimAppService.submitReviewApprove"
                       }
+                    }
+                  }
+                },
+                "body": {
+                  "sections": {
+                    "AuditLogTimeLine": {
+                      "template": "com.logicalstarconsulting.claims.ext.fragment.AuditLogTimeLine",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "AgentAssessment"
+                      },
+                      "title": "Audit Log"
                     }
                   }
                 }

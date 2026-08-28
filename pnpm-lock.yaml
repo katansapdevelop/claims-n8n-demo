@@ -242,6 +242,21 @@ importers:
         specifier: ^0.11.0
         version: 0.11.0(@sap/cds@9.9.1(@eslint/js@10.0.1(eslint@10.5.0))(tar@7.5.16))(express@5.2.1)
 
+  app/beers:
+    devDependencies:
+      '@sap-ux/eslint-plugin-fiori-tools':
+        specifier: ^10.0.0
+        version: 10.6.4(eslint@10.5.0)(typescript-eslint@8.61.1(eslint@10.5.0)(typescript@5.9.3))(typescript@5.9.3)
+      '@sap/ux-ui5-tooling':
+        specifier: '1'
+        version: 1.27.0
+      '@ui5/cli':
+        specifier: ^4.0.33
+        version: 4.0.56
+      eslint:
+        specifier: ^10
+        version: 10.5.0
+
   app/claims:
     devDependencies:
       '@sap-ux/eslint-plugin-fiori-tools':
@@ -3481,8 +3496,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.57.2(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.57.2(typescript@5.9.3)
-      '@typescript-eslint/types': 8.57.2
+      '@typescript-eslint/tsconfig-utils': 8.61.1(typescript@5.9.3)
+      '@typescript-eslint/types': 8.61.1
       debug: 4.4.3
       typescript: 5.9.3
     transitivePeerDependencies:

@@ -1,0 +1,9 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m">
+	<Image
+		id="FilePreview"
+		src="{content}"
+		width="100px"
+		height="100px"
+		densityAware="false"
+	/>
+</core:FragmentDefinition>

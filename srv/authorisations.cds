@@ -1,0 +1,83 @@
+using {ClaimAppService} from './claim-app-service';
+using {ConfigAppService} from './config-app-service';
+using {BeerAppService} from './beers-app-service';
+using {DeliveryAppService} from './delivery-app-service';
+
+annotate ClaimAppService with @(requires: 'authenticated-user');
+annotate ConfigAppService with @(requires: 'authenticated-user');
+annotate BeerAppService with @(requires: 'authenticated-user');
+annotate DeliveryAppService with @(requires: 'authenticated-user');
+
+// Delivery App Service Auths
+annotate DeliveryAppService.Deliveries with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'] },
+    { grant: 'CREATE', to: ['operator'] },
+    { grant: 'UPDATE', to: ['operator'] },
+    { grant: 'DELETE', to: ['operator'] }
+]);
+
+annotate DeliveryAppService.Pallets with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'] },
+    { grant: 'CREATE', to: ['operator'] },
+    { grant: 'UPDATE', to: ['operator'] },
+    { grant: 'DELETE', to: ['operator'] }
+]);
+
+// Beer App Service Auths
+annotate BeerAppService.Beers with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'] },
+    { grant: 'CREATE', to: ['operator'] },
+    { grant: 'UPDATE', to: ['operator'] },
+    { grant: 'DELETE', to: ['operator'] }
+]);
+
+annotate BeerAppService.Partners with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'] }
+]);
+
+
+// Claims App Service Auths
+annotate ClaimAppService.Claims with @(restrict: [
+    
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'],
+      where: '$user.claim_type = type_id' },
+    { grant: 'CREATE', 
+      to: ['operator', 'reviewer'], 
+      where: '$user.claim_type = type_id' },
+    { grant: 'UPDATE', to: ['operator', 'finance','reviewer'] },
+    { grant: 'DELETE', to: ['operator', 'finance','reviewer'] },
+    
+
+    { grant: 'submitForReview', to: ['operator', 'reviewer']  },
+    { grant: 'requestInfo', to: ['reviewer'] },
+    { grant: 'submitReviewApprove', to: ['reviewer'] },
+    { grant: 'submitReviewReject', to: ['reviewer'] },
+    { grant: 'submitSendToBrewer', to: ['reviewer'] },
+    { grant: 'submitBrewerAccepted', to: ['reviewer'] },
+    { grant: 'submitBrewerRejected', to: ['reviewer'] },
+    { grant: 'submitFinanceComplete', to: ['finance'] }
+    
+]);
+
+annotate ClaimAppService.ClaimType with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'],
+    where: '$user.claim_type = id' }
+]);
+
+
+// Config App Service Auths
+annotate ConfigAppService.ConfigSettings with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'] }
+]);
+
+annotate ConfigAppService.CurrencyConversion with @(restrict: [
+    { grant: '*', to: ['admin'] },
+    { grant: 'READ', to: ['finance','operator','reviewer'] }
+]);

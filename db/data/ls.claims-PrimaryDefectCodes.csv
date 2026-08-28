@@ -1,29 +1,9 @@
 id,name,descr
-SHIPPING,Shipping,Shipping
-PACKING,Packing & Labelling,Packing & Labelling
-00009,Stem Puncture,Stem Puncture
-00010,Mechanical Damage / Cuts,Mechanical Damage / Cuts
-00011,Lenticil Blotch/Pits,Lenticil Blotch/Pits
-00014,Stem Split,Stem Split
-00017,Stem Pull,Stem Pull
-00018,Scald,Scald
-00019,Shrivel,Shrivel
-00022,Pest Damage ,Pest Damage 
-00023,Major Bruise,Major Bruise
-00025,Senescent Browning ,Senescent Browning 
-00029,Sunburn,Sunburn
-00030,Russet,Russet
-00035,Pink Lady Misshapen,Pink Lady Misshapen
-00037,Pest Interception,Pest Interception
-00038,Under Colour ,Under Colour 
-00040,Blush/Bleach,Blush/Bleach
-00044,Wrong Size,Wrong Size
-00049,Stem Mold,Stem Mold
-00050,Rots,Rots
-00052,Black Spot ,Black Spot 
-00053,Hail,Hail
-00055,Internal Browning Disorder,Internal Browning Disorder
-00057,Watercore,Watercore
-00058,Mouldy Core,Mouldy Core
-00059,FLESH FIRMNESS KG-F,FLESH FIRMNESS KG-F
-00073,Eating Texture,Eating Texture
+88888,Shipping,Shipping
+99999,Packing & Labelling,Packing & Labelling
+00001,Appearance,"Discolouration, bruising, shot damage - Stress, poor handling, oxidation"
+00002,Odour,"Sour, gamey, rancid - Spoilage, rutting, contamination"
+00003,Flavour,"Gamey, metallic, bitter - Diet, bleeding, spoilage"
+00005,Hygiene,"Hair, dirt, gut content - Poor field dressing"
+00006,Processing,"Freezer burn, cold shortening - Incorrect chilling/packaging"
+00007,Expiry,"Past expiry date or outdated product"

@@ -1,0 +1,4 @@
+id,name,descr
+SH,Shipper,Company that shipped the goods
+CU,Customer,Company that purchased the beers
+BR,Brewery,Company that brewed the beers

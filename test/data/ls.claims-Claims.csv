@@ -1,6 +1,6 @@
-ID,claim_id,type_id,date_of_claim,description,claim_value,delivery_id,claim_date_week_number,days_to_claim,status_id,credit_note_id,payment_deduction_doc_id,total_claim_value,grower_id,grower_name,claim_currency_code,primary_defect_code_id,market_representative_id,arrival_date
-3b241101-e2bb-4255-8caf-4136c566a979,0023157001,QC,2026-01-01,"Claim 1",100.00,1980023157,40,46,2,,,200.00,4500003,Tollemache Orchards Ltd,USD,00023,1b5c4af6-f7f6-4b4a-b8df-5baf2cfd76ec,2026-05-01
-3b241101-e2bb-4255-8caf-4136c566a980,0023158001,SH,2026-02-01,"Claim 2",200.00,1980023158,44,14,1,,,400.00,,,USD,,5f4c1fe7-2e23-45a2-9bbc-dc094ce19243,2026-04-01
-3b241101-e2bb-4255-8caf-4136c566a981,0023159001,QC,2026-03-01,"Claim 3",300.00,1980023159,45,10,3,,,600.00,4500003,Tollemache Orchards Ltd,USD,00009,1b5c4af6-f7f6-4b4a-b8df-5baf2cfd76ec,2026-03-01
-3b241101-e2bb-4255-8caf-4136c566a982,0023165001,MK,2026-04-01,"Claim 4",400.00,1980023165,44,15,7,,,800.00,,,USD,,,2026-02-01
-3b241101-e2bb-4255-8caf-4136c566a983,0023166001,PK,2026-05-01,"Claim 5",500.00,1980023166,44,15,2,,,1500.00,,,USD,,,2026-01-01
+ID,claim_id,type_id,date_of_claim,description,claim_value,delivery_id,claim_date_week_number,status_id,credit_note_id,payment_deduction_doc_id,total_claim_value,claim_currency_code,primary_defect_code_id,arrival_date,agent_approval_outcome
+3b241101-e2bb-4255-8caf-4136c566a979,2000000001,QC,2026-01-01,"Beer has expired",67.25,123e4567-e89b-12d3-a456-426614174000,40,7,,,77.25,AUD,00007,2026-05-01,90
+3b241101-e2bb-4255-8caf-4136c566a980,2000000002,SH,2026-02-01,"Beer bottles cracked and leaking during transport",48.90,223e4567-e89b-12d3-a456-426614174000,44,1,,,58.90,AUD,88888,2026-04-01,0
+3b241101-e2bb-4255-8caf-4136c566a981,2000000003,QC,2026-03-01,"Excessive sediment and haze in beer",91.50,323e4567-e89b-12d3-a456-426614174000,45,1,,,101.50,AUD,00001,2026-03-01,0
+3b241101-e2bb-4255-8caf-4136c566a982,2000000004,SH,2026-04-01,"Cans exploded in transit",32.75,423e4567-e89b-12d3-a456-426614174000,44,1,,,42.75,AUD,88888,2026-02-01,0
+3b241101-e2bb-4255-8caf-4136c566a983,2000000005,PK,2026-05-01,"Damaged bottle labels and misaligned caps",105.25,523e4567-e89b-12d3-a456-426614174000,44,1,,,115.25,AUD,99999,2026-01-01,0

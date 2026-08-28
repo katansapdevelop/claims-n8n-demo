@@ -6,32 +6,47 @@ annotate service.Claims with @(
         {
             $Type : 'UI.DataField',
             Value : claim_id,
+            @UI.Importance : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : delivery.delivery_id,
+            @UI.Importance : #High,
         },
         {
             $Type : 'UI.DataField',
             Value : type_id,
+            @UI.Importance : #High,
         },
         {
             $Type : 'UI.DataField',
-            Value : grower_name,
+            Value : delivery.customer.name,
+            Label : 'Customer Name',
+            @UI.Importance : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : delivery.brewer.name,
+            Label : 'Brewer Name',
         },
         {
             $Type : 'UI.DataField',
             Value : total_claim_value,
         },
-        
-        {
-            $Type : 'UI.DataField',
-            Value : delivery_id,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : payment_deduction_doc_id,
-        },
         {
             $Type : 'UI.DataField',
             Value : status.descr,
             Label : 'Status',
+            Criticality : status.criticality,
+            CriticalityRepresentation : #WithoutIcon,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : primary_defect_code_id,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : payment_deduction_doc_id,
         },
     ],
     UI.Facets : [
@@ -55,27 +70,22 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Secondary Defects',
-            ID : 'Defects',
-            Target : 'defects/@UI.LineItem#Defects',
-        },
-        {
-            $Type : 'UI.ReferenceFacet',
-            Label : 'Evidence',
-            ID : 'Attachment',
-            Target : 'attachments/@UI.LineItem#Attachment',
-        },
-        {
-            $Type : 'UI.ReferenceFacet',
             Label : 'Additional Costs',
             ID : 'AdditionalCosts',
             Target : 'costs/@UI.LineItem#AdditionalCosts',
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Audit Log',
-            ID : 'AuditLog',
-            Target : 'auditLog/@UI.LineItem#AuditLog',
+            Label : 'Supplementary Evidence',
+            ID : 'Attachment',
+            Target : 'attachments/@UI.LineItem#Attachment',
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Agent Assessment',
+            ID : 'AgentAssessment',
+            Target : '@UI.FieldGroup#AgentAssessment',
+            @UI.Hidden: (agent_approval_outcome = 0),
         },
     ],
     UI.FieldGroup #General : {
@@ -87,7 +97,7 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : delivery_id,
+                Value : delivery_ID,
             },
             {
                 $Type : 'UI.DataField',
@@ -118,15 +128,7 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : days_to_claim,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : grower_id,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : grower_name,
+                Value : description,
             },
         ],
     },
@@ -147,31 +149,21 @@ annotate service.Claims with @(
         Data : [
             {
                 $Type : 'UI.DataField',
-                Value : delivery.customer_id,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : delivery.customer_name,
-            },
-            {
-                $Type : 'UI.DataField',
                 Value : delivery.delivery_date,
             },
             {
                 $Type : 'UI.DataField',
-                Value : delivery.discharge_country,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : delivery.origin_country,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : delivery.sales_region_desc,
-            },
-            {
-                $Type : 'UI.DataField',
                 Value : delivery.shipment_id,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.brewer.country,
+                Label : 'Origin Country',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.customer.country,
+                Label : 'Discharge Country',
             },
         ],
     },
@@ -200,23 +192,23 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataFieldForAction',
-            Action : 'ClaimAppService.submitSendToGrower',
-            Label : 'Send To Grower',
+            Action : 'ClaimAppService.submitSendToBrewer',
+            Label : 'Send To Brewer',
             Determining : true,
             @UI.Hidden : ((status.id != 4) or $draft.HasActiveEntity = true)    ,
         },
         {
             $Type : 'UI.DataFieldForAction',
-            Action : 'ClaimAppService.submitGrowerAccepted',
-            Label : 'Grower Accepted',
+            Action : 'ClaimAppService.submitBrewerAccepted',
+            Label : 'Brewer Accepted',
             Determining : true,
             @UI.Hidden : ((status.id != 6 and type.id != 'qc') or $draft.HasActiveEntity = true)    ,
             Criticality : #Positive,
         },
         {
             $Type : 'UI.DataFieldForAction',
-            Action : 'ClaimAppService.submitGrowerRejected',
-            Label : 'Grower Rejected',
+            Action : 'ClaimAppService.submitBrewerRejected',
+            Label : 'Brewer Rejected',
             Determining : true,
             @UI.Hidden : ((status.id != 6 and type.id != 'qc') or $draft.HasActiveEntity = true)    ,
             Criticality : #Negative,
@@ -238,9 +230,27 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Total Value',
-            ID : 'TotalValue',
-            Target : '@UI.FieldGroup#TotalValue',
+            Label : 'Customer',
+            ID : 'Customer',
+            Target : '@UI.FieldGroup#Customer',
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Brewer',
+            ID : 'Brewer',
+            Target : '@UI.FieldGroup#Brewer',
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Shipping Partner',
+            ID : 'ShippingPartner',
+            Target : '@UI.FieldGroup#ShippingPartner',
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID : 'agent_approval_outcome',
+            Target : '@UI.DataPoint#agent_approval_outcome',
+            @UI.Hidden: (agent_approval_outcome = 0),
         },
     ],
     UI.FieldGroup #Status : {
@@ -251,6 +261,11 @@ annotate service.Claims with @(
                 Value : status_id,
                 Criticality : status.criticality,
             },
+            {
+                $Type : 'UI.DataField',
+                Value : total_claim_value,
+                Label : 'Total Value',
+            },
         ],
     },
     UI.UpdateHidden : (status.id != 1 and status.id != 3 and status.id != 7),
@@ -258,11 +273,7 @@ annotate service.Claims with @(
     UI.FieldGroup #TotalValue : {
         $Type : 'UI.FieldGroupType',
         Data : [
-            {
-                $Type : 'UI.DataField',
-                Value : total_claim_value,
-                Label : 'Value',
-            },
+            
            
         ],
     },
@@ -272,6 +283,77 @@ annotate service.Claims with @(
             {
                 $Type : 'UI.DataField',
                 Value : primary_defect_code_id,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : defects.secondary_defect_code_id,
+                Label : 'Secondary Defect Codes',
+            },
+        ],
+    },
+    UI.FieldGroup #Customer : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.customer.partner_id,
+                Label : 'Id',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.customer.name,
+                Label : 'Name',
+            },
+        ],
+    },
+    UI.FieldGroup #Brewer : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.brewer.partner_id,
+                Label : 'Id',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.brewer.name,
+                Label : 'Name',
+            },
+        ],
+    },
+    UI.SelectionFields : [
+        status_id,
+        total_claim_value,
+    ],
+    UI.FieldGroup #ShippingPartner : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.shipping_partner.partner_id,
+                Label : 'Id',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : delivery.shipping_partner.name,
+                Label : 'Name',
+            },
+        ],
+    },
+    UI.DataPoint #agent_approval_outcome : {
+        $Type : 'UI.DataPointType',
+        Value : agent_approval_outcome,
+        TargetValue  : 100.0,
+        Title : 'Approval',
+        Visualization : #Progress,
+        Description : '',
+    },
+    UI.FieldGroup #AgentAssessment : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : agent_approval_report,
             },
         ],
     },
@@ -286,7 +368,17 @@ annotate service.Attachments with @(
         {
             $Type : 'UI.DataField',
             Value : claim.attachments.content,
-            Label : 'Attachment Name',
+            Label : 'File',
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : contentType,
+            Label : 'Content Type',
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : contentLengthKB,
+            Label : 'Content Length',
         },
         {
             $Type : 'UI.DataField',
@@ -301,41 +393,7 @@ annotate service.Attachments with @(
     ]
 );
 
-annotate service.Claims with {
-    delivery_id @(
-        Common.FieldControl : #Mandatory,
-        Common.ValueList : {
-            $Type : 'Common.ValueListType',
-            CollectionPath : 'Deliveries',
-            Parameters : [
-                {
-                    $Type : 'Common.ValueListParameterInOut',
-                    LocalDataProperty : delivery_id,
-                    ValueListProperty : 'delivery_id',
-                },
-                {
-                    $Type : 'Common.ValueListParameterDisplayOnly',
-                    ValueListProperty : 'customer_id',
-                },
-                {
-                    $Type : 'Common.ValueListParameterDisplayOnly',
-                    ValueListProperty : 'customer_name',
-                },
-                {
-                    $Type : 'Common.ValueListParameterDisplayOnly',
-                    ValueListProperty : 'container_id',
-                },
-                {
-                    $Type : 'Common.ValueListParameterDisplayOnly',
-                    ValueListProperty : 'delivery_date',
-                },
-            ],
-            Label : 'Delivery Search',
-            PresentationVariantQualifier : 'vh_Claims_delivery_id',
-        },
-        Common.ValueListWithFixedValues : false,
-    )
-};
+
 
 annotate service.Deliveries with @(
     UI.PresentationVariant #vh_Claims_delivery_id : {
@@ -458,10 +516,6 @@ annotate service.ClaimPallets with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : rpin,
-        },
-        {
-            $Type : 'UI.DataField',
             Value : size,
         },
         {
@@ -505,17 +559,29 @@ annotate service.ClaimDefects with {
     secondary_defect_code @(
         Common.ValueList : {
             $Type : 'Common.ValueListType',
-            CollectionPath : 'SecondaryDefectCodes',
+            CollectionPath : 'ClaimsToSecondaryDefectSearch',
             Parameters : [
                 {
                     $Type : 'Common.ValueListParameterInOut',
                     LocalDataProperty : secondary_defect_code_id,
-                    ValueListProperty : 'id',
+                    ValueListProperty : 'secondary_defect_code_id',
+                },
+                {
+                    $Type : 'Common.ValueListParameterIn',
+                    ValueListProperty : 'primary_defect_code_id',
+                    LocalDataProperty : claim.primary_defect_code_id,
+                },
+                {
+                    $Type : 'Common.ValueListParameterIn',
+                    ValueListProperty : 'claim_type_id',
+                    LocalDataProperty : claim.type_id,
                 },
             ],
             Label : 'Secondary Defect Code',
         },
         Common.ValueListWithFixedValues : true,
+        Common.Text : secondary_defect_code.name,
+        Common.Text.@UI.TextArrangement : #TextOnly,
 )};
 
 annotate service.SecondaryDefectCodes with {
@@ -549,12 +615,7 @@ annotate service.AuditLogs with @(
     ]
 );
 
-annotate service.AllMarketRepresentatives with {
-    fullName @(
-        Common.Text : 'Full Name',
-        Common.Text.@UI.TextArrangement : #TextOnly,
-        Common.ExternalID : fullName,
-)};
+
 
 annotate service.AuditLogs with {
     originalStatus @(
@@ -583,10 +644,6 @@ annotate service.Costs with @(
         {
             $Type : 'UI.DataField',
             Value : value,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : value_nzd,
         },
         {
             $Type : 'UI.DataField',
@@ -678,4 +735,83 @@ annotate service.Claims with {
     claim_value @Measures.ISOCurrency : claim_currency_code
 };
 
+
+annotate service.Claims with {
+    description @UI.MultiLineText : true
+};
+
+annotate service.Claims with {
+    delivery @(
+        Common.ExternalID : delivery.delivery_id,
+        Common.ValueList : {
+            $Type : 'Common.ValueListType',
+            CollectionPath : 'Deliveries',
+            Parameters : [
+                {
+                    $Type : 'Common.ValueListParameterInOut',
+                    LocalDataProperty : delivery_ID,
+                    ValueListProperty : 'ID',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'customer/name',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'brewer/name',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'shipping_partner/name',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'shipment_id',
+                },
+            ],
+        },
+        Common.ValueListWithFixedValues : false,
+    )
+};
+
+annotate service.Partners with {
+    ID @Common.ExternalID : partner_id
+};
+
+annotate service.ClaimDefects with {
+    ID @Common.ExternalID : secondary_defect_code.name
+};
+
+annotate service.ClaimsToSecondaryDefectSearch with {
+    claim_type @Common.Text : secondary_defect_name
+};
+
+annotate service.ClaimsToSecondaryDefectSearch with {
+    secondary_defect_code @Common.Text : secondary_defect_name
+};
+
+annotate service.Attachments with {
+    contentType @Common.FieldControl : #ReadOnly
+};
+
+annotate service.Attachments with {
+    contentLength @(
+        Common.FieldControl : #ReadOnly,
+        Measures.Unit : 'KB',
+    )
+};
+
+annotate service.Attachments with {
+    contentLengthKB @(
+        Common.FieldControl : #ReadOnly,
+        Measures.Unit : 'KB',
+    )
+};
+
+annotate service.Claims with {
+    agent_approval_report @(
+        UI.MultiLineText : true,
+        Common.FieldControl : #ReadOnly,
+    )
+};
 

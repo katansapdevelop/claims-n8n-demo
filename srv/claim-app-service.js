@@ -1,17 +1,14 @@
 import cds from "@sap/cds";
-import { loadDestination } from "sap-cap-sdm-plugin/lib/util/index.js";
 const LOG = cds.log("ls.claims");
 import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.cjs";
-import claimsUtil from "./utils/ClaimsUtil.cjs";
-import { updateClaimsTotals, calculateQualityClaimsValuesForClaim, updateClaimStatus, claim_types, claim_statuses, claimActions, updateClaimDetailsFromERP, validateClaimBeforeSave, updateExternalClaimId, calculateQualityClaimsValuesForQualityClaim, convertToMarketAssistance, convertClaimAmountsToNZD, validateBeforeSubmitForReview, validateRepBeforeSave, updateClaimDuetoTypeChange, updateClaimDueToRPINChange, getWeekNumber, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
-import { parseQueryOptionsForFiltering } from "./utils/ODataUtil.cjs";
-import { onHandleReadErpRPINs, onHandleReadErpDelivery } from "./utils/DeliveriesUtil.cjs";
+import { updateClaimsTotals, updateClaimStatus, claim_types, claim_statuses, claimActions, validateClaimBeforeSave, updateExternalClaimId, validateBeforeSubmitForReview, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
+
+
 
 class ClaimAppService extends cds.ApplicationService {
   async init() {
     const {
       Claims,
-      RPINSearch,
       Attachments,
       PalletSearch,
       ClaimPallets,
@@ -34,11 +31,7 @@ class ClaimAppService extends cds.ApplicationService {
               });
           })
           .where({ ID: { in: costIds } });
-        LOG.info(
-          "Successfully read " +
-            costClaims.length +
-            " claim currencies from the DB for costs from the DB"
-        );
+        LOG.info("Successfully read " + costClaims.length + " claim currencies from the DB for costs from the DB");
       }
 
       for (let cost of Costs) {
@@ -60,65 +53,22 @@ class ClaimAppService extends cds.ApplicationService {
         LOG.info("Defaulting the status of the claim to new");
         updateClaimStatus(Claim_Header.ID, claim_statuses.NEW, "New");
         await updateExternalClaimId(Claim_Header);
+        await updateClaimsTotals(Claim_Header);
       }
-    });
-
-    this.after("CREATE", "Claims", async (claims) => {
-      LOG.info("Convert Claim Amounts to NZD");
-      await convertClaimAmountsToNZD(claims);
-
-      LOG.info("Updating Claims Totals");
-      await updateClaimsTotals(claims);
-
-      LOG.info("Claim Type is " + claims.type_id);
-      switch (claims.type_id) {
-        case claim_types.quality:
-          LOG.info("Creating Quality Claim Entity");
-          await INSERT.into("ls.claims.QualityClaims").entries({
-            claim_ID: claims.ID,
-          });
-          break;
-        case claim_types.packaging:
-          LOG.info("Creating Packaging Claim Entity");
-          await INSERT.into("ls.claims.PackagingClaims").entries({
-            claim_ID: claims.ID,
-          });
-          break;
-      }
-    });
-
-    
-    this.on("SAVE", "Claims", async (req, next) => {
-      const claim = req.data;
-      LOG.info("Updating the week number for the claim");
-      if (claim.arrival_date) {
-        req.data.claim_date_week_number = await getWeekNumber(
-          new Date(claim.arrival_date)
-        );
-      }
-
-      await next(req);
-    });
-
-    this.on("UPDATE", "Claims", async (req, next) => {
-      await updateClaimDuetoTypeChange(req);
-      await updateClaimDueToRPINChange(req);
-
-      await next(req);
     });
 
     this.after("UPDATE", "Claims", async (claims) => {
-      LOG.info("Convert Claim Amounts to NZD");
-      await convertClaimAmountsToNZD(claims);
+
 
       LOG.info("Updating claims data after save");
       await updateClaimsTotals(claims);
       
     });
 
+    
     this.after("READ", Claims, async (claims) => {
       LOG.info("Reading expanded claim data");
-      await calculateQualityClaimsValuesForClaim(claims);
+      
 
       let deliveryIds = [];
       claims.map((claim) => {
@@ -134,20 +84,9 @@ class ClaimAppService extends cds.ApplicationService {
           delivery_id: deliveryIds,
         });
       }
-
-      claims.map((claim) => {
-        const delivery = deliveries.find(
-          (d) => d.delivery_id === claim.delivery_id
-        );
-        if (delivery) {
-          claim.container_id = delivery.container_id
-            ? delivery.container_id
-            : null;
-        }
-      });
-
       await calculateDaysFromArrival(claims);
     });
+    
 
     this.before("CREATE", "ClaimDefects.drafts", async (req) => {
       LOG.info("Validating Claim Defects Befor Create");
@@ -165,22 +104,17 @@ class ClaimAppService extends cds.ApplicationService {
 
       if (draftClaim.primary_defect_code_id === null) {
         LOG.error("Primary Defect ID is required");
-        req.error("Primary Defect ID is required before assigning defects");
+        req.error(400, "PrimaryDefectRequired");
       }
     });
 
-    this.after("READ", "QualityClaims", async (claims) => {
-      LOG.info("Updating expanded claim data");
-      await calculateQualityClaimsValuesForQualityClaim(claims);
-    });
+    
 
     this.after("READ", "Claims.drafts", async (claims) => {
       LOG.info("Updating expanded claim data");
-      await calculateQualityClaimsValuesForClaim(claims);
-      let claimIds = [];
+            let claimIds = [];
       let deliveryIds = [];
       claims.map((claim) => {
-        claim.hideRPIN = true; // Default to hide
         claimIds.push(claim.ID);
       });
 
@@ -206,42 +140,6 @@ class ClaimAppService extends cds.ApplicationService {
         });
       }
 
-      claims.map((claim) => {
-        LOG.info("Updating hideRPIN property for claim " + claim.ID);
-        const draftClaim = draftClaims.find((d) => d.ID === claim.ID);
-
-        LOG.info("Found matching draft claim: " + JSON.stringify(draftClaim));
-
-        if (draftClaim) {
-          claim.hideRPIN =
-            (draftClaim.type_id === claim_types.quality ||
-              draftClaim.type_id === claim_types.market ||
-              draftClaim.type_id === claim_types.packaging) &&
-            draftClaim.delivery_id != null
-              ? false
-              : claim.hideRPIN;
-        } else {
-          claim.hideRPIN = true;
-        }
-
-        // This is a fix to update the claim specific property for container_id
-        // to support auto update via a side effect as you can use a side effect to
-        // navigate to an association
-        LOG.info("Updating claim specific property for container_id");
-
-        if (draftClaim) {
-          const delivery = deliveries.find(
-            (d) => d.delivery_id === draftClaim.delivery_id
-          );
-          if (delivery) {
-            claim.container_id = delivery.container_id
-              ? delivery.container_id
-              : null;
-          }
-        } else {
-          claim.container_id = null;
-        }
-      });
       await calculateDaysFromArrival(claims);
     });
 
@@ -277,7 +175,7 @@ class ClaimAppService extends cds.ApplicationService {
         claimActions.REQUEST_INFO
       );
       const message = response.success
-        ? `An e-mail has been sent to the claimant to request further information to support the claim`
+        ? `A request for further information to support the claim has been sent to the claimant`
         : response.message;
       req.notify(message);
     });
@@ -315,7 +213,7 @@ class ClaimAppService extends cds.ApplicationService {
       const claimId = req.params[0].ID;
       LOG.info("Validating Review Reject Action for claim " + claimId);
       const rejectionReason = req.data.reason;
-      const marketAssistanceConversion = req.data.convertToMarketAssistance;
+      
 
       switch (rejectionReason) {
         case "IE":
@@ -328,30 +226,7 @@ class ClaimAppService extends cds.ApplicationService {
           break;
       }
 
-      LOG.info(
-        "Convert to market assistance was found to be " +
-          marketAssistanceConversion
-      );
-      if (marketAssistanceConversion) {
-        LOG.info("Check claim type for conversion for claim " + claimId);
-        const claim = await SELECT.one
-          .from("ls.claims.Claims")
-          .columns((claim) => {
-            claim.ID,
-              claim.type((type) => {
-                type.id;
-              });
-          })
-          .where({ ID: claimId });
-        if (claim.type.id !== claim_types.quality) {
-          LOG.error(
-            "Cannot convert claim to market assistance for type" + claim.type.id
-          );
-          req.error(
-            "Only quality claims currently support conversion to market assistance claims"
-          );
-        }
-      }
+      
     });
 
     this.on("submitReviewReject", Claims, async (req) => {
@@ -389,42 +264,42 @@ class ClaimAppService extends cds.ApplicationService {
       req.notify(message);
     });
 
-    this.on("submitSendToGrower", Claims, async (req) => {
+    this.on("submitSendToBrewer", Claims, async (req) => {
       const response = await updateClaimStatus(
         req.params[0].ID,
-        claim_statuses.SENT_TO_GROWER,
-        "Sent to Grower",
-        claimActions.SEND_GROWER
+        claim_statuses.SENT_TO_BREWER,
+        "Sent to Brewer",
+        claimActions.SEND_BREWER
       );
       const message = response.success
-        ? `The claim has been sent to the grower for review`
+        ? `The claim has been sent to the brewer for review`
         : response.message;
       req.notify(message);
     });
 
-    this.on("submitGrowerAccepted", Claims, async (req) => {
+    this.on("submitBrewerAccepted", Claims, async (req) => {
       const response = await updateClaimStatus(
         req.params[0].ID,
         claim_statuses.WITH_FINANCE,
         "With Finance",
-        claimActions.GROWER_ACCEPT
+        claimActions.BREWER_ACCEPT
       );
       const message = response.success
-        ? `The claim has been approved by the grower & is with finance to complete`
+        ? `The claim has been approved by the brewer & is with finance to complete`
         : response.message;
       req.notify(message);
     });
 
-    this.on("submitGrowerRejected", Claims, async (req) => {
+    this.on("submitBrewerRejected", Claims, async (req) => {
       const response = await updateClaimStatus(
         req.params[0].ID,
         claim_statuses.PENDING_REVIEW,
-        "Grower Rejected",
-        claimActions.GROWER_REJECT
+        "Brewer Rejected",
+        claimActions.BREWER_REJECT
       );
 
       const message = response.success
-        ? `The claim has been rejected by the grower`
+        ? `The claim has been rejected by the brewer`
         : response.message;
       req.notify(message);
     });
@@ -444,18 +319,14 @@ class ClaimAppService extends cds.ApplicationService {
           .where({ ID: req.params[0].ID });
         if (
           claim.credit_note_id === null &&
-          claim.payment_deduction_doc_id === null &&
-          claim.type_id !== claim_types.complaint
+          claim.payment_deduction_doc_id === null 
         ) {
           LOG.error(
             "Cannot complete the claim as payment details have not been maintained: " +
               JSON.stringify(claim)
           );
 
-          req.error(
-            400,
-            "Cannot complete the claim as payment details have not been maintained"
-          );
+          req.error(400,"Cannot complete the claim as payment details have not been maintained");
 
           return;
         }
@@ -475,22 +346,6 @@ class ClaimAppService extends cds.ApplicationService {
       req.notify(message);
     });
 
-    // Handler for all actions in draft
-    this.before("requestInfo", "Claims.drafts", async (req) => {
-      LOG.error("Method requestInfo not allowed for records in draft");
-      req.error("You cannot perform this action on a draft record");
-    });
-
-    this.on("submitForReview", "Claims.drafts", async (req) => {
-      LOG.error("Method submitForReview not allowed for a record in draft");
-      req.error("You cannot perform this action on a draft record");
-    });
-
-    this.on("submitForApproval", "Claims.drafts", async (req) => {
-      LOG.error("Method submitForApproval not allowed for a record in draft");
-      req.error("You cannot perform this action on a draft record");
-    });
-
     this.before("UPDATE", "Attachments.drafts", async (req) => {
       LOG.info("Before Attachment Record Created");
       validateAttachments(req);
@@ -508,6 +363,8 @@ class ClaimAppService extends cds.ApplicationService {
 
         
         const filename = attachments.content.header('content-disposition').split("=")[1].replace(/"/g, '');
+        const contentType = attachments.content.header('content-type');
+        const contentLength = attachments.content.header('content-length');
 
         const id = attachments.content.url.match(/attachments\(ID=([0-9a-fA-F-]{36})/)[1];
 
@@ -524,7 +381,7 @@ class ClaimAppService extends cds.ApplicationService {
         );
         await cds.run(
           UPDATE(Attachments.drafts)
-            .set({ objectId: documentObjectId, name: filename })
+            .set({ objectId: documentObjectId, name: filename, contentType: contentType, contentLength: contentLength })
             .where({ ID: id })
         );
       } catch (error) {
@@ -600,33 +457,17 @@ class ClaimAppService extends cds.ApplicationService {
     });
 
     
-
-    this.before("SAVE", "MarketRepresentative", async (req, next) => {
-      const repId = req.data.ID;
-      LOG.info("Before saving market rep: " + repId);
-      await validateRepBeforeSave(req);
-    });
-
-    this.before("DELETE", "MarketRepresentative", async (req, next) => {
-      const repId = req.data.ID;
-      LOG.info("Before deleting market rep: " + repId);
-      req.warn({
-        code: "WRN_DELETE",
-        message:
-          "Deleting a market representative that has been referenced in a claim could lead to data inconsistency (i.e. missing names)",
-      });
-    });
-
+    
     this.on("error", Claims, (err, req) => {
       LOG.info("Custom Error Handling");
       if (err.code === 403) {
         err.message = "You are not authorized to perform this action";
       }
     });
+    
 
     return super.init();
   }
 }
 
-//module.exports = ClaimAppService;
 export default ClaimAppService;

@@ -7,12 +7,6 @@ using {
 
 namespace ls.claims;
 
-@Common.Label: 'Complaint Status'
-entity ComplaintStatus : CodeList {
-  key id          : String(2);
-      criticality : Integer;
-}
-
 
 @Common.Label: 'Claim Type'
 entity ClaimType : CodeList {
@@ -28,6 +22,7 @@ entity ClaimStatus : CodeList {
 @Common.Label: 'Claim Action Type'
 entity ClaimActionType : CodeList {
   key id : String(2);
+  Icon     : String @(UI: {IsImageURL: true});
 }
 
 @Common.Label: 'Cost Type'
@@ -51,34 +46,61 @@ entity PrimaryDefectCodes : CodeList {
   key id : String(10);
 }
 
-@Common.Label: 'Complaints'
-entity Complaints : cuid {
-  description : String(300) @Common.Label: 'Description';
-  // Associations
-  delivery    : Association to one Deliveries;
-  status      : Association to one ComplaintStatus  @Common.Label: 'Status'  @Common.Text: status.name;
+@Common.Label: 'Partner Type'
+entity PartnerType : CodeList {
+  key id : String(2);
 }
 
+
+@Common.Label: 'Unit of Measure'
+entity UnitofMeasure : CodeList {
+  key id : String(2);
+}
+
+// Partners
+@Common.Label: 'Partners'
+entity Partners : managed, cuid {
+  partner_id            : String(10)   @Common.Label: 'Partner Id'; 
+  name                  : String(100)  @Common.Label: 'Partner Name';
+  street_address        : String(100)  @Common.Label: 'Street Address';
+  city                  : String(50)   @Common.Label: 'City';
+  state_province        : String(50)   @Common.Label: 'State/Province';
+  postal_code           : String(20)   @Common.Label: 'Postal Code';
+  country               : String(50)   @Common.Label: 'Country';
+  contact_person_name   : String(100)  @Common.Label: 'Contact Person Name';
+  contact_number        : String(20)   @Common.Label: 'Contact Number';
+  email_address         : String(254)  @Common.Label: 'Email Address'  @Communication.IsEmailAddress: true;
+  // Associations
+  type                  : Association to one PartnerType  @Common.Label: 'Partner Type'  @Common.Text: type.name;
+}
+
+entity Beers : managed, cuid {
+  beer_id       : String(10)    @Common.Label: 'Beer Id';
+  name          : String(100)   @Common.Label: 'Beer Name';
+  description   : String(300)   @Common.Label: 'Description';
+  abv           : Decimal(5, 2) @Common.Label: 'Alcohol by Volume';
+  brewer        : Association to one Partners @Common.Label: 'Brewer'  @Common.Text: brewer.name;
+}
 
 // Deliveries
 @Common.Label: 'Delivery'
 entity Deliveries : managed, cuid {
-  delivery_id                    : String(10)            @Common.Label: 'Delivery Id'; 
-  customer_id                    : String(10)            @Common.Label: 'Customer Id'; 
-  shipment_id                    : String(10)            @Common.Label: 'Shipment Id'; 
-  customer_name                  : String(200)           @Common.Label: 'Customer Name'; 
-  virtual open_claims            : Boolean default false @Common.Label: 'Open Claims'; 
-  description                    : String(300)           @Common.Label: 'Description';
-  container_id                   : String(50)            @Common.Label: 'Container Id'; 
-  origin_country                 : String(2)             @Common.Label: 'Origin Country'; 
-  sales_region                   : String(4)             @Common.Label: 'Sales Region'; 
-  sales_region_desc              : String(40)            @Common.Label: 'Sales Region Description'; 
-  delivery_date                  : Date                  @Common.Label: 'Delivery Date'; 
-  discharge_country              : String(2)             @Common.Label: 'Discharge Country';
-  claims                         : Association to many Claims
-                                     on claims.delivery_id = $self.delivery_id;
+  delivery_id                    : String(10)                  @Common.Label: 'Delivery Id';
+  shipment_id                    : String(10)                  @Common.Label: 'Shipment Id'; 
+  delivery_date                  : Date                        @Common.Label: 'Delivery Date'; 
+  customer                       : Association to one Partners @Common.Label: 'Customer'  @Common.Text: customer.name;
+  shipping_partner               : Association to one Partners @Common.Label: 'Shipping Partner'  @Common.Text: shipping_partner.name;
+  brewer                         : Association to one Partners @Common.Label: 'Brewer'  @Common.Text: brewer.name;
+  pallets                        : Composition of many Pallets @Common.Label: 'Pallets'  @Common.Text: pallets.pallet_id;
 }
 
+entity Pallets : managed, cuid {
+  pallet_id       : String(10)   @Common.Label: 'Pallet Id';
+  delivery        : Association to one Deliveries @Common.Label: 'Delivery'  @Common.Text: delivery.delivery_id;
+  quantity        : Integer      @Common.Label: 'Quantity';
+  uom             : Association to one UnitofMeasure @Common.Label: 'Unit of Measure' @Common.IsUnit;
+  beer            : Association to one Beers @Common.Label: 'Beer'  @Common.Text: beer.name;
+}
 
 // Claims
 @Common.Label: 'Claims'
@@ -90,16 +112,14 @@ entity Claims : managed, cuid {
   claim_value              : Decimal(15, 2) @Common.Label: 'Claim Value';
   claim_currency           : Currency       @Common.Label: 'Claim Currency'  @Common.IsCurrency;
   claim_date_week_number   : Integer        @Common.Label: 'Claim Date Week Number';
-  days_to_claim            : Integer        @Common.Label: 'Days to Claim';
   credit_note_id           : String(10)     @Common.Label: 'Credit Note Id';
   payment_deduction_doc_id : String(10)     @Common.Label: 'Payment Deduction Doc Id';
-  grower_id                : String(10)     @Common.Label: 'Grower Id';
-  grower_name              : String(50)     @Common.Label: 'Grower Name';
-  delivery_id              : String(40)     @Common.Label: 'Delivery Id';
   workflow_id              : UUID           @Common.Label: 'Workflow Id';
   arrival_date             : Date           @Common.Label: 'Actual Arrival Date';
   virtual days_from_arrival: Integer        @Common.Label: 'Days from Arrival';
-  // Associations
+  agent_approval_outcome   : Decimal(3,0)   @Common.Label: 'Agent Assessment Outcome';
+  agent_approval_report    : String         @Common.Label: 'Agent Approval Report';  
+  // Associations & Compositions
   comments                 : Composition of many Comments
                                on comments.claim = $self;
   costs                    : Composition of many Costs
@@ -109,31 +129,21 @@ entity Claims : managed, cuid {
   type                     : Association to one ClaimType                    @Common.Label: 'Claim Type'  @Common.Text           : type.name;
   RejectionReason          : Association to one RejectionReason              @Common.Label: 'Rejection Reason'  @Common.Text     : RejectionReason.name;
 
-
-  qualityClaim             : Composition of one QualityClaims
-                               on qualityClaim.claim = $self;
-
-  packagingClaim           : Composition of one PackagingClaims
-                               on packagingClaim.claim = $self;
-
   attachments              : Composition of many Attachments
                                on attachments.claim = $self;
 
   auditLog                 : Composition of many AuditLogs
                                on auditLog.claim = $self;
 
-  delivery                 : Association to one Deliveries
-                               on delivery.delivery_id = $self.delivery_id;
+  delivery                 : Association to one Deliveries                   @Common.Label: 'Delivery'  @Common.Text             : delivery.delivery_id;
 
   pallets                  : Composition of many ClaimPallets
                                on pallets.claim = $self;
 
   defects                  : Composition of many ClaimDefects
                                on defects.claim = $self;
-
-  parentClaim              : Association to one Claims                       @Common.Label: 'Parent Claim Id'  @Common.Text  : parentClaim.claim_id;             
+          
   primary_defect_code      : Association to one PrimaryDefectCodes           @Common.Label: 'Primary Defect Code'  @Common.Text  : primary_defect_code.name;
-  market_representative    : Association to one MarketRep                    @Common.Label: 'Market Representative'  @Common.Text: market_representative.email;
 }
 
 
@@ -148,37 +158,17 @@ entity Comments : managed, cuid {
 @Common.Label: 'Additional Costs'
 entity Costs : cuid, managed {
   value     : Decimal(15, 2) @Common.Label: 'Value';
-  value_nzd : Decimal(15, 2) @Common.Label: 'Value (NZD)';
   // Associations
   claim     : Association to one Claims;
   cost_type : Association to one CostType  @Common.Label: 'Cost Type'  @Common.Text: cost_type.name;
 }
 
-
-@Common.Label: 'Quality Claim'
-entity QualityClaims : managed {
-
-  key claim                           : Association to one Claims;
-      is_pool                         : Boolean        @Common.Label: 'Is Pool';
-      virtual claim_value_per_tce     : Decimal(15, 2) @Common.Label: 'Claim Value per TCE';
-      qc_inspection_date              : Date           @Common.Label: 'QC Inspection Date';
-      virtual percentage_claimed      : Decimal(15, 2) @Common.Label: 'Percentage Claimed';
-      number_of_tce_out_of_spec       : Integer        @Common.Label: 'Number of TCE Out of Spec';
-}
-
-
-@Common.Label: 'Packaging Claim'
-entity PackagingClaims : managed {
-  key claim           : Association to one Claims;
-      pack_house_id   : String(10) @Common.Label: 'Pack House Id';
-      pack_house_name : String(50) @Common.Label: 'Pack House Name';
-}
-
 @Common.Label: 'Attachments'
 entity Attachments : cuid, managed {
   name            : String(100)  @Common.Label : 'File Name';
-  virtual content : LargeBinary  @Core.Computed: false  @Core.MediaType: contentType  @Core.ContentDisposition.Filename: name ;
-  contentType     : String(20)   @Core.IsMediaType;
+  virtual content : LargeBinary  @Core.Computed: false  @Core.MediaType: contentType  @Core.ContentDisposition.Filename: name;
+  contentType     : String(20)   @Common.Label : 'Content Type' @Core.IsMediaType ;
+  contentLength   : Integer      @Common.Label : 'Content Length';
   objectId        : String(50)   @Common.Label : 'DMS Object Id';
   // Associations
   claim           : Association to one Claims;
@@ -196,15 +186,7 @@ entity AuditLogs : cuid, managed {
 @Common.Label: 'Impacted Claim Pallets'
 entity ClaimPallets : managed, cuid {
   pallet_id    : String(20) @Common.Label: 'Pallet Id';
-  batch_id     : String(20) @Common.Label: 'Batch Id';
-  rpin         : String(10) @Common.Label: 'RPIN';
-  storage_type : String(50) @Common.Label: 'Storage Type';
-  pack_date    : Date       @Common.Label: 'Pack Date';
-  pack_type    : String(50) @Common.Label: 'Pack Type';
-  variety      : String(50) @Common.Label: 'Variety';
-  region       : String(20) @Common.Label: 'Region';
-  packer_name  : String(35) @Common.Label: 'Packer Name';
-  size         : String(50) @Common.Label: 'Size';
+  
   // Associations
   claim        : Association to one Claims;
 }
@@ -228,11 +210,3 @@ entity PrimaryToSecondaryDefectMap {
   key secondary_defect_code : Association to one SecondaryDefectCodes  @Common.Label: 'Secondary Defect Code'  @Common.Text: secondary_defect_code.name;
 }
 
-
-@Common.Label: 'Market Representatives'
-entity MarketRep : cuid, managed {
-  email     : String(254)  @Common.Label: 'Email'  @Communication.IsEmailAddress: true;
-  firstName : String(40)   @Common.Label: 'First Name';
-  lastName  : String(40)   @Common.Label: 'Last Name';
-  active    : Boolean      @Common.Label: 'Active';
-}
