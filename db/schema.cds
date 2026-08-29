@@ -74,6 +74,7 @@ entity Partners : managed, cuid {
   type                  : Association to one PartnerType  @Common.Label: 'Partner Type'  @Common.Text: type.name;
 }
 
+// Beers
 entity Beers : managed, cuid {
   beer_id       : String(10)    @Common.Label: 'Beer Id';
   name          : String(100)   @Common.Label: 'Beer Name';
