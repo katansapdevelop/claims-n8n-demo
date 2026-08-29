@@ -1,8 +1,10 @@
+import cds from "@sap/cds";
+
 const LOG = cds.log("ls.claims");
 
 let validRates = null;
 
-getValidConfigSettingByIds = async (settingIds) => {
+export const getValidConfigSettingByIds = async (settingIds) => {
   const now = new Date().toISOString();
   let settings = await SELECT.from("ls.claims.config.AppConfig")
     .columns((setting) => {
@@ -13,16 +15,15 @@ getValidConfigSettingByIds = async (settingIds) => {
       and: { validTo: { ">=": now }, and: { setting_id: settingIds } },
     });
 
-  settings = settings.map((setting) => {
-    return {
-      setting_id: setting.setting_id,
-      value: setting.value,
-    };
-  });
+  settings = settings.map((setting) => ({
+    setting_id: setting.setting_id,
+    value: setting.value,
+  }));
+
   return settings;
 };
 
-getValidConfigSettings = async () => {
+export const getValidConfigSettings = async () => {
   const now = new Date().toISOString();
   let settings = await SELECT.from("ls.claims.config.AppConfig")
     .columns((setting) => {
@@ -33,34 +34,32 @@ getValidConfigSettings = async () => {
       and: { validTo: { ">=": now } },
     });
 
-  settings = settings.map((setting) => {
-    return {
-      setting_id: setting.setting_id,
-      value: setting.value,
-    };
-  });
+  settings = settings.map((setting) => ({
+    setting_id: setting.setting_id,
+    value: setting.value,
+  }));
+
   return settings;
 };
 
-getAllConfigSettingsBySettingId = async (settingId) => {
+export const getAllConfigSettingsBySettingId = async (settingId) => {
   let settings = await SELECT.from("ls.claims.config.AppConfig")
     .columns((setting) => {
       setting`.*`;
     })
     .where({ setting_id: settingId });
 
-  settings = settings.map((setting) => {
-    return {
-      setting_id: setting.setting_id,
-      value: setting.value,
-      validFrom: setting.validFrom,
-      validTo: setting.validTo,
-    };
-  });
+  settings = settings.map((setting) => ({
+    setting_id: setting.setting_id,
+    value: setting.value,
+    validFrom: setting.validFrom,
+    validTo: setting.validTo,
+  }));
+
   return settings;
 };
 
-getConversionRatesByCurrency = async (fromCurrency, toCurrency) => {
+export const getConversionRatesByCurrency = async (fromCurrency, toCurrency) => {
   const now = new Date().toISOString();
 
   const rates = await SELECT.from("ls.claims.config.CurrencyConversion")
@@ -84,8 +83,9 @@ getConversionRatesByCurrency = async (fromCurrency, toCurrency) => {
  * @returns {Promise<number>} The conversion rate between the two currencies.
  * @throws {Error} If the conversion rate cannot be retrieved.
  */
-getValidConversionRateByCurrency = async (fromCurrency, toCurrency) => {
+export const getValidConversionRateByCurrency = async (fromCurrency, toCurrency) => {
   const now = new Date().toISOString();
+
   if (!validRates) {
     validRates = await SELECT.from("ls.claims.config.CurrencyConversion")
       .columns((conversion) => {
@@ -115,10 +115,4 @@ getValidConversionRateByCurrency = async (fromCurrency, toCurrency) => {
   return filteredRates[0].rate;
 };
 
-module.exports = {
-  getAppSettings: getValidConfigSettings,
-  getAllConfigSettingsBySettingId: getAllConfigSettingsBySettingId,
-  getValidConversionRateByCurrency: getValidConversionRateByCurrency,
-  getConversionRatesByCurrency: getConversionRatesByCurrency,
-  getValidConfigSettingByIds: getValidConfigSettingByIds,
-};
+export { getValidConfigSettings as getAppSettings };
