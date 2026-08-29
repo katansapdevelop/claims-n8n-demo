@@ -120,14 +120,6 @@ annotate service.Claims with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : arrival_date,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : days_from_arrival,
-            },
-            {
-                $Type : 'UI.DataField',
                 Value : description,
             },
         ],

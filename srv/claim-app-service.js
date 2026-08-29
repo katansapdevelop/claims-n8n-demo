@@ -1,7 +1,7 @@
 import cds from "@sap/cds";
 const LOG = cds.log("ls.claims");
 import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.cjs";
-import { updateClaimsTotals, updateClaimStatus, claim_types, claim_statuses, claimActions, validateClaimBeforeSave, updateExternalClaimId, validateBeforeSubmitForReview, calculateDaysFromArrival } from "./utils/ClaimsUtil.cjs";
+import { updateClaimsTotals, updateClaimStatus, claim_types, claim_statuses, claimActions, validateClaimBeforeSave, updateExternalClaimId, validateBeforeSubmitForReview} from "./utils/ClaimsUtil.cjs";
 
 
 
@@ -66,27 +66,6 @@ class ClaimAppService extends cds.ApplicationService {
     });
 
     
-    this.after("READ", Claims, async (claims) => {
-      LOG.info("Reading expanded claim data");
-      
-
-      let deliveryIds = [];
-      claims.map((claim) => {
-        if (claim.delivery_id) {
-          deliveryIds.push(claim.delivery_id);
-        }
-      });
-
-      LOG.info("Reading delivery IDs for claims");
-      let deliveries = [];
-      if (deliveryIds.length > 0) {
-        deliveries = await SELECT.from("ls.claims.Deliveries").where({
-          delivery_id: deliveryIds,
-        });
-      }
-      await calculateDaysFromArrival(claims);
-    });
-    
 
     this.before("CREATE", "ClaimDefects.drafts", async (req) => {
       LOG.info("Validating Claim Defects Befor Create");
@@ -108,40 +87,6 @@ class ClaimAppService extends cds.ApplicationService {
       }
     });
 
-    
-
-    this.after("READ", "Claims.drafts", async (claims) => {
-      LOG.info("Updating expanded claim data");
-            let claimIds = [];
-      let deliveryIds = [];
-      claims.map((claim) => {
-        claimIds.push(claim.ID);
-      });
-
-      LOG.info("Reading draft claims");
-      let draftClaims = [];
-      if (claimIds.length > 0) {
-        draftClaims = await cds.run(
-          SELECT(Claims.drafts).where({ ID: claimIds })
-        );
-      }
-
-      LOG.info("Reading delivery IDs for draft claims");
-      draftClaims.map((claim) => {
-        if (claim.delivery_id) {
-          deliveryIds.push(claim.delivery_id);
-        }
-      });
-
-      let deliveries = [];
-      if (deliveryIds.length > 0) {
-        deliveries = await SELECT.from("ls.claims.Deliveries").where({
-          delivery_id: deliveryIds,
-        });
-      }
-
-      await calculateDaysFromArrival(claims);
-    });
 
     this.before("SAVE", "Claims", async (req, next) => {
       const claimId = req.data.ID;

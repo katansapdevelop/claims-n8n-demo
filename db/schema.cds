@@ -116,8 +116,6 @@ entity Claims : managed, cuid {
   credit_note_id           : String(10)     @Common.Label: 'Credit Note Id';
   payment_deduction_doc_id : String(10)     @Common.Label: 'Payment Deduction Doc Id';
   workflow_id              : UUID           @Common.Label: 'Workflow Id';
-  arrival_date             : Date           @Common.Label: 'Actual Arrival Date';
-  virtual days_from_arrival: Integer        @Common.Label: 'Days from Arrival';
   agent_approval_outcome   : Decimal(3,0)   @Common.Label: 'Agent Assessment Outcome';
   agent_approval_report    : String         @Common.Label: 'Agent Approval Report';  
   // Associations & Compositions

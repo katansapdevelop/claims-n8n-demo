@@ -111,12 +111,6 @@ const validateClaimBeforeSave = async (req) => {
     req.reject(400, "Claim date cannot be in the future");
   }
 
-  LOG.info("Validating if the arrival date is set in the future");
-
-  if (_isDateInFuture(claim.arrival_date)) {
-    LOG.warn("Arrival date cannot be in the future");
-    req.reject(400, "Arrival date cannot be in the future");
-  }
 
   LOG.info(
     "Validating if the claim status is complete than no more changes are accepted"
@@ -455,24 +449,6 @@ validateBeforeSubmitForReview = async (req) => {
 };
 
 
-const calculateDaysFromArrival = async (claims) =>{
-  claims.map((claim) => {
-    LOG.info("Calculating days from arrival for " + claim.ID);
-    claim.days_from_arrival = null;
-    if (claim.arrival_date) {
-      const arrivalDate = new Date(claim.arrival_date);
-      const today = new Date();
-      const timeDiff = Math.abs(today.getTime() - arrivalDate.getTime());
-      claim.days_from_arrival = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    }
-
-    if(claim.days_from_arrival > 366){
-      LOG.info("Defaulting days from arrival to null as it is greater than 366 for claim " + claim.ID);
-      claim.days_from_arrival = null;
-    }
-  });
-};
-      
 
 module.exports = {
   updateClaimsTotals: updateClaimsTotals,
@@ -483,6 +459,5 @@ module.exports = {
   claimActions: claimActions,
   validateClaimBeforeSave: validateClaimBeforeSave,
   updateExternalClaimId: updateExternalClaimId,
-  validateBeforeSubmitForReview: validateBeforeSubmitForReview,
-  calculateDaysFromArrival:calculateDaysFromArrival
+  validateBeforeSubmitForReview: validateBeforeSubmitForReview
 };

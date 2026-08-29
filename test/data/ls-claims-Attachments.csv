@@ -1,3 +1,3 @@
 ID,claim_ID,name,contentType,createdBy,objectId,contentLength
-4b241101-e2bb-4255-8caf-4136c566a979,3b241101-e2bb-4255-8caf-4136c566a979,OldMoney1.jpg,image/jpeg,claimant@test.global,_sF3VHMtBWzDpk69dM4TDaNoj2j8eOm_9oCJujUuA5o,361000
-5b241101-e2bb-4255-8caf-4136c566a979,3b241101-e2bb-4255-8caf-4136c566a979,OldMoney2.jpg,image/jpeg,claimant@test.global,_sF3VHMtBWzDpk69dM4TDaNoj2j8eOm_9oCJujUuA5o,140000
+4b241101-e2bb-4255-8caf-4136c566a979,3b241101-e2bb-4255-8caf-4136c566a979,OldMoney1.jpg,image/jpeg,claimant@test.com,_sF3VHMtBWzDpk69dM4TDaNoj2j8eOm_9oCJujUuA5o,361000
+5b241101-e2bb-4255-8caf-4136c566a979,3b241101-e2bb-4255-8caf-4136c566a979,OldMoney2.jpg,image/jpeg,claimant@test.com,_sF3VHMtBWzDpk69dM4TDaNoj2j8eOm_9oCJujUuA5o,140000
