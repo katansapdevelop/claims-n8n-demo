@@ -1,13 +1,14 @@
+import cds from "@sap/cds";
 
 const LOG = cds.log("ls.claims");
 
-const claim_types = {
+export const claim_types = {
   quality: "QC",
   packaging: "PK",
   shipping: "SH",
 };
 
-const claim_statuses = {
+export const claim_statuses = {
   NEW: 1,
   PENDING_REVIEW: 2,
   INFO_REQ: 3,
@@ -18,7 +19,7 @@ const claim_statuses = {
   COMPLETE: 8,
 };
 
-const claimActions = {
+export const claimActions = {
   CREATED: 0,
   SUBMIT_REVIEW: 1,
   APPROVE_REVIEW: 2,
@@ -31,42 +32,26 @@ const claimActions = {
 };
 
 let _claimTypes = null;
-getClaimTypes = async () => {
+export const getClaimTypes = async () => {
   if (_claimTypes === null) {
     _claimTypes = await SELECT.from("ls.claims.ClaimType");
   }
   return _claimTypes;
 };
 
-getClaimTypeById = async (claimTypeId) => {
+export const getClaimTypeById = async (claimTypeId) => {
   const claimTypes = await getClaimTypes();
-  const claim = claimTypes.find((claimType) => claimType.id === claimTypeId);
-  return claim;
+  return claimTypes.find((claimType) => claimType.id === claimTypeId);
 };
 
 let _erpClaims = null;
 
-
-/**
- * This method checks if a given date is in the future.
- *
- * @param {Date} date - The date to check.
- * @returns {boolean} Returns true if the date is in the future, false otherwise.
- */
-_isDateInFuture = (date) => {
-  let tomorrow = new Date();
+const _isDateInFuture = (date) => {
+  const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   return new Date(date) > tomorrow;
 };
 
-
-/**
- * This method validates a QC (Quality Control) claim before it is saved.
- *
- * @param {Object} req - The request object containing the QC claim data.
- * @throws {Error} If the QC claim does not meet the above conditions, an error is thrown with a 400 status code.
- * @returns {undefined} This function does not return a value. It either completes successfully or throws an error.
- */
 const _validateQCClaimBeforeSave = async (req) => {
   const claim = req.data;
   if (claim.type_id !== claim_types.quality) {
@@ -75,20 +60,16 @@ const _validateQCClaimBeforeSave = async (req) => {
 
   if (!claim.primary_defect_code_id) {
     LOG.warn("Primary Defect Code is mandatory for a Quality Claim");
-    const ClaimType = "Quality Claim"  
-    req.reject(400, cds.i18n.labels.at('PRIMARY_DEFECT_REQUIRED_CLAIM_TYPE', {ClaimType}));
+    const ClaimType = "Quality Claim";
+    req.reject(
+      400,
+      cds.i18n.labels.at("PRIMARY_DEFECT_REQUIRED_CLAIM_TYPE", { ClaimType })
+    );
   }
 };
 
-/**
- * Validates a claim before creating/updating it
- *
- * @param {Object} req - The request object containing the claim data.
- * @throws {Error} If the claim is not valid
- */
-const validateClaimBeforeSave = async (req) => {
+export const validateClaimBeforeSave = async (req) => {
   const claim = req.data;
-  
 
   LOG.info("Validating if the claim has currency code");
   if (
@@ -105,12 +86,10 @@ const validateClaimBeforeSave = async (req) => {
   }
 
   LOG.info("Validating if the claim date is set in the future");
-
   if (_isDateInFuture(claim.date_of_claim)) {
     LOG.warn("Claim date cannot be in the future");
     req.reject(400, "Claim date cannot be in the future");
   }
-
 
   LOG.info(
     "Validating if the claim status is complete than no more changes are accepted"
@@ -144,13 +123,7 @@ const validateClaimBeforeSave = async (req) => {
   await _validateQCClaimBeforeSave(req);
 };
 
-/**
- * Calculates the virtual delivery details for a given set of deliveries.
- *
- * @async
- * @param {Array} Deliveries - An array of delivery objects. Each object should have an 'ID' property.
- */
-calculateVirtualDeliveryDetails = async (Deliveries) => {
+export const calculateVirtualDeliveryDetails = async (Deliveries) => {
   LOG.info("Calculating virtual details for deliveries");
 
   if (Deliveries.length === 0) {
@@ -158,12 +131,12 @@ calculateVirtualDeliveryDetails = async (Deliveries) => {
     return;
   }
 
-  let deliveryIds = Deliveries.map((delivery) => delivery.ID);
+  const deliveryIds = Deliveries.map((delivery) => delivery.ID);
   LOG.info(
     "Reading all claims for " + deliveryIds.length + " deliveries being read"
   );
 
-  let deliveryClaims = await SELECT.from("ls.claims.Deliveries")
+  const deliveryClaims = await SELECT.from("ls.claims.Deliveries")
     .columns((delivery) => {
       delivery.ID,
         delivery.claims((claim) => {
@@ -175,25 +148,19 @@ calculateVirtualDeliveryDetails = async (Deliveries) => {
         });
     })
     .where({ ID: { in: deliveryIds } });
+
   LOG.info(
     "Read " + deliveryClaims.length + " claims for all deliveries being read"
   );
 
-  // Update the virtual attributes for each delivery found
-  for (delivery of Deliveries) {
-    // Dafault all the values
+  for (const delivery of Deliveries) {
     delivery.open_claims = false;
-
-    // Filter the claims for the specific delivery
-    let deliveryClaim = deliveryClaims.filter(
+    const deliveryClaim = deliveryClaims.filter(
       (deliveryClaim) => deliveryClaim.ID === delivery.ID
     );
 
     if (deliveryClaim.length > 0) {
-      // Calculate the total claim value for the delivery
-      for (claim of deliveryClaim[0].claims) {
-        
-        // check if the claim is open
+      for (const claim of deliveryClaim[0].claims) {
         if (
           !(
             claim.status.id === claim_statuses.COMPLETE ||
@@ -207,20 +174,9 @@ calculateVirtualDeliveryDetails = async (Deliveries) => {
   }
 };
 
-/**
- * Asynchronously calculates and updates the total claim value for each claim in the provided array, including additional costs.
- * If the claim values are not present in the claim headers, they are read from the database.
- *
- * @param {Array|Object} Claim_Header - An array of claims or a single claim. Each claim header should be an object with at least an 'ID' property.
- * @returns {void} - This function does not return anything. It modifies the claim in place, adding 'total_claim_value'  properties to each one.
- * @throws {Error} - Throws an error if the database operations fail.
- */
-updateClaimsTotals = async (Claim_Header) => {
-  LOG.info(
-    "Calculating the total claim value including additional costs"
-  );
+export const updateClaimsTotals = async (Claim_Header) => {
+  LOG.info("Calculating the total claim value including additional costs");
 
-  // Calculate the total claim value including additional costs
   let claimHeaders = Claim_Header;
   if (!Array.isArray(Claim_Header)) {
     claimHeaders = [Claim_Header];
@@ -231,36 +187,32 @@ updateClaimsTotals = async (Claim_Header) => {
     return;
   }
 
-  // Get Additional Costs for all claims being read
   LOG.info("Reading costs for all claims being read");
-  let claimIds = claimHeaders.map((claim) => claim.ID);
+  const claimIds = claimHeaders.map((claim) => claim.ID);
 
-  // If no claim value is present, then we need to read the claim cost values from the DB
   let readClaimCostsFromDb = false;
   let claims = null;
-  if (!claimHeaders[0].hasOwnProperty("claim_value")) {
+  if (!Object.prototype.hasOwnProperty.call(claimHeaders[0], "claim_value")) {
     readClaimCostsFromDb = true;
     claims = await SELECT.from("ls.claims.Claims")
       .columns("ID", "claim_value")
       .where({ ID: { in: claimIds } });
   }
 
-  // Read values of any additional costs for the claim
   const costs = await SELECT.from("ls.claims.Costs")
     .columns("claim_ID", "value")
     .where({ claim_ID: { in: claimIds } });
 
   LOG.info("Updating costs for all claims being read");
-  for (let claim of claimHeaders) {
+  for (const claim of claimHeaders) {
     if (readClaimCostsFromDb === true && claims.length > 0) {
-      let claimCost = claims.filter((claimCost) => claimCost.ID === claim.ID);
+      const claimCost = claims.filter((claimCost) => claimCost.ID === claim.ID);
       claim.claim_value = Number(claimCost[0].claim_value.toFixed(2));
     }
     claim.total_claim_value = claim.claim_value | 0;
 
-    // Add up all costs related to the claim
     const claimCosts = costs.filter((cost) => cost.claim_ID === claim.ID);
-    for (let cost of claimCosts) {
+    for (const cost of claimCosts) {
       claim.total_claim_value += Number(cost.value);
     }
     claim.total_claim_value.toFixed(2);
@@ -272,16 +224,14 @@ updateClaimsTotals = async (Claim_Header) => {
   }
 };
 
-
-
-_generateClaimId = async (delivery_id, offsetForSelf) => {
+const _generateClaimId = async (delivery_id) => {
   LOG.info("Generating claim ID for the claim");
+  LOG.info(
+    "Reading the highest claims to generate claim id for delivery ID: " + delivery_id
+  );
+  const latestClaim = await SELECT.one.from("ls.claims.Claims").orderBy("claim_id desc");
+  LOG.info("Successfully found latest claim was " + latestClaim.claim_id);
 
-  // Read the highest claim id
-  LOG.info("Reading the highest claims to generate claim id for delivery ID: " + delivery_id);
-  const latestClaim = await SELECT.one.from("ls.claims.Claims").orderBy('claim_id desc');
-  LOG.info( "Successfully found latest claim was " + latestClaim.claim_id);
-  
   let claimId = latestClaim.claim_id;
   claimId++;
   claimId = claimId.toString();
@@ -290,8 +240,7 @@ _generateClaimId = async (delivery_id, offsetForSelf) => {
   return claimId;
 };
 
-
-updateExternalClaimId = async (ClaimHeader) => {
+export const updateExternalClaimId = async (ClaimHeader) => {
   LOG.info("Updating claim ID for the claim");
   const claimId = await _generateClaimId(ClaimHeader.delivery_id);
   LOG.info("Updating the claim id of the claim to: " + claimId);
@@ -300,24 +249,14 @@ updateExternalClaimId = async (ClaimHeader) => {
   });
 };
 
-
-/**
- * Asynchronously updates the status of a claim.
- *
- * @async
- * @param {number|string} claimId - The ID of the claim to update.
- * @param {number|string} statusId - The ID of the new status.
- * @param {string} statusText - The text of the new status.
- * @returns {Promise<Object>} A promise that resolves to an object containing the success status, message for the operation & the claim status
- */
-updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
+export const updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
   LOG.info("Updating claims status to " + statusText);
-  let response = {
+  const response = {
     success: false,
     message: "",
   };
 
-  let auditLogRecord = {
+  const auditLogRecord = {
     claim_ID: claimId,
     claimAction_id:
       claimAction !== undefined
@@ -328,8 +267,7 @@ updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
   };
 
   try {
-    // Read the claim status and check the status change is valid
-    claims = await SELECT.one
+    const claims = await SELECT.one
       .from("ls.claims.Claims")
       .columns((claim) => {
         claim.ID,
@@ -342,12 +280,10 @@ updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
       })
       .where({ ID: claimId });
 
-    // Hack to ensure the code is consistent for the new claim type as it is for the others
     if (claims.status === null) {
       claims.status = { id: null };
     }
 
-    //Update the status for the audit log record
     auditLogRecord.originalStatus_id =
       claimAction !== undefined ? claims.status.id.toString() : null;
 
@@ -357,36 +293,30 @@ updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
         " and found values: " +
         JSON.stringify(claims)
     );
-    response.claimType = claims.type.id; //Added claim type to avoid reading DB again from the calling function
-    previousValidStatusCodes = _claim_status_previous;
+
+    response.claimType = claims.type.id;
+    let previousValidStatusCodes = _claim_status_previous;
     switch (claims.type.id) {
       case claim_types.quality:
         previousValidStatusCodes = _claim_status_previous_qc;
         break;
     }
-  } catch (e) {
-    LOG.error("Errors occured reading the claim status: " + e);
-    response.message = "Errors occured updating the claim";
-    return response;
-  }
 
-  if (!previousValidStatusCodes[statusId].includes(claims.status.id)) {
-    LOG.error(
-      "Trying to set status id " +
-        statusId +
-        " but no matching values for current status " +
-        claims.status.id +
-        " for claim ID " +
-        claimId
-    );
-    response.message =
-      "It is not possible to change the status from the current status to " +
-      statusText;
-    return response;
-  }
+    if (!previousValidStatusCodes[statusId].includes(claims.status.id)) {
+      LOG.error(
+        "Trying to set status id " +
+          statusId +
+          " but no matching values for current status " +
+          claims.status.id +
+          " for claim ID " +
+          claimId
+      );
+      response.message =
+        "It is not possible to change the status from the current status to " +
+        statusText;
+      return response;
+    }
 
-  try {
-    // Update the claim status
     LOG.info("Updating the status of the claim to: " + statusText);
     await UPDATE("ls.claims.Claims", { ID: claimId }).with({
       status_id: statusId,
@@ -395,69 +325,49 @@ updateClaimStatus = async (claimId, statusId, statusText, claimAction) => {
     response.success = true;
     response.message = "Claim status updated to " + statusText;
 
-    // Update the audit log
     LOG.info(
       "Updating the audit log for the claim: " + JSON.stringify(auditLogRecord)
     );
     await INSERT.into("ls.claims.AuditLogs").entries([auditLogRecord]);
     LOG.info("Audit Log successfully added");
   } catch (e) {
-    LOG.error("Errors occured updating the claim status: " + e);
+    LOG.error("Errors occured reading the claim status: " + e);
     response.message = "Errors occured updating the claim";
     return response;
   }
+
   return response;
 };
 
-
-const _maxTceOnPallet = 56;
-
-
-// Quality Claim
 const _claim_status_previous_qc = {
-  1: [null], // New
-  2: [1, 6, 3], // Pending Review
-  3: [2], // Info Required
-  4: [2], // Review Approved
-  5: [2], // Review Rejected
-  6: [4], // Sent to Brewer
-  7: [6], // With Finance
-  8: [7], // Complete
+  1: [null],
+  2: [1, 6, 3],
+  3: [2],
+  4: [2],
+  5: [2],
+  6: [4],
+  7: [6],
+  8: [7],
 };
 
 const _claim_status_previous = {
-  1: [null], // New
-  2: [1, 3], // Pending Review
-  3: [2], // Info Required
-  5: [2], // Review Rejected
-  7: [2], // With Finance
-  8: [7], // Complete
+  1: [null],
+  2: [1, 3],
+  3: [2],
+  5: [2],
+  7: [2],
+  8: [7],
 };
 
-validateBeforeSubmitForReview = async (req) => {
-  let claimID = req.params[0].ID;
+export const validateBeforeSubmitForReview = async (req) => {
+  const claimID = req.params[0].ID;
   LOG.info("Reading claim details for claim id: " + claimID);
   const claim = await SELECT.one
     .from("ls.claims.Claims")
     .columns((claim) => {
       claim.ID,
-        claim.type_id
+        claim.type_id;
     })
     .where({ ID: claimID });
   LOG.info("Read claim " + JSON.stringify(claim));
-
-};
-
-
-
-module.exports = {
-  updateClaimsTotals: updateClaimsTotals,
-  calculateVirtualDeliveryDetails: calculateVirtualDeliveryDetails,
-  updateClaimStatus: updateClaimStatus,
-  claim_types: claim_types,
-  claim_statuses: claim_statuses,
-  claimActions: claimActions,
-  validateClaimBeforeSave: validateClaimBeforeSave,
-  updateExternalClaimId: updateExternalClaimId,
-  validateBeforeSubmitForReview: validateBeforeSubmitForReview
 };
