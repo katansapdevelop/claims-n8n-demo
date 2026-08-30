@@ -2,7 +2,7 @@ import cds from "@sap/cds";
 
 const LOG = cds.log("ls.claims");
 
-import { getAllConfigSettingsBySettingId, getConversionRatesByCurrency } from "./utils/ConfigUtil.cjs";
+import { getAllConfigSettingsBySettingId, getConversionRatesByCurrency } from "./utils/ConfigUtil.js";
 
 class ConfigAppService extends cds.ApplicationService {
   async init() {

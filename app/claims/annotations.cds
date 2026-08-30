@@ -10,13 +10,13 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataField',
-            Value : delivery.delivery_id,
+            Value : type_id,
             @UI.Importance : #High,
         },
         {
             $Type : 'UI.DataField',
-            Value : type_id,
-            @UI.Importance : #High,
+            Value : delivery.ID,
+            Label : 'Delivery Id',
         },
         {
             $Type : 'UI.DataField',
@@ -117,14 +117,6 @@ annotate service.Claims with @(
             {
                 $Type : 'UI.DataField',
                 Value : date_of_claim,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : arrival_date,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : days_from_arrival,
             },
             {
                 $Type : 'UI.DataField',
@@ -742,7 +734,6 @@ annotate service.Claims with {
 
 annotate service.Claims with {
     delivery @(
-        Common.ExternalID : delivery.delivery_id,
         Common.ValueList : {
             $Type : 'Common.ValueListType',
             CollectionPath : 'Deliveries',
@@ -771,6 +762,8 @@ annotate service.Claims with {
             ],
         },
         Common.ValueListWithFixedValues : false,
+        Common.Text : delivery.delivery_id,
+        Common.Text.@UI.TextArrangement : #TextOnly,
     )
 };
 
@@ -812,6 +805,34 @@ annotate service.Claims with {
     agent_approval_report @(
         UI.MultiLineText : true,
         Common.FieldControl : #ReadOnly,
+    )
+};
+
+annotate service.Deliveries with {
+    delivery_id @(
+        Common.SemanticObject : 'delivery',
+        Common.SemanticObjectMapping : [
+            {
+                $Type : 'Common.SemanticObjectMappingType',
+                LocalProperty : delivery_id,
+                SemanticObjectProperty : 'delivery_id',
+            },
+        ],
+    )
+};
+
+annotate service.Deliveries with {
+    ID @(
+        Common.Text : delivery_id,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+        Common.SemanticObject : 'delivery',
+        Common.SemanticObjectMapping : [
+            {
+                $Type : 'Common.SemanticObjectMappingType',
+                LocalProperty : ID,
+                SemanticObjectProperty : 'ID',
+            },
+        ],
     )
 };
 

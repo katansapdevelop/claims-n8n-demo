@@ -74,6 +74,7 @@ entity Partners : managed, cuid {
   type                  : Association to one PartnerType  @Common.Label: 'Partner Type'  @Common.Text: type.name;
 }
 
+// Beers
 entity Beers : managed, cuid {
   beer_id       : String(10)    @Common.Label: 'Beer Id';
   name          : String(100)   @Common.Label: 'Beer Name';
@@ -91,7 +92,7 @@ entity Deliveries : managed, cuid {
   customer                       : Association to one Partners @Common.Label: 'Customer'  @Common.Text: customer.name;
   shipping_partner               : Association to one Partners @Common.Label: 'Shipping Partner'  @Common.Text: shipping_partner.name;
   brewer                         : Association to one Partners @Common.Label: 'Brewer'  @Common.Text: brewer.name;
-  pallets                        : Composition of many Pallets @Common.Label: 'Pallets'  @Common.Text: pallets.pallet_id;
+  pallets                        : Composition of many Pallets on pallets.delivery = $self  @Common.Label: 'Pallets'  @Common.Text: pallets.pallet_id;
 }
 
 entity Pallets : managed, cuid {
@@ -115,8 +116,6 @@ entity Claims : managed, cuid {
   credit_note_id           : String(10)     @Common.Label: 'Credit Note Id';
   payment_deduction_doc_id : String(10)     @Common.Label: 'Payment Deduction Doc Id';
   workflow_id              : UUID           @Common.Label: 'Workflow Id';
-  arrival_date             : Date           @Common.Label: 'Actual Arrival Date';
-  virtual days_from_arrival: Integer        @Common.Label: 'Days from Arrival';
   agent_approval_outcome   : Decimal(3,0)   @Common.Label: 'Agent Assessment Outcome';
   agent_approval_report    : String         @Common.Label: 'Agent Approval Report';  
   // Associations & Compositions
