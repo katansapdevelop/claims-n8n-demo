@@ -186,7 +186,6 @@
                       "press": "com.logicalstarconsulting.claims.ext.controller.ClaimsObjectPageActions.onReviewerReject",
                       "visible": "{= %{status/id} === 2 }",
                       "enabled": true,
-                      "criticality": "negative",
                       "text": "Reject Review",
                       "position": {
                         "placement": "After",
