@@ -184,8 +184,9 @@
                   "actions": {
                     "RejectReview": {
                       "press": "com.logicalstarconsulting.claims.ext.controller.ClaimsObjectPageActions.onReviewerReject",
-                      "visible": true,
+                      "visible": "{= %{status/id} === 2 }",
                       "enabled": true,
+                      "criticality": "negative",
                       "text": "Reject Review",
                       "position": {
                         "placement": "After",
@@ -216,7 +217,7 @@
       "extensions": {
         "sap.ui.controllerExtensions": {
           "sap.fe.templates.ObjectPage.ObjectPageController#com.logicalstarconsulting.claims::ClaimsObjectPage": {
-            "controllerName": "com.logicalstarconsulting.claims.ext.controller.ClaimsOPExtend"
+            "controllerName": "com.logicalstarconsulting.claims.ext.controller.ClaimsObjectPageExtension"
           }
         }
       }

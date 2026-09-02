@@ -25,8 +25,7 @@ service ClaimAppService @(path: '/app/claim', ) {
             action submitReviewReject(reason : String enum {
                 IE;
                 IS;
-            },
-            convertToMarketAssistance : Boolean);
+            });
 
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]

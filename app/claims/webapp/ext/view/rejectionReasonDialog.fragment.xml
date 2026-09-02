@@ -33,9 +33,6 @@
 			</f:SimpleForm>
 		</VBox>
 		<buttons>
-			<Button text="Submit + Convert" press=".submitRejectionReason" id="submitConvertRejectionReasonButton"
-				type="Attention" visible="{= ${path: 'type_id', targetType: 'any'} === 'QC' }"
-				/>
 			<Button text="Submit" press=".submitRejectionReason" id="submitRejectionReasonButton"
 				type="Accept" />
 			<Button text="Cancel" press=".closeDialog" id="closeDialogButton" type="Reject"/>

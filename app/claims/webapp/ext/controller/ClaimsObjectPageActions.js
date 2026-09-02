@@ -15,10 +15,12 @@ sap.ui.define([
                 this.rejectionReasonDialog = await this.getInterface().loadFragment({
                     id: "rejectionReasonDialog",
                     name: "com.logicalstarconsulting.claims.ext.view.rejectionReasonDialog",
-                    controller: this.extension.com.logicalstarconsulting.claims.ext.controller.OPExtend
+                    controller: this.extension.com.logicalstarconsulting.claims.ext.controller.ClaimsObjectPageExtension
                 })
             }
             this.rejectionReasonDialog.open();
         }
+
+
     };
 });
