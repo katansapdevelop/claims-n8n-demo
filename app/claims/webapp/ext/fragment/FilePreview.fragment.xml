@@ -1,9 +1,21 @@
-<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m">
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" >
+	<VBox id="FilePreviewVBox"> 
 	<Image
 		id="FilePreview"
 		src="{content}"
 		width="100px"
 		height="100px"
 		densityAware="false"
+		visible="{= ${isImage} === true }"
 	/>
+	<core:Icon
+	    id="FilePreviewIcon" 
+		src="{sourceIcon}"
+		width="100px"
+		height="100px"
+		color="#031E48" 
+		size="60px"
+		visible="{= ${isImage} !== true }"
+	/>	
+	</VBox>
 </core:FragmentDefinition>

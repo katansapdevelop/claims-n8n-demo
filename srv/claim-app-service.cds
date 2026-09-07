@@ -55,7 +55,13 @@ service ClaimAppService @(path: '/app/claim', ) {
     entity Attachments                   as projection on db.Attachments {
         *,
         @title : 'Content Length (KB)'
-        contentLength / 1024 as contentLengthKB : Decimal(15, 2)
+        contentLength / 1024 as contentLengthKB : Decimal(15, 2),
+        contentType like 'image/%' as isImage : Boolean @title : 'Is Image',
+        case 
+            when contentType = 'application/pdf' 
+                then 'sap-icon://pdf-attachment' 
+            else 'sap-icon://document' 
+        end as sourceIcon : String(20)
     };
 
     @cds.redirection.target
