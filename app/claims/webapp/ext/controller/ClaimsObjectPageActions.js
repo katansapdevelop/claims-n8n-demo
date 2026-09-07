@@ -1,8 +1,6 @@
 sap.ui.define([
     "sap/m/MessageToast",
-    "sap/m/PDFViewer",
-    "sap/suite/ui/commons/imageeditor/ImageEditor"
-], function(MessageToast,PDFViewer,ImageEditor) {
+], function(MessageToast) {
     'use strict';
 
     function _getDetailsForSelectedAttachment(oSource) {
@@ -102,32 +100,6 @@ sap.ui.define([
             } catch (error) {
                 MessageToast.show("Unable to download attachment");
             }
-        },
-        onPreviewEvidence: async function(oEvent, oSource) {
-			var sAttachment = _getDetailsForSelectedAttachment(oSource);
-            if (!sAttachment) {
-                return;
-            }
-            switch (sAttachment.type) {
-                case "application/pdf":
-                    this._pdfViewer.setSource(sAttachment.downloadUrl);
-                    this._pdfViewer.setTitle("Previewing " + sAttachment.fileName);
-                    this._pdfViewer.open();
-                    break;
-                case "image/png":
-                case "image/jpeg":
-                    this._imageViewer.setSource(sAttachment.downloadUrl);
-                    this._imageViewer.setTitle("Previewing " + sAttachment.fileName);
-                    this._imageViewer.open();
-                    break;
-                case "image/jpeg":
-                    
-                    break;
-                default:
-                    MessageToast.show("Preview not available for file type " + sAttachment.type);
-                    break;
-            }
-        
         }
 
     };

@@ -307,7 +307,7 @@ class ClaimAppService extends cds.ApplicationService {
       try {
 
         
-        const filename = attachments.content.header('content-disposition').split("=")[1].replace(/"/g, '');
+        const filename = decodeURIComponent(attachments.content.header('content-disposition').split("=")[1].replace(/"/g, ''));
         const contentType = attachments.content.header('content-type');
         const contentLength = attachments.content.header('content-length');
 
@@ -394,7 +394,14 @@ class ClaimAppService extends cds.ApplicationService {
           attachmentRecord.objectId;
 
         let fileContent = await getAttachmentStream(attachmentRecord);
-        attachments[0].content = fileContent;
+        const targetAttachment = Array.isArray(attachments)
+          ? attachments[0]
+          : attachments;
+
+        targetAttachment.content = fileContent;
+        targetAttachment.$mediaContentType = attachmentRecord.contentType;
+        targetAttachment.$mediaContentDispositionFilename =
+          attachmentRecord.name;
       } catch (error) {
         LOG.error("Error reading attachment content: " + error);
         throw new Error("Error reading attachment from content repository");
