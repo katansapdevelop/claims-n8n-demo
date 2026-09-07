@@ -359,8 +359,8 @@ annotate service.Attachments with @(
     UI.LineItem #Attachment : [
         {
             $Type : 'UI.DataField',
-            Value : claim.attachments.content,
-            Label : 'File',
+            Value : content,
+            Label : 'content',
         },
         {
             $Type : 'UI.DataField',
