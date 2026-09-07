@@ -201,6 +201,11 @@
                   "tableSettings": {
                     "type": "ResponsiveTable"
                   }
+                },
+                "pallets/@com.sap.vocabularies.UI.v1.LineItem#Pallets": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
                 }
               },
               "content": {

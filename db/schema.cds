@@ -190,9 +190,9 @@ entity AuditLogs : cuid, managed {
 
 @Common.Label: 'Impacted Claim Pallets'
 entity ClaimPallets : managed, cuid {
-  pallet_id    : String(20) @Common.Label: 'Pallet Id';
   
   // Associations
+  pallet       : Association to one Pallets;
   claim        : Association to one Claims;
 }
 

@@ -72,6 +72,12 @@ service ClaimAppService @(path: '/app/claim', ) {
     entity Deliveries                    as projection on db.Deliveries;
 
     @readonly
+    entity Pallets                        as projection on db.Pallets;
+
+    @readonly
+    entity Beers                         as projection on db.Beers;
+
+    @readonly
     entity Partners                      as projection on db.Partners;
 
     @readonly

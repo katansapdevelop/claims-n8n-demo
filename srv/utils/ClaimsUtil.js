@@ -111,7 +111,7 @@ export const validateClaimBeforeSave = async (req) => {
 
   LOG.info("Validating if the claim has duplicate pallet ids in the claim");
   if (claim.pallets) {
-    const palletIds = claim.pallets.map((pallet) => pallet.pallet_id);
+    const palletIds = claim.pallets.map((pallet) => pallet.pallet_ID);
     const uniquePalletIds = new Set(palletIds);
     if (palletIds.length !== uniquePalletIds.size) {
       LOG.warn("Duplicate pallet ids found for claim " + claim.ID);
