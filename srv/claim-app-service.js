@@ -177,7 +177,6 @@ class ClaimAppService extends cds.ApplicationService {
     this.on("submitReviewReject", Claims, async (req) => {
       const claimId = req.params[0].ID;
       const rejectionReason = req.data.reason;
-      const marketAssistanceConversion = req.data.convertToMarketAssistance;
       const response = await updateClaimStatus(
         claimId,
         claim_statuses.REVIEW_REJECTED,
@@ -190,18 +189,6 @@ class ClaimAppService extends cds.ApplicationService {
         RejectionReason_id: rejectionReason,
       });
 
-      if (marketAssistanceConversion) {
-        const marketAssistClaim = await convertToMarketAssistance(claimId);
-        LOG.info(
-          "Updating the converted claim id for claim to " + marketAssistClaim.ID
-        );
-        await UPDATE("ls.claims.Claims", { ID: claimId }).with({
-          convertedClaim_ID: marketAssistClaim.ID,
-        });
-        LOG.info(
-          "Successfully updated the converted claim id for claim " + claimId
-        );
-      }
 
       const message = response.success
         ? `The claim review has been rejected`

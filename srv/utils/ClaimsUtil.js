@@ -123,56 +123,6 @@ export const validateClaimBeforeSave = async (req) => {
   await _validateQCClaimBeforeSave(req);
 };
 
-export const calculateVirtualDeliveryDetails = async (Deliveries) => {
-  LOG.info("Calculating virtual details for deliveries");
-
-  if (Deliveries.length === 0) {
-    LOG.info("No deliveries found exiting routine");
-    return;
-  }
-
-  const deliveryIds = Deliveries.map((delivery) => delivery.ID);
-  LOG.info(
-    "Reading all claims for " + deliveryIds.length + " deliveries being read"
-  );
-
-  const deliveryClaims = await SELECT.from("ls.claims.Deliveries")
-    .columns((delivery) => {
-      delivery.ID,
-        delivery.claims((claim) => {
-          claim.ID,
-            claim.total_claim_value,
-            claim.status((status) => {
-              status.id;
-            });
-        });
-    })
-    .where({ ID: { in: deliveryIds } });
-
-  LOG.info(
-    "Read " + deliveryClaims.length + " claims for all deliveries being read"
-  );
-
-  for (const delivery of Deliveries) {
-    delivery.open_claims = false;
-    const deliveryClaim = deliveryClaims.filter(
-      (deliveryClaim) => deliveryClaim.ID === delivery.ID
-    );
-
-    if (deliveryClaim.length > 0) {
-      for (const claim of deliveryClaim[0].claims) {
-        if (
-          !(
-            claim.status.id === claim_statuses.COMPLETE ||
-            claim.status.id === claim_statuses.REVIEW_REJECTED
-          )
-        ) {
-          delivery.open_claims = true;
-        }
-      }
-    }
-  }
-};
 
 export const updateClaimsTotals = async (Claim_Header) => {
   LOG.info("Calculating the total claim value including additional costs");
@@ -209,7 +159,12 @@ export const updateClaimsTotals = async (Claim_Header) => {
       const claimCost = claims.filter((claimCost) => claimCost.ID === claim.ID);
       claim.claim_value = Number(claimCost[0].claim_value.toFixed(2));
     }
-    claim.total_claim_value = claim.claim_value | 0;
+    // Initialize the total claim value to 0 before adding individual costs
+    claim.total_claim_value = 0
+    
+    if (claim.claim_value) {
+      claim.total_claim_value = claim.claim_value;
+    }
 
     const claimCosts = costs.filter((cost) => cost.claim_ID === claim.ID);
     for (const cost of claimCosts) {
