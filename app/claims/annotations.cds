@@ -359,8 +359,12 @@ annotate service.Attachments with @(
     UI.LineItem #Attachment : [
         {
             $Type : 'UI.DataField',
+            Value : type_id,
+        },
+        {
+            $Type : 'UI.DataField',
             Value : content,
-            Label : 'content',
+            Label : 'Name',
         },
         {
             $Type : 'UI.DataField',
@@ -835,4 +839,11 @@ annotate service.Deliveries with {
         ],
     )
 };
+
+annotate service.Attachments with {
+    type @(
+        Common.Text : type.name,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+        Common.ValueListWithFixedValues : true,
+)};
 
