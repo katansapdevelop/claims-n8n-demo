@@ -1,0 +1,29 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m">
+	<Text id="Text" text="ImpactedPallets" />
+	<Table id="impactedClaimsTable" items="{pallets}">
+		<columns>
+			<Column id="colPalletID">
+				<Text id="colPalletIDText" text="Pallet ID" />
+			</Column>
+			<Column id="colBeerName">
+				<Text id="colBeerNameText" text="Beer Name" />
+			</Column>
+			
+			<Column id="colPalletQuantity">
+				<Text id="colPalletQuantityText" text="Pallet Quantity" />
+			</Column>
+			<Column id="colPalletUOM">
+				<Text id="colPalletUOMText" text="Pallet UOM" />
+			</Column>
+		</columns>
+		<items>
+			<ColumnListItem id="impactedClaimsColumnListItem">
+				<Text id="impactedClaimsBeerIDText" text="{pallet_display_id}" />
+				<Text id="impactedClaimsBeerNameText" text="{beer_name}" />
+				<Text id="impactedClaimsPalletQuantityText" text="{pallet_quantity}" />
+				<Text id="impactedClaimsPalletUOMText" text="{pallet_uom_id}" />
+			</ColumnListItem>
+		</items>
+
+	</Table>
+</core:FragmentDefinition>

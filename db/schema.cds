@@ -100,6 +100,7 @@ entity Deliveries : managed, cuid {
   pallets                        : Composition of many Pallets on pallets.delivery = $self  @Common.Label: 'Pallets'  @Common.Text: pallets.pallet_id;
 }
 
+// Pallets
 entity Pallets : managed, cuid {
   pallet_id       : String(10)   @Common.Label: 'Pallet Id';
   delivery        : Association to one Deliveries @Common.Label: 'Delivery'  @Common.Text: delivery.delivery_id;

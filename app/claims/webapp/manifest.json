@@ -201,11 +201,6 @@
                   "tableSettings": {
                     "type": "ResponsiveTable"
                   }
-                },
-                "pallets/@com.sap.vocabularies.UI.v1.LineItem#Pallets": {
-                  "tableSettings": {
-                    "type": "ResponsiveTable"
-                  }
                 }
               },
               "content": {
@@ -232,6 +227,14 @@
                         "anchor": "AgentAssessment"
                       },
                       "title": "Audit Log"
+                    },
+                    "ImpactedPallets1": {
+                      "template": "com.logicalstarconsulting.claims.ext.fragment.ImpactedPallets",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "Defects1"
+                      },
+                      "title": "Impacted Pallets"
                     }
                   }
                 }

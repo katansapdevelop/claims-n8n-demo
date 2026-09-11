@@ -65,17 +65,18 @@ service ClaimAppService @(path: '/app/claim', ) {
     };
 
     @cds.redirection.target
-    entity ClaimPallets                  as projection on db.ClaimPallets;
-
+    entity ClaimPallets                  as projection on db.ClaimPallets {
+        *,
+        pallet.pallet_id as pallet_display_id,
+        pallet.beer.name as beer_name,
+        pallet.beer.ID as beer_ID,
+        pallet.quantity as pallet_quantity,
+        pallet.uom as pallet_uom
+    };
 
     @readonly
     entity Deliveries                    as projection on db.Deliveries;
 
-    @readonly
-    entity Pallets                        as projection on db.Pallets;
-
-    @readonly
-    entity Beers                         as projection on db.Beers;
 
     @readonly
     entity Partners                      as projection on db.Partners;
@@ -98,21 +99,21 @@ service ClaimAppService @(path: '/app/claim', ) {
     @readonly
     entity ClaimsToPrimaryDefectSearch   as projection on db.DefectToClaimTypeMap;
 
-
-    annotate ClaimPallets with @(Common: {SideEffects #singleSourceProperty: {
-        SourceProperties: [pallet_id],
-        TargetProperties: [
-            'variety',
-            'storage_type',
-            'size',
-            'pack_type',
-            'pack_date',
-            'packer_name',
-            'region'
-        ]
-    }}) {
-
-    };
-
-    
+   @readonly
+   entity PalletSearch as 
+   select  
+       key pallets.ID,
+       pallet_id,
+       delivery.ID as delivery_ID_UUID,
+       delivery.delivery_id,
+       beer.beer_id,
+       beer.name as beer_name,
+       pallets.quantity,
+       pallets.uom
+       
+    from db.Pallets as pallets
+    inner join db.Deliveries as delivery
+        on pallets.delivery.ID = delivery.ID
+    inner join db.Beers as beer
+        on pallets.beer.ID = beer.ID;
 }
