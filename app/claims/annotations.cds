@@ -85,7 +85,7 @@ annotate service.Claims with @(
             Label : 'Agent Assessment',
             ID : 'AgentAssessment',
             Target : '@UI.FieldGroup#AgentAssessment',
-            @UI.Hidden: (agent_approval_outcome = 0),
+            @UI.Hidden: (agent_approval_outcome == null),
         },
     ],
     UI.FieldGroup #General : {
@@ -242,7 +242,7 @@ annotate service.Claims with @(
             $Type : 'UI.ReferenceFacet',
             ID : 'agent_approval_outcome',
             Target : '@UI.DataPoint#agent_approval_outcome',
-            @UI.Hidden: (agent_approval_outcome = 0),
+            @UI.Hidden: (agent_approval_outcome == null ),
         },
     ],
     UI.FieldGroup #Status : {
