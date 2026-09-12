@@ -35,7 +35,8 @@
     "docker:volume": "docker volume ls",
     "n8n:start": "docker run -it --rm --name n8n_beer_demo -p 5678:5678 -e GENERIC_TIMEZONE=\"Australia/Brisbane\" -e TZ=\"Australia/Brisbane\" -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true -e N8N_RUNNERS_ENABLED=true -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n",
     "n8n:stop": "docker stop n8n_beer_demo",
-    "n8n:export": "docker exec n8n_beer_demo n8n export:workflow --all --output /tmp/n8n_workflows.json && docker cp n8n_beer_demo:/tmp/n8n_workflows.json ./n8n/n8n_workflows.json",
+    "n8n:export:wf": "docker exec n8n_beer_demo n8n export:workflow --id=ilkNoziH22zXfqr0 --output /tmp/n8n_workflows.json && docker cp n8n_beer_demo:/tmp/n8n_workflows.json ./n8n/n8n_workflows.json",    
+    "n8n:export:creds": "docker exec n8n_beer_demo n8n export:credentials --id=6swTpIaH1jvHTpo6 --output /tmp/n8n_credentials.json && docker cp n8n_beer_demo:/tmp/n8n_credentials.json ./n8n/n8n_credentials.json",
     "n8n:license": "docker exec n8n_beer_demo n8n license:info"
   },
   "keywords": [],

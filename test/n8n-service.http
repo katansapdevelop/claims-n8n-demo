@@ -1,0 +1,9 @@
+@username = beer_demo_user
+@password = beer1
+@host = http://localhost:5678/
+@auth = {{username}}:{{password}}
+
+
+### Trigger Webhook with Basic Auth Directly
+POST {{host}}webhook/3f7edc41-2b95-4c02-b695-a69f5ea09c32 HTTP/1.1
+Authorization: Basic {{auth}}
