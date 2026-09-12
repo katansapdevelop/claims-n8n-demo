@@ -57,6 +57,11 @@ entity UnitofMeasure : CodeList {
   key id : String(2);
 }
 
+@Common.Label: 'Attachment Type Codes'
+entity AttachmentTypeCodes : CodeList {
+  key id : String(10);
+}
+
 // Partners
 @Common.Label: 'Partners'
 entity Partners : managed, cuid {
@@ -95,6 +100,7 @@ entity Deliveries : managed, cuid {
   pallets                        : Composition of many Pallets on pallets.delivery = $self  @Common.Label: 'Pallets'  @Common.Text: pallets.pallet_id;
 }
 
+// Pallets
 entity Pallets : managed, cuid {
   pallet_id       : String(10)   @Common.Label: 'Pallet Id';
   delivery        : Association to one Deliveries @Common.Label: 'Delivery'  @Common.Text: delivery.delivery_id;
@@ -169,6 +175,7 @@ entity Attachments : cuid, managed {
   contentType     : String(20)   @Common.Label : 'Content Type' @Core.IsMediaType ;
   contentLength   : Integer      @Common.Label : 'Content Length';
   objectId        : String(50)   @Common.Label : 'DMS Object Id';
+  type            : Association to one AttachmentTypeCodes  @Common.Label: 'Attachment Type'  @Common.Text: type.id;  
   // Associations
   claim           : Association to one Claims;
 }
@@ -184,9 +191,9 @@ entity AuditLogs : cuid, managed {
 
 @Common.Label: 'Impacted Claim Pallets'
 entity ClaimPallets : managed, cuid {
-  pallet_id    : String(20) @Common.Label: 'Pallet Id';
   
   // Associations
+  pallet       : Association to one Pallets;
   claim        : Association to one Claims;
 }
 

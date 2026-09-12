@@ -85,7 +85,7 @@ annotate service.Claims with @(
             Label : 'Agent Assessment',
             ID : 'AgentAssessment',
             Target : '@UI.FieldGroup#AgentAssessment',
-            @UI.Hidden: (agent_approval_outcome = 0),
+            @UI.Hidden: (agent_approval_outcome == null),
         },
     ],
     UI.FieldGroup #General : {
@@ -242,7 +242,7 @@ annotate service.Claims with @(
             $Type : 'UI.ReferenceFacet',
             ID : 'agent_approval_outcome',
             Target : '@UI.DataPoint#agent_approval_outcome',
-            @UI.Hidden: (agent_approval_outcome = 0),
+            @UI.Hidden: (agent_approval_outcome == null ),
         },
     ],
     UI.FieldGroup #Status : {
@@ -272,6 +272,11 @@ annotate service.Claims with @(
     UI.FieldGroup #Defects : {
         $Type : 'UI.FieldGroupType',
         Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : pallets.pallet_ID,
+                Label : 'Impacted Pallets',
+            },
             {
                 $Type : 'UI.DataField',
                 Value : primary_defect_code_id,
@@ -359,8 +364,12 @@ annotate service.Attachments with @(
     UI.LineItem #Attachment : [
         {
             $Type : 'UI.DataField',
-            Value : claim.attachments.content,
-            Label : 'File',
+            Value : type_id,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : content,
+            Label : 'Name',
         },
         {
             $Type : 'UI.DataField',
@@ -500,39 +509,15 @@ annotate service.ClaimPallets with @(
     UI.LineItem #Pallets : [
         {
             $Type : 'UI.DataField',
-            Value : pallet_id,
+            Value : pallet.pallet_id,
         },
         {
             $Type : 'UI.DataField',
-            Value : packer_name,
+            Value : pallet.quantity,
         },
         {
             $Type : 'UI.DataField',
-            Value : size,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : storage_type,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : region,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : pack_type,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : pack_date,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : batch_id,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : variety,
+            Value : beer_name,
         },
     ]
 );
@@ -834,5 +819,95 @@ annotate service.Deliveries with {
             },
         ],
     )
+};
+
+annotate service.Attachments with {
+    type @(
+        Common.Text : type.name,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+        Common.ValueListWithFixedValues : true,
+)};
+
+
+
+annotate service.Pallets with {
+    ID @(
+        Common.Text : pallet_id,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+)};
+
+annotate service.Pallets with {
+    quantity @(
+        Measures.Unit : uom_id,
+        Common.FieldControl : #ReadOnly,
+    )
+};
+
+annotate service.ClaimPallets with {
+    pallet @(
+        Common.ValueList : {
+            $Type : 'Common.ValueListType',
+            CollectionPath : 'PalletSearch',
+            Parameters : [
+                {
+                    $Type : 'Common.ValueListParameterInOut',
+                    LocalDataProperty : pallet_ID,
+                    ValueListProperty : 'ID',
+                },
+                {
+                    $Type : 'Common.ValueListParameterIn',
+                    ValueListProperty : 'delivery_ID_UUID',
+                    LocalDataProperty : claim.delivery_ID,
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'beer_id',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'beer_name',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'quantity',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'uom_id',
+                },
+            ],
+        },
+        Common.ValueListWithFixedValues : true,
+        Common.Text : pallet.pallet_id,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+)};
+
+annotate service.PalletSearch with {
+    ID @(
+        Common.Text : pallet_id,
+        Common.Text.@UI.TextArrangement : #TextOnly,
+)};
+
+annotate service.ClaimPallets with {
+    ID @(
+        Common.Text : beer_name,
+        Common.SemanticObject : 'beer',
+        Common.Text.@UI.TextArrangement : #TextOnly,
+        Common.SemanticObjectMapping : [
+            {
+                $Type : 'Common.SemanticObjectMappingType',
+                LocalProperty : ID,
+                SemanticObjectProperty : 'ID',
+            },
+        ],
+        )
+};
+
+annotate service.Pallets with {
+    pallet_id @Common.FieldControl : #ReadOnly
+};
+
+annotate service.ClaimPallets with {
+    beer_name @Common.FieldControl : #ReadOnly
 };
 

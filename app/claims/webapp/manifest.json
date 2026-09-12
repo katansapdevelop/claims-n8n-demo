@@ -155,21 +155,45 @@
                     "type": "ResponsiveTable",
                     "disableCopyToClipboard": true,
                     "enableExport": false,
-                    "personalization": false,
-                    "enablePaste": false
+                    "personalization": {
+                      "column": false,
+                      "filter": false,
+                      "group": false,
+                      "sort": false
+                    },
+                    "enablePaste": false,
+                    "selectionMode": "Single",
+                    "selectAll": true
                   },
                   "columns": {
                     "FilePreview": {
                       "header": "Preview",
                       "position": {
-                        "anchor": "DataField::claim::attachments::content",
+                        "anchor": "DataField::content",
                         "placement": "After"
                       },
                       "template": "com.logicalstarconsulting.claims.ext.fragment.FilePreview",
                       "width": "10rem"
+                    }
+                  },
+                  "actions": {
+                    "DownloadEvidence": {
+                      "press": "com.logicalstarconsulting.claims.ext.controller.ClaimsObjectPageActions.DownloadEvidence",
+                      "visible": true,
+                      "enabled": true,
+                      "requiresSelection": true,
+                      "text": "Download"
                     },
-                    "DataField::claim::attachments::content": {
-                      "width": "20rem"
+                    "PreviewEvidence": {
+                      "press": ".extension.com.logicalstarconsulting.claims.ext.controller.ClaimsObjectPageExtension.onPreviewEvidence",
+                      "visible": true,
+                      "enabled": true,
+                      "requiresSelection": true,
+                      "text": "Preview",
+                      "position": {
+                        "placement": "Before",
+                        "anchor": "DownloadEvidence"
+                      }
                     }
                   }
                 },
@@ -203,6 +227,14 @@
                         "anchor": "AgentAssessment"
                       },
                       "title": "Audit Log"
+                    },
+                    "ImpactedPallets1": {
+                      "template": "com.logicalstarconsulting.claims.ext.fragment.ImpactedPallets",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "Defects1"
+                      },
+                      "title": "Impacted Pallets"
                     }
                   }
                 }

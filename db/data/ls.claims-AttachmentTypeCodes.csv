@@ -1,0 +1,5 @@
+id,name,descr
+DAMAGE,Evidence of Damage,Image of Damaged Goods Purchased
+PURCHASE,Evidence of Purchase,Image of Receipt of Purchased Goods
+LABEL,Labeled Bottle,Image of Labeled Bottle
+OTHER,Other,Other Types of Evidence

@@ -47,7 +47,7 @@ annotate ClaimAppService.Claims with @(restrict: [
     { grant: 'READ', to: ['finance','operator','reviewer'],
       where: '$user.claim_type = type_id' },
     { grant: 'CREATE', 
-      to: ['operator', 'reviewer'], 
+      to: ['operator'], 
       where: '$user.claim_type = type_id' },
     { grant: 'UPDATE', to: ['operator', 'finance','reviewer'] },
     { grant: 'DELETE', to: ['operator', 'finance','reviewer'] },

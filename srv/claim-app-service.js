@@ -177,7 +177,6 @@ class ClaimAppService extends cds.ApplicationService {
     this.on("submitReviewReject", Claims, async (req) => {
       const claimId = req.params[0].ID;
       const rejectionReason = req.data.reason;
-      const marketAssistanceConversion = req.data.convertToMarketAssistance;
       const response = await updateClaimStatus(
         claimId,
         claim_statuses.REVIEW_REJECTED,
@@ -190,18 +189,6 @@ class ClaimAppService extends cds.ApplicationService {
         RejectionReason_id: rejectionReason,
       });
 
-      if (marketAssistanceConversion) {
-        const marketAssistClaim = await convertToMarketAssistance(claimId);
-        LOG.info(
-          "Updating the converted claim id for claim to " + marketAssistClaim.ID
-        );
-        await UPDATE("ls.claims.Claims", { ID: claimId }).with({
-          convertedClaim_ID: marketAssistClaim.ID,
-        });
-        LOG.info(
-          "Successfully updated the converted claim id for claim " + claimId
-        );
-      }
 
       const message = response.success
         ? `The claim review has been rejected`
@@ -307,7 +294,7 @@ class ClaimAppService extends cds.ApplicationService {
       try {
 
         
-        const filename = attachments.content.header('content-disposition').split("=")[1].replace(/"/g, '');
+        const filename = decodeURIComponent(attachments.content.header('content-disposition').split("=")[1].replace(/"/g, ''));
         const contentType = attachments.content.header('content-type');
         const contentLength = attachments.content.header('content-length');
 
@@ -394,7 +381,14 @@ class ClaimAppService extends cds.ApplicationService {
           attachmentRecord.objectId;
 
         let fileContent = await getAttachmentStream(attachmentRecord);
-        attachments[0].content = fileContent;
+        const targetAttachment = Array.isArray(attachments)
+          ? attachments[0]
+          : attachments;
+
+        targetAttachment.content = fileContent;
+        targetAttachment.$mediaContentType = attachmentRecord.contentType;
+        targetAttachment.$mediaContentDispositionFilename =
+          attachmentRecord.name;
       } catch (error) {
         LOG.error("Error reading attachment content: " + error);
         throw new Error("Error reading attachment from content repository");
