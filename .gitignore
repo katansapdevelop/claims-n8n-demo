@@ -20,3 +20,6 @@ mta_archives/
 
 test/attachments
 logs/
+
+.env
+.env.*  
