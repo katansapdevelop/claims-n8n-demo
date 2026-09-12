@@ -31,7 +31,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch-claims": "cds watch --open com.logicalstarconsulting.claims/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-beers": "cds watch --open com.logicalstarconsulting.claims.beers/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-deliveries": "cds watch --open com.logicalstarconsulting.claims.deliveries/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-deliveries": "cds watch --open com.logicalstarconsulting.claims.deliveries/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "docker:volume": "docker volume ls",
+    "n8n:start": "docker run -it --rm --name n8n_beer_demo -p 5678:5678 -e GENERIC_TIMEZONE=\"Australia/Brisbane\" -e TZ=\"Australia/Brisbane\" -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true -e N8N_RUNNERS_ENABLED=true -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n",
+    "n8n:stop": "docker stop n8n_beer_demo",
+    "n8n:export": "docker exec n8n_beer_demo n8n export:workflow --all --output n8n_workflows.json",
+    "n8n:wf:ls": "docker exec n8n_beer_demo n8n license:info"
   },
   "keywords": [],
   "author": "",

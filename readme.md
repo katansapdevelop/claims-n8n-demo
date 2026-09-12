@@ -23,9 +23,21 @@ Learn more at <https://cap.cloud.sap>.
 
 
 ## N8N
+### Initial Setup
+
+On your first run create a volume 
 ```
 docker volume create n8n_data
+```
 
+You can check if you've done this before by running 
+```
+docker volume ls
+```
+
+### Start Locally
+Run the following command to start N8N via Docker.  You'll need to replace the Time Zone with your own Time Zone
+```
 docker run -it --rm \
  --name n8n \
  -p 5678:5678 \
@@ -36,6 +48,8 @@ docker run -it --rm \
  -v n8n_data:/home/node/.n8n \
  docker.n8n.io/n8nio/n8n
 ```
-## Beer Links
 
+On first login you'll be prompted to create your admin login details.  There after are you will be promoted to login using those credentials.
+
+## Beer Links
 https://www.bjcp.org/education-training/education-resources/beer-faults/
