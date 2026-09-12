@@ -10,12 +10,14 @@ service ClaimAppService @(path: '/app/claim', ) {
         actions {
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
+            @n8n.trigger: 'submitClaimReview'
             action submitForReview();
 
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
             action requestInfo();
-
+            
+            
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
             action submitReviewApprove();
