@@ -68,7 +68,7 @@ class ClaimAppService extends cds.ApplicationService {
     
 
     this.before("CREATE", "ClaimDefects.drafts", async (req) => {
-      LOG.info("Validating Claim Defects Befor Create");
+      LOG.info("Validating Claim Defects Before Create");
       const claim_id = req.data.claim_ID;
 
       LOG.info("Read claim draft data");
@@ -100,6 +100,7 @@ class ClaimAppService extends cds.ApplicationService {
     this.on("submitForReview", Claims, async (req) => {
       await validateBeforeSubmitForReview(req);
 
+      // Added programatically instead of via bound action so the claim ui is refreshed after processing is completed
       const n8n = await cds.connect.to("n8n")
       const n8nresponse = await n8n.trigger({
         path: "submitClaimReview",
@@ -116,7 +117,7 @@ class ClaimAppService extends cds.ApplicationService {
         agent_approval_report: agent_approval_report,
       });
 
-      
+
 
       const response = await updateClaimStatus(
         req.params[0].ID,
