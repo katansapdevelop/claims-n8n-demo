@@ -4,11 +4,11 @@
 
 @N8N_API_KEY = {{$dotenv N8N_API_KEY}}
 
-@cap_service_basic_auth = n8n_wf_user:n8n_wf_user
+@basic_auth = n8n_wf_user:n8n_wf_user
 
 ### Trigger Webhook with API Key (Had to set the webhook to use header auth and use  header X-N8N-API-KEY in order to use cap-n8n plugin)
 POST {{host}}webhook/submitClaimReview HTTP/1.1
-X-N8N-API-KEY: {{N8N_API_KEY}}
+Authorization: Basic {{basic_auth}}
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 
 ### Call updateAgentAssessment Bound Action
 POST {{cap_service_hist}}app/claim/Claims(ID='3b241101-e2bb-4255-8caf-4136c566a980',IsActiveEntity=true)/updateAgentAssessment HTTP/1.1
-Authorization: Basic {{cap_service_basic_auth}}
+Authorization: Basic {{basic_auth}}
 Content-Type: application/json
 
 {

@@ -3,6 +3,7 @@ using {ls.claims as db} from '../db/schema';
 
 service ClaimAppService @(path: '/app/claim', ) {
     @odata.draft.enabled
+    @n8n.process.start: {path: 'submitClaimReview', method: 'POST', on: 'submitForReview'}
     entity Claims                        as
         projection on db.Claims {
             *
@@ -10,7 +11,7 @@ service ClaimAppService @(path: '/app/claim', ) {
         actions {
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
-            @n8n.trigger: 'submitClaimReview'
+            
             action submitForReview();
 
             @cds.odata.bindingparameter.name  : '_it'
@@ -19,7 +20,10 @@ service ClaimAppService @(path: '/app/claim', ) {
             
             
             @cds.odata.bindingparameter.name  : '_it'
-            @Common.SideEffects.TargetEntities: [_it]
+            @Common.SideEffects : {
+                TargetEntities : [_it],
+                TargetProperties : ['agent_approval_outcome', 'agent_approval_report']
+            }
             action submitReviewApprove();
 
             @cds.odata.bindingparameter.name  : '_it'
@@ -46,7 +50,10 @@ service ClaimAppService @(path: '/app/claim', ) {
             action submitFinanceComplete();
 
             @cds.odata.bindingparameter.name  : '_it'
-            @Common.SideEffects.TargetEntities: [_it]
+            @Common.SideEffects : {
+                TargetEntities : [_it],
+                TargetProperties : ['agent_approval_outcome', 'agent_approval_report']
+            }
             action updateAgentAssessment(
                 outcome : Decimal(3, 0),
                 report : String
@@ -74,14 +81,15 @@ service ClaimAppService @(path: '/app/claim', ) {
     };
 
     @cds.redirection.target
-    entity ClaimPallets                  as projection on db.ClaimPallets {
+    entity ClaimPallets                  as projection on db.ClaimPallets  {
         *,
         pallet.pallet_id as pallet_display_id,
         pallet.beer.name as beer_name,
         pallet.beer.ID as beer_ID,
         pallet.quantity as pallet_quantity,
         pallet.uom as pallet_uom
-    };
+    } ;
+
 
     @readonly
     entity Deliveries                    as projection on db.Deliveries;

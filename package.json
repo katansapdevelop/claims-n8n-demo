@@ -12,8 +12,8 @@
     "node": ">=24"
   },
   "dependencies": {
+    "@cap-js/n8n": "^0.0.1",
     "@sap/cds": "^9.7",
-    "cap-n8n": "^0.1.0",
     "helmet": "^8.2.0",
     "mime-types": "^3.0.2",
     "sap-cap-sdm-plugin": "^1.3.1"
@@ -62,8 +62,16 @@
   ],
   "cds": {
     "requires": {
-      "n8n":{
-         "kind": "n8n-rest"
+      "n8n": {
+        "kind": "n8n-to-rest",
+        "credentials": {
+          "url": "http://localhost:5678",
+          "webhookAuth": {
+              "type": "basic",
+              "username": "n8n_wf_user",
+              "password": "n8n_wf_user"
+          }
+        }
       },
       "auth": {
         "kind": "mocked",
