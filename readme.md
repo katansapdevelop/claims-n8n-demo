@@ -49,7 +49,7 @@ docker run -it --rm \
  docker.n8n.io/n8nio/n8n
 ```
 
-On first login you'll be prompted to create your admin login details.  There after are you will be promoted to login using those credentials.
+On first login you'll be prompted to create your admin login details.  There after are you will be prompted to login using those credentials.
 
 ## Beer Links
 https://www.bjcp.org/education-training/education-resources/beer-faults/
