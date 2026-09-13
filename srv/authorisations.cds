@@ -60,7 +60,8 @@ annotate ClaimAppService.Claims with @(restrict: [
     { grant: 'submitSendToBrewer', to: ['reviewer'] },
     { grant: 'submitBrewerAccepted', to: ['reviewer'] },
     { grant: 'submitBrewerRejected', to: ['reviewer'] },
-    { grant: 'submitFinanceComplete', to: ['finance'] }
+    { grant: 'submitFinanceComplete', to: ['finance'] },
+    { grant: 'updateAgentAssessment', to: ['n8n_wf'] }
     
 ]);
 

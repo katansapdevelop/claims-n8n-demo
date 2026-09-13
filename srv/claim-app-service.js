@@ -278,6 +278,31 @@ class ClaimAppService extends cds.ApplicationService {
       req.notify(message);
     });
 
+    this.on("updateAgentAssessment", Claims, async (req) => {
+       const claimId = req.params[0].ID;
+       const agent_approval_outcome = req.data.outcome;
+       const agent_approval_report = req.data.report;
+
+       let response = {
+        success: false,
+        message: "",
+       };
+
+      LOG.info("Updating the agent assessment for claim " + claimId);
+      await UPDATE("ls.claims.Claims", { ID: claimId }).with({
+        agent_approval_outcome: agent_approval_outcome,
+        agent_approval_report: agent_approval_report,
+      });
+
+
+      const message = response.success
+        ? `The claim agent assessment has been updated`
+        : response.message;
+      req.notify(message);
+
+
+    })  
+
     this.before("UPDATE", "Attachments.drafts", async (req) => {
       LOG.info("Before Attachment Record Created");
       validateAttachments(req);

@@ -44,6 +44,13 @@ service ClaimAppService @(path: '/app/claim', ) {
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
             action submitFinanceComplete();
+
+            @cds.odata.bindingparameter.name  : '_it'
+            @Common.SideEffects.TargetEntities: [_it]
+            action updateAgentAssessment(
+                outcome : Decimal(3, 0),
+                report : String
+            );
         };
 
 
