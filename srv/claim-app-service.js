@@ -100,6 +100,24 @@ class ClaimAppService extends cds.ApplicationService {
     this.on("submitForReview", Claims, async (req) => {
       await validateBeforeSubmitForReview(req);
 
+      const n8n = await cds.connect.to("n8n")
+      const n8nresponse = await n8n.trigger({
+        path: "submitClaimReview",
+        payload: { ID: req.params[0].ID },
+      })
+
+      const claimId = req.params[0].ID;
+      const agent_approval_outcome = n8nresponse.outcome;
+      const agent_approval_report = n8nresponse.report;
+
+      LOG.info("Updating the agent assessment for claim " + claimId);
+      await UPDATE("ls.claims.Claims", { ID: claimId }).with({
+        agent_approval_outcome: agent_approval_outcome,
+        agent_approval_report: agent_approval_report,
+      });
+
+      
+
       const response = await updateClaimStatus(
         req.params[0].ID,
         claim_statuses.PENDING_REVIEW,

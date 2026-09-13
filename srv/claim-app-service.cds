@@ -3,7 +3,7 @@ using {ls.claims as db} from '../db/schema';
 
 service ClaimAppService @(path: '/app/claim', ) {
     @odata.draft.enabled
-    @n8n.process.start: {path: 'submitClaimReview', method: 'POST', on: 'submitForReview'}
+    //@n8n.process.start: {path: 'submitClaimReview', method: 'POST', on: 'submitForReview'}
     entity Claims                        as
         projection on db.Claims {
             *
