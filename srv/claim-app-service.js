@@ -102,9 +102,34 @@ class ClaimAppService extends cds.ApplicationService {
 
       // Added programatically instead of via bound action so the claim ui is refreshed after processing is completed
       const n8n = await cds.connect.to("n8n")
+
+      const claim = await SELECT.one
+          .from("ls.claims.Claims")
+          .columns((claim) => {
+            claim.ID,
+            claim.claim_id,
+            claim.description,
+            claim.type.name.as("type"),
+            claim.primary_defect_code_id,
+            claim.defects((defect) => {
+              defect.secondary_defect_code.name.as("defect_code_name")
+            }).as('secondary_defects'),
+            claim.attachments((attachment) => {
+              attachment.ID,
+              attachment.name,
+              attachment.contentType,
+              attachment.content,
+              attachment.type.id.as("type_id"),
+              attachment.type.name.as("type")
+            }).as('evidence_attachments');
+          })
+          .where({ ID: req.params[0].ID });
+
+
+
       const n8nresponse = await n8n.trigger({
         path: "submitClaimReview",
-        payload: { ID: req.params[0].ID },
+        payload: claim,
       })
 
       const claimId = req.params[0].ID;
