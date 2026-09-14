@@ -110,7 +110,7 @@ class ClaimAppService extends cds.ApplicationService {
             claim.claim_id,
             claim.description,
             claim.type.name.as("type"),
-            claim.primary_defect_code_id,
+            claim.primary_defect_code.name.as("primary_defect_code_name"),
             claim.defects((defect) => {
               defect.secondary_defect_code.name.as("defect_code_name")
             }).as('secondary_defects'),
@@ -121,7 +121,13 @@ class ClaimAppService extends cds.ApplicationService {
               attachment.content,
               attachment.type.id.as("type_id"),
               attachment.type.name.as("type")
-            }).as('evidence_attachments');
+            }).as('evidence_attachments'),
+            claim.pallets((claim_pallet) => {
+              claim_pallet.pallet.pallet_id.as("id"),
+              claim_pallet.pallet.beer.name.as("beer_name"),
+              claim_pallet.pallet.quantity.as("quantity"),
+              claim_pallet.pallet.uom_id.as("uom_id")
+            }).as('impacted_pallets');
           })
           .where({ ID: req.params[0].ID });
 

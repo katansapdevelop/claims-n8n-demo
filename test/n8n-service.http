@@ -7,15 +7,16 @@
 @basic_auth = n8n_wf_user:n8n_wf_user
 
 ### Trigger Webhook with API Key (Had to set the webhook to use header auth and use  header X-N8N-API-KEY in order to use cap-n8n plugin)
-POST {{host}}webhook-test/submitClaimReview HTTP/1.1
+POST {{host}}webhook/submitClaimReview HTTP/1.1
 Authorization: Basic {{basic_auth}}
 Content-Type: application/json
 
 {
+  "ID": "3b241101-e2bb-4255-8caf-4136c566a981",
   "claim_id": "2000000003",
   "description": "Excessive sediment and haze in beer",
   "type": "Quality Claim",
-  "primary_defect_code_id": "00001",
+  "primary_defect_code_name": "Appearance",
   "secondary_defects": [
     {
       "defect_code_name": "Discolouration"
@@ -26,11 +27,19 @@ Content-Type: application/json
   ],
   "evidence_attachments": [
     {
-      "ID": "d4d3af50-a1b3-41de-9772-d1ee4119ccb2",
+      "ID": "bd1dad65-9b56-40f7-8c0a-7f530597b9fa",
       "name": "ColaCanCrushed.jpeg",
       "contentType": "image/jpeg",
       "type_id": "DAMAGE",
       "type": "Evidence of Damage"
+    }
+  ],
+  "impacted_pallets": [
+    {
+      "id": "1000000040",
+      "beer_name": "Twofold WCIPA",
+      "quantity": 10,
+      "uom_id": "CT"
     }
   ]
 }
