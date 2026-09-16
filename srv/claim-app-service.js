@@ -1,6 +1,6 @@
 import cds from "@sap/cds";
 const LOG = cds.log("ls.claims");
-import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.js";
+import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream, streamToBase64 } from "./utils/AttachmentsUtil.js";
 import { updateClaimsTotals, updateClaimStatus, claim_types, claim_statuses, claimActions, validateClaimBeforeSave, updateExternalClaimId, validateBeforeSubmitForReview} from "./utils/ClaimsUtil.js";
 
 
@@ -133,7 +133,7 @@ class ClaimAppService extends cds.ApplicationService {
           .where({ ID: req.params[0].ID });
 
       for(let attachmentEvidence of claim.evidenceAttachments) {
-           attachmentEvidence.stream = await getAttachmentStream(attachmentEvidence);
+           attachmentEvidence.stream = await streamToBase64(await getAttachmentStream(attachmentEvidence));
       }
 
       const n8nresponse = await n8n.trigger({
