@@ -59,3 +59,10 @@ Content-Type: application/json
   "outcome": 85,
   "report": "Claim assessment completed by agent"
 }
+
+
+### Get Attachment
+GET {{cap_service_hist}}app/claim/Attachments(ID='bd1dad65-9b56-40f7-8c0a-7f530597b9fa',IsActiveEntity=true)/content HTTP/1.1
+Authorization: Basic {{basic_auth}}
+Content-Type: application/json
+

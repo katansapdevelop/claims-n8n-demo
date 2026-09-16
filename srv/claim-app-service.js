@@ -119,9 +119,10 @@ class ClaimAppService extends cds.ApplicationService {
               attachment.name,
               attachment.contentType,
               attachment.content,
+              attachment.objectId,
               attachment.type.id.as("type_id"),
               attachment.type.name.as("type")
-            }).as('evidence_attachments'),
+            }).as('evidenceAttachments'),
             claim.pallets((claim_pallet) => {
               claim_pallet.pallet.pallet_id.as("id"),
               claim_pallet.pallet.beer.name.as("beer_name"),
@@ -131,7 +132,9 @@ class ClaimAppService extends cds.ApplicationService {
           })
           .where({ ID: req.params[0].ID });
 
-
+      for(let attachmentEvidence of claim.evidenceAttachments) {
+           attachmentEvidence.stream = await getAttachmentStream(attachmentEvidence);
+      }
 
       const n8nresponse = await n8n.trigger({
         path: "submitClaimReview",

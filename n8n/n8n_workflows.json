@@ -34,6 +34,49 @@
             },
             {
                 "parameters": {
+                    "conditions": {
+                        "boolean": [
+                            {
+                                "condition": "true",
+                                "value1": "={{ $json.evidence_attachments && $json.evidence_attachments.length > 0 && $json.evidence_attachments.some(a => a.type_id === \"DAMAGE\") }}",
+                                "value2": true
+                            }
+                        ]
+                    }
+                },
+                "type": "n8n-nodes-base.if",
+                "typeVersion": 2,
+                "position": [
+                    220,
+                    0
+                ],
+                "id": "a1b2c3d4-e5f6-4g7h-8i9j-k0l1m2n3o4p5",
+                "name": "Check for DAMAGE Attachment"
+            },
+            {
+                "parameters": {
+                    "method": "GET",
+                    "url": "=http://localhost:4004/app/claim/Attachments(ID='{{ $json.evidence_attachments.find(a => a.type_id === \"DAMAGE\").ID }}',IsActiveEntity=true)/content",
+                    "authentication": "basicAuth",
+                    "options": {}
+                },
+                "type": "n8n-nodes-base.httpRequest",
+                "typeVersion": 4.2,
+                "position": [
+                    440,
+                    -100
+                ],
+                "id": "b2c3d4e5-f6g7-4h8i-9j0k-l1m2n3o4p5q6",
+                "name": "Fetch DAMAGE Attachment",
+                "credentials": {
+                    "httpBasicAuth": {
+                        "id": "6swTpIaH1jvHTpo6",
+                        "name": "Beer Demo User"
+                    }
+                }
+            },
+            {
+                "parameters": {
                     "modelId": {
                         "__rl": true,
                         "value": "claude-haiku-4-5-20251001",
@@ -52,7 +95,7 @@
                 "type": "@n8n/n8n-nodes-langchain.anthropic",
                 "typeVersion": 1,
                 "position": [
-                    208,
+                    660,
                     0
                 ],
                 "id": "f735dd2c-e248-48e7-b8ac-20ddabe29e13",
@@ -73,7 +116,7 @@
                 "type": "n8n-nodes-base.set",
                 "typeVersion": 3.4,
                 "position": [
-                    784,
+                    880,
                     0
                 ],
                 "id": "98f353be-dfb2-4c38-914b-033e3d581713",
@@ -82,6 +125,35 @@
         ],
         "connections": {
             "Webhook": {
+                "main": [
+                    [
+                        {
+                            "node": "Check for DAMAGE Attachment",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Check for DAMAGE Attachment": {
+                "main": [
+                    [
+                        {
+                            "node": "Fetch DAMAGE Attachment",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ],
+                    [
+                        {
+                            "node": "Message a model",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Fetch DAMAGE Attachment": {
                 "main": [
                     [
                         {
