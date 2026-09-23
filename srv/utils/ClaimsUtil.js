@@ -58,14 +58,7 @@ const _validateQCClaimBeforeSave = async (req) => {
     return;
   }
 
-  if (!claim.primary_defect_code_id) {
-    LOG.warn("Primary Defect Code is mandatory for a Quality Claim");
-    const ClaimType = "Quality Claim";
-    req.reject(
-      400,
-      cds.i18n.labels.at("PRIMARY_DEFECT_REQUIRED_CLAIM_TYPE", { ClaimType })
-    );
-  }
+  
 };
 
 export const validateClaimBeforeSave = async (req) => {

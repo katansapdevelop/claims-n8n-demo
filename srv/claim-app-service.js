@@ -2,6 +2,7 @@ import cds from "@sap/cds";
 const LOG = cds.log("ls.claims");
 import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream, streamToBase64 } from "./utils/AttachmentsUtil.js";
 import { updateClaimsTotals, updateClaimStatus, claim_types, claim_statuses, claimActions, validateClaimBeforeSave, updateExternalClaimId, validateBeforeSubmitForReview} from "./utils/ClaimsUtil.js";
+import { SELECT } from "@sap/cds/lib/ql/cds-ql.js";
 
 
 
@@ -13,6 +14,7 @@ class ClaimAppService extends cds.ApplicationService {
       PalletSearch,
       ClaimPallets,
       PackHouseSearch,
+      ClaimDefects,
       Costs,
     } = this.entities;
 
@@ -59,7 +61,6 @@ class ClaimAppService extends cds.ApplicationService {
 
     this.after("UPDATE", "Claims", async (claims) => {
 
-
       LOG.info("Updating claims data after save");
       await updateClaimsTotals(claims);
       
@@ -85,6 +86,37 @@ class ClaimAppService extends cds.ApplicationService {
         LOG.error("Primary Defect ID is required");
         req.error(400, "PrimaryDefectRequired");
       }
+    });
+
+
+    this.before("UPDATE", "Claims.drafts", async (req) => {
+      LOG.info("Handling update for claim draft when claim type is changed");
+      const claim_id = req.data.ID;
+      const currentClaimType = req.data.type_id;
+
+      const claim = await cds.run(
+          SELECT.one.from(Claims.drafts).where({ ID: claim_id })
+        );
+
+      if( currentClaimType && claim.type_id !== currentClaimType) {
+        LOG.info("Claim type has changed for claim draft with ID: " + claim_id);
+
+        // Clear Defect Codes as they are linked to the claim type
+        await cds.run(
+          UPDATE(Claims.drafts)
+            .set({ primary_defect_code_id: null })
+            .where({ ID: claim_id })
+        );
+
+        await cds.run(
+          DELETE(ClaimDefects.drafts)
+            .where({ claim_ID: claim_id })
+        );
+
+        req.notify("Claim type has changed, some properties have been reset");
+
+      }
+
     });
 
 
