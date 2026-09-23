@@ -1,26 +1,78 @@
-# Getting Started
+# Claims N8N Demo
 
-Welcome to your new CAP project.
+## About
 
-It contains these folders and files, following our recommended project layout:
+This is a comprehensive claims management system built on SAP Cloud Application Programming (CAP) model with integration to N8N for workflow automation. The project demonstrates a multi-app architecture with support for managing beer claims, deliveries, and related configurations.
+
+**Key Features:**
+- **Claims Management**: Track and manage beer-related claims with attachments and audit logs
+- **Delivery Tracking**: Monitor deliveries and associated shipments
+- **Configuration Management**: Centralized configuration and settings management
+- **N8N Integration**: Workflow automation for claims processing
+- **Multi-App UI**: Separate SAPUI5 applications for beers, claims, and deliveries
+- **Comprehensive Data Model**: Support for defects, costs, partners, and audit trails
+
+**Technology Stack:**
+- SAP CAP (Cloud Application Programming) for backend
+- CDS (Core Data Services) for data modeling
+- SAPUI5 for frontend applications
+- Node.js for server-side logic
+- N8N for workflow orchestration
+- Docker for N8N deployment
+
+## Getting Started
+
+### Prerequisites
+
+- **Node.js** and npm/pnpm installed
+- **Docker** (for N8N)
+- **VS Code** (recommended)
+
+### Quick Start
+
+1. **Install Dependencies**
+   ```bash
+   pnpm install
+   ```
+
+2. **Start the CAP Development Server**
+   
+   Open a terminal and run:
+   ```bash
+   cds watch
+   ```
+   
+   Or in VS Code, use: _**Terminal** > Run Task > cds watch_
+   
+   The server will start on `http://localhost:4004` and watch for file changes.
+
+3. **Access the Applications**
+   - Claims App: `http://localhost:4004/app/claims/`
+   - Beers App: `http://localhost:4004/app/beers/`
+   - Deliveries App: `http://localhost:4004/app/deliveries/`
+
+### Project Structure
 
 File or Folder | Purpose
 ---------|----------
-`app/` | content for UI frontends goes here
-`db/` | your domain models and data go here
-`srv/` | your service models and code go here
-`readme.md` | this getting started guide
+`app/` | SAPUI5 frontend applications (claims, beers, deliveries)
+`db/` | Domain models and data definitions
+`srv/` | Service implementations and business logic
+`test/` | Test files and sample data
+`n8n/` | N8N workflow configurations
+`readme.md` | This file
 
-## Next Steps
+### Development Tips
 
-- Open a new terminal and run `cds watch`
-- (in VS Code simply choose _**Terminal** > Run Task > cds watch_)
-- Start with your domain model, in a CDS file in `db/`
+- Edit your domain model in `db/schema.cds`
+- Add service logic in `srv/*.js`
+- UI annotations are in `app/*/annotations.cds`
+- Sample test data is in `test/data/`
+- Use `cds watch` for live reloading during development
 
 ## Learn More
 
-Learn more at <https://cap.cloud.sap>.
-
+Learn more about CAP at <https://cap.cloud.sap>.
 
 ## N8N
 ### Initial Setup
