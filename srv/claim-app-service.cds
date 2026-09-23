@@ -57,6 +57,16 @@ service ClaimAppService @(path: '/app/claim', ) {
                 outcome : Decimal(3, 0),
                 report : String
             );
+
+            @cds.odata.bindingparameter.name  : '_it'
+            @Common.SideEffects : {
+                TargetEntities : [_it]
+            }
+            @title : 'Update Payment Deduction Document'
+            action updatePaymentDeductionDoc(
+                @title : 'Payment Deduction Document ID'
+                Id : String(10)  
+            );
         };
 
 

@@ -352,9 +352,19 @@ class ClaimAppService extends cds.ApplicationService {
         ? `The claim agent assessment has been updated`
         : response.message;
       req.notify(message);
+    });
 
+    this.on("updatePaymentDeductionDoc", Claims, async (req) => {
+      const claimId = req.params[0].ID;
+      const payment_deduction_doc_id = req.data.Id;
 
-    })  
+      LOG.info("Updating the payment deduction document for claim " + claimId);
+      await UPDATE("ls.claims.Claims", { ID: claimId }).with({
+        payment_deduction_doc_id: payment_deduction_doc_id,
+      });
+
+      req.notify(`The payment deduction document has been updated for the claim `);
+    });
 
     this.before("UPDATE", "Attachments.drafts", async (req) => {
       LOG.info("Before Attachment Record Created");

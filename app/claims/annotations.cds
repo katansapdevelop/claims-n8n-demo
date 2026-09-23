@@ -207,10 +207,17 @@ annotate service.Claims with @(
         },
         {
             $Type : 'UI.DataFieldForAction',
+            Action : 'ClaimAppService.updatePaymentDeductionDoc',
+            Label : 'Update Payment Deduction',
+            Determining : true,
+            @UI.Hidden: ((status.id != 7) or $draft.HasActiveEntity = true) ,
+        },
+        {
+            $Type : 'UI.DataFieldForAction',
             Action : 'ClaimAppService.submitFinanceComplete',
             Label : 'Finance Completed',
             Determining : true,
-            @UI.Hidden: ((status.id != 7) or $draft.HasActiveEntity = true) ,
+            @UI.Hidden: ((status.id != 7) or $draft.HasActiveEntity = true or payment_deduction_doc_id = null) ,
         },
     ],
     UI.HeaderFacets : [
@@ -260,7 +267,7 @@ annotate service.Claims with @(
             },
         ],
     },
-    UI.UpdateHidden : (status.id != 1 and status.id != 3 and status.id != 7),
+    UI.UpdateHidden : (status.id != 1 and status.id != 3),
     UI.DeleteHidden : (status.id = 8),
     UI.FieldGroup #TotalValue : {
         $Type : 'UI.FieldGroupType',
