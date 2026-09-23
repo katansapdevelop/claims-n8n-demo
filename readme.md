@@ -27,6 +27,59 @@ This is a comprehensive claims management system built on SAP Cloud Application 
 - N8N for workflow orchestration
 - Docker for N8N deployment
 
+## Architecture
+
+```mermaid
+graph TB
+    subgraph UI["Frontend Applications"]
+        ClaimsApp["Claims App<br/>SAPUI5"]
+        BeersApp["Beers App<br/>SAPUI5"]
+        DeliveriesApp["Deliveries App<br/>SAPUI5"]
+    end
+
+    subgraph API["CAP Backend Services"]
+        ClaimService["Claim Service"]
+        BeerService["Beer Service"]
+        DeliveryService["Delivery Service"]
+        ConfigService["Config Service"]
+    end
+
+    subgraph LOGIC["Business Logic"]
+        ClaimsUtil["Claims Utility"]
+        ConfigUtil["Config Utility"]
+        AttachmentUtil["Attachments Utility"]
+    end
+
+    subgraph DATA["Data Layer"]
+        Database["CAP Database<br/>Schema & Config"]
+        CSV["CSV Data Files<br/>Lookups & Seeds"]
+    end
+
+    subgraph AUTOMATION["Workflow Automation"]
+        N8N["N8N Engine<br/>Workflow Orchestration"]
+    end
+
+    subgraph EXTERNAL["External Systems"]
+        Attachments["Attachments<br/>Storage"]
+        AuditLogs["Audit Logs<br/>Tracking"]
+    end
+
+    UI -->|HTTP/REST| API
+    API -->|Business Logic| LOGIC
+    LOGIC -->|Query/Update| DATA
+    API -->|Workflow Triggers| AUTOMATION
+    AUTOMATION -->|Data Events| API
+    LOGIC -->|Store/Retrieve| Attachments
+    API -->|Log Events| AuditLogs
+
+    style UI fill:#e1f5ff
+    style API fill:#f3e5f5
+    style LOGIC fill:#fce4ec
+    style DATA fill:#e0f2f1
+    style AUTOMATION fill:#fff3e0
+    style EXTERNAL fill:#f1f8e9
+```
+
 ## Getting Started
 
 ### Prerequisites
