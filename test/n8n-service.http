@@ -7,7 +7,7 @@
 @basic_auth = n8n_wf_user:n8n_wf_user
 
 ### Trigger Webhook with API Key (Had to set the webhook to use header auth and use  header X-N8N-API-KEY in order to use cap-n8n plugin)
-POST {{host}}webhook/submitClaimReview HTTP/1.1
+POST {{host}}webhook-test/submitClaimReview HTTP/1.1
 Authorization: Basic {{basic_auth}}
 Content-Type: application/json
 

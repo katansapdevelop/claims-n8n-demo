@@ -350,7 +350,7 @@ annotate service.Claims with @(
         Data : [
             {
                 $Type : 'UI.DataField',
-                Value : agent_approval_report,
+                Value : agent_approval_report
             },
         ],
     },
@@ -789,7 +789,7 @@ annotate service.Attachments with {
 annotate service.Claims with {
     agent_approval_report @(
         UI.MultiLineText : true,
-        Common.FieldControl : #ReadOnly,
+        Common.FieldControl : #ReadOnly
     )
 };
 
