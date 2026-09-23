@@ -1,7 +1,8 @@
 import cds from "@sap/cds";
 const LOG = cds.log("ls.claims");
-import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream } from "./utils/AttachmentsUtil.js";
+import { validateAttachments, uploadAttachmentToRepository, getAttachmentStream, streamToBase64 } from "./utils/AttachmentsUtil.js";
 import { updateClaimsTotals, updateClaimStatus, claim_types, claim_statuses, claimActions, validateClaimBeforeSave, updateExternalClaimId, validateBeforeSubmitForReview} from "./utils/ClaimsUtil.js";
+import { SELECT } from "@sap/cds/lib/ql/cds-ql.js";
 
 
 
@@ -13,6 +14,7 @@ class ClaimAppService extends cds.ApplicationService {
       PalletSearch,
       ClaimPallets,
       PackHouseSearch,
+      ClaimDefects,
       Costs,
     } = this.entities;
 
@@ -59,7 +61,6 @@ class ClaimAppService extends cds.ApplicationService {
 
     this.after("UPDATE", "Claims", async (claims) => {
 
-
       LOG.info("Updating claims data after save");
       await updateClaimsTotals(claims);
       
@@ -68,7 +69,7 @@ class ClaimAppService extends cds.ApplicationService {
     
 
     this.before("CREATE", "ClaimDefects.drafts", async (req) => {
-      LOG.info("Validating Claim Defects Befor Create");
+      LOG.info("Validating Claim Defects Before Create");
       const claim_id = req.data.claim_ID;
 
       LOG.info("Read claim draft data");
@@ -88,6 +89,37 @@ class ClaimAppService extends cds.ApplicationService {
     });
 
 
+    this.before("UPDATE", "Claims.drafts", async (req) => {
+      LOG.info("Handling update for claim draft when claim type is changed");
+      const claim_id = req.data.ID;
+      const currentClaimType = req.data.type_id;
+
+      const claim = await cds.run(
+          SELECT.one.from(Claims.drafts).where({ ID: claim_id })
+        );
+
+      if( currentClaimType && claim.type_id !== currentClaimType) {
+        LOG.info("Claim type has changed for claim draft with ID: " + claim_id);
+
+        // Clear Defect Codes as they are linked to the claim type
+        await cds.run(
+          UPDATE(Claims.drafts)
+            .set({ primary_defect_code_id: null })
+            .where({ ID: claim_id })
+        );
+
+        await cds.run(
+          DELETE(ClaimDefects.drafts)
+            .where({ claim_ID: claim_id })
+        );
+
+        req.notify("Claim type has changed, some properties have been reset");
+
+      }
+
+    });
+
+
     this.before("SAVE", "Claims", async (req, next) => {
       const claimId = req.data.ID;
       LOG.info("Before saving claim: " + claimId);
@@ -99,6 +131,59 @@ class ClaimAppService extends cds.ApplicationService {
 
     this.on("submitForReview", Claims, async (req) => {
       await validateBeforeSubmitForReview(req);
+
+      // Added programatically instead of via bound action so the claim ui is refreshed after processing is completed
+      const n8n = await cds.connect.to("n8n")
+
+      const claim = await SELECT.one
+          .from("ls.claims.Claims")
+          .columns((claim) => {
+            claim.ID,
+            claim.claim_id,
+            claim.description,
+            claim.type.name.as("type"),
+            claim.primary_defect_code.name.as("primary_defect_code_name"),
+            claim.defects((defect) => {
+              defect.secondary_defect_code.name.as("defect_code_name")
+            }).as('secondary_defects'),
+            claim.attachments((attachment) => {
+              attachment.ID,
+              attachment.name,
+              attachment.contentType,
+              attachment.content,
+              attachment.objectId,
+              attachment.type.id.as("type_id"),
+              attachment.type.name.as("type")
+            }).as('evidenceAttachments'),
+            claim.pallets((claim_pallet) => {
+              claim_pallet.pallet.pallet_id.as("id"),
+              claim_pallet.pallet.beer.name.as("beer_name"),
+              claim_pallet.pallet.quantity.as("quantity"),
+              claim_pallet.pallet.uom_id.as("uom_id")
+            }).as('impacted_pallets');
+          })
+          .where({ ID: req.params[0].ID });
+
+      for(let attachmentEvidence of claim.evidenceAttachments) {
+           attachmentEvidence.stream = await streamToBase64(await getAttachmentStream(attachmentEvidence));
+      }
+
+      const n8nresponse = await n8n.trigger({
+        path: "submitClaimReview",
+        payload: claim,
+      })
+
+      const claimId = req.params[0].ID;
+      const agent_approval_outcome = n8nresponse.outcome;
+      const agent_approval_report = n8nresponse.report;
+
+      LOG.info("Updating the agent assessment for claim " + claimId);
+      await UPDATE("ls.claims.Claims", { ID: claimId }).with({
+        agent_approval_outcome: agent_approval_outcome,
+        agent_approval_report: agent_approval_report,
+      });
+
+
 
       const response = await updateClaimStatus(
         req.params[0].ID,
@@ -276,6 +361,41 @@ class ClaimAppService extends cds.ApplicationService {
         ? `The claim is now complete`
         : response.message;
       req.notify(message);
+    });
+
+    this.on("updateAgentAssessment", Claims, async (req) => {
+       const claimId = req.params[0].ID;
+       const agent_approval_outcome = req.data.outcome;
+       const agent_approval_report = req.data.report;
+
+       let response = {
+        success: false,
+        message: "",
+       };
+
+      LOG.info("Updating the agent assessment for claim " + claimId);
+      await UPDATE("ls.claims.Claims", { ID: claimId }).with({
+        agent_approval_outcome: agent_approval_outcome,
+        agent_approval_report: agent_approval_report,
+      });
+
+
+      const message = response.success
+        ? `The claim agent assessment has been updated`
+        : response.message;
+      req.notify(message);
+    });
+
+    this.on("updatePaymentDeductionDoc", Claims, async (req) => {
+      const claimId = req.params[0].ID;
+      const payment_deduction_doc_id = req.data.Id;
+
+      LOG.info("Updating the payment deduction document for claim " + claimId);
+      await UPDATE("ls.claims.Claims", { ID: claimId }).with({
+        payment_deduction_doc_id: payment_deduction_doc_id,
+      });
+
+      req.notify(`The payment deduction document has been updated for the claim `);
     });
 
     this.before("UPDATE", "Attachments.drafts", async (req) => {

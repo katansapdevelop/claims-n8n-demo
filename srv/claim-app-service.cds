@@ -10,14 +10,19 @@ service ClaimAppService @(path: '/app/claim', ) {
         actions {
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
+            
             action submitForReview();
 
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
             action requestInfo();
-
+            
+            
             @cds.odata.bindingparameter.name  : '_it'
-            @Common.SideEffects.TargetEntities: [_it]
+            @Common.SideEffects : {
+                TargetEntities : [_it],
+                TargetProperties : ['agent_approval_outcome', 'agent_approval_report']
+            }
             action submitReviewApprove();
 
             @cds.odata.bindingparameter.name  : '_it'
@@ -42,6 +47,26 @@ service ClaimAppService @(path: '/app/claim', ) {
             @cds.odata.bindingparameter.name  : '_it'
             @Common.SideEffects.TargetEntities: [_it]
             action submitFinanceComplete();
+
+            @cds.odata.bindingparameter.name  : '_it'
+            @Common.SideEffects : {
+                TargetEntities : [_it],
+                TargetProperties : ['agent_approval_outcome', 'agent_approval_report']
+            }
+            action updateAgentAssessment(
+                outcome : Decimal(3, 0),
+                report : String
+            );
+
+            @cds.odata.bindingparameter.name  : '_it'
+            @Common.SideEffects : {
+                TargetEntities : [_it]
+            }
+            @title : 'Update Payment Deduction Document'
+            action updatePaymentDeductionDoc(
+                @title : 'Payment Deduction Document ID'
+                Id : String(10)  
+            );
         };
 
 
@@ -65,14 +90,15 @@ service ClaimAppService @(path: '/app/claim', ) {
     };
 
     @cds.redirection.target
-    entity ClaimPallets                  as projection on db.ClaimPallets {
+    entity ClaimPallets                  as projection on db.ClaimPallets  {
         *,
         pallet.pallet_id as pallet_display_id,
         pallet.beer.name as beer_name,
         pallet.beer.ID as beer_ID,
         pallet.quantity as pallet_quantity,
         pallet.uom as pallet_uom
-    };
+    } ;
+
 
     @readonly
     entity Deliveries                    as projection on db.Deliveries;

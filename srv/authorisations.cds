@@ -44,7 +44,7 @@ annotate BeerAppService.Partners with @(restrict: [
 annotate ClaimAppService.Claims with @(restrict: [
     
     { grant: '*', to: ['admin'] },
-    { grant: 'READ', to: ['finance','operator','reviewer'],
+    { grant: 'READ', to: ['finance','operator','reviewer','n8n_wf'],
       where: '$user.claim_type = type_id' },
     { grant: 'CREATE', 
       to: ['operator'], 
@@ -60,7 +60,8 @@ annotate ClaimAppService.Claims with @(restrict: [
     { grant: 'submitSendToBrewer', to: ['reviewer'] },
     { grant: 'submitBrewerAccepted', to: ['reviewer'] },
     { grant: 'submitBrewerRejected', to: ['reviewer'] },
-    { grant: 'submitFinanceComplete', to: ['finance'] }
+    { grant: 'submitFinanceComplete', to: ['finance'] },
+    { grant: 'updateAgentAssessment', to: ['n8n_wf'] }
     
 ]);
 

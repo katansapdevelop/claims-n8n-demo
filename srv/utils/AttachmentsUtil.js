@@ -117,6 +117,23 @@ export const validateAttachments = async (req) => {
   }
 };
 
+const _streamToBuffer = async (stream) => {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+    stream.on("error", reject);
+  });
+};
+
+/**
+ * Converts a stream to base64 encoded text.
+ */
+export const streamToBase64 = async (stream) => {
+  const buffer = await _streamToBuffer(stream);
+  return buffer.toString("base64");
+};
+
 const _readAttachmentLocally = async (attachment) => {
   const fileName = attachment.ID + "." + mime.extension(attachment.contentType);
   const filePath = path.resolve(__dirname, "../..", "test", "attachments", fileName);
