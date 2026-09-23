@@ -148,20 +148,62 @@ docker volume ls
 ```
 
 ### Start Locally
-Run the following command to start N8N via Docker.  You'll need to replace the Time Zone with your own Time Zone
-```
-docker run -it --rm \
- --name n8n \
- -p 5678:5678 \
- -e GENERIC_TIMEZONE="Australia/Brisbane" \
- -e TZ="Australia/Brisbane" \
- -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true \
- -e N8N_RUNNERS_ENABLED=true \
- -v n8n_data:/home/node/.n8n \
- docker.n8n.io/n8nio/n8n
+
+1. **Start the N8N Container**
+
+   Use the npm script to start N8N in the background:
+   ```bash
+   pnpm run n8n:start
+   ```
+
+   Or manually with Docker (replace timezone as needed):
+   ```bash
+   docker run -d \
+    --name n8n_beer_demo \
+    -p 5678:5678 \
+    -e GENERIC_TIMEZONE="Australia/Brisbane" \
+    -e TZ="Australia/Brisbane" \
+    -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true \
+    -e N8N_RUNNERS_ENABLED=true \
+    -v n8n_data:/home/node/.n8n \
+    docker.n8n.io/n8nio/n8n
+   ```
+
+2. **First Time Setup - Import Workflows & Credentials**
+
+   On your first run, you'll need to import the workflows and credentials:
+   ```bash
+   pnpm run n8n:import:wf
+   pnpm run n8n:import:creds
+   ```
+
+   Or import individually:
+   ```bash
+   pnpm run n8n:import:wf
+   pnpm run n8n:import:creds:beer_demo_user
+   pnpm run n8n:import:creds:beer_claims_header_auth
+   ```
+
+3. **Access N8N**
+
+   N8N will be available at `http://localhost:5678`
+
+   On first login you'll be prompted to create your admin login details. Thereafter you will be prompted to login using those credentials.
+
+### Stop N8N
+
+To stop the N8N container:
+```bash
+pnpm run n8n:stop
 ```
 
-On first login you'll be prompted to create your admin login details.  There after are you will be prompted to login using those credentials.
+### Export Workflows & Credentials
+
+To export your workflows and credentials from N8N back to the n8n directory:
+```bash
+pnpm run n8n:export:wf
+pnpm run n8n:export:creds
+```
 
 ## Beer Links
 https://www.bjcp.org/education-training/education-resources/beer-faults/
