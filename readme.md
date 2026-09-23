@@ -1,5 +1,12 @@
 # Claims N8N Demo
 
+[![License: Beerware](https://img.shields.io/badge/license-Beerware-blue)](LICENSE)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16-brightgreen)](https://nodejs.org/)
+[![Docker Required](https://img.shields.io/badge/docker-required-blue)](https://www.docker.com/)
+[![Status](https://img.shields.io/badge/status-Active-brightgreen)]()
+[![SAP CAP](https://img.shields.io/badge/SAP-CAP-0066ff)](https://cap.cloud.sap)
+[![N8N Integration](https://img.shields.io/badge/N8N-Workflow%20Automation-red)](https://n8n.io/)
+
 ## About
 
 This is a comprehensive claims management system built on SAP Cloud Application Programming (CAP) model with integration to N8N for workflow automation. The project demonstrates a multi-app architecture with support for managing beer claims, deliveries, and related configurations.
