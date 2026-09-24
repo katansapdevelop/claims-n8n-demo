@@ -194,17 +194,30 @@ docker volume ls
    pnpm run n8n:import:creds
    ```
 
-   Or import individually:
-   ```bash
-   pnpm run n8n:import:wf
-   pnpm run n8n:import:creds:beer_demo_user
-   ```
-
 3. **Access N8N**
 
    N8N will be available at `http://localhost:5678`
 
    On first login you'll be prompted to create your admin login details. Thereafter you will be prompted to login using those credentials.
+
+4. **Configure Credentials and Publish Workflow**
+
+   After logging into N8N, you'll need to complete the following setup steps:
+
+   a. **Update Beer Demo User Credentials** (for testing):
+      - Go to Overview Page > Credentials
+      - Find and edit the "Beer Demo User" basic auth credential
+      - Update it to use:
+        - **Username:** `n8n_wf_user`
+        - **Password:** `n8n_wf_user`
+      - Save the credential
+
+   b. **Publish the Workflow**:
+      - Open the "Beer Demo Claim Assessment" workflow
+      - Click the "Publish" button in the toolbar
+      - The workflow is now active and ready to receive webhook requests
+
+   > **Note:** These test credentials are only for development/testing purposes. Update them with secure credentials for production use.
 
 ### Stop N8N
 
