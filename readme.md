@@ -111,6 +111,12 @@ graph TB
    - Claims App: `http://localhost:4004/app/claims/`
    - Beers App: `http://localhost:4004/app/beers/`
    - Deliveries App: `http://localhost:4004/app/deliveries/`
+   
+   Alternatively, access all applications through the [UI5 Launchpad](http://localhost:4004/launchpad#Shell-home)
+
+   **Authentication:** You will be prompted to authenticate when accessing the applications. Credentials are maintained in `package.json`, but you can simply use:
+   - **Username:** `admin`
+   - **Password:** `admin`
 
    > **Note:** In order to submit claims for agent review in N8N, you need to set up N8N as described in the [N8N section](#n8n) below.
 
