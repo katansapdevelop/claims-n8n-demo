@@ -1,7 +1,7 @@
 # Claims N8N Demo
 
 [![License: Beerware](https://img.shields.io/badge/license-Beerware-blue)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16-brightgreen)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D24-brightgreen)](https://nodejs.org/)
 [![Docker Required](https://img.shields.io/badge/docker-required-blue)](https://www.docker.com/)
 [![Status](https://img.shields.io/badge/status-Active-brightgreen)]()
 [![SAP CAP](https://img.shields.io/badge/SAP-CAP-0066ff)](https://cap.cloud.sap)
@@ -87,6 +87,7 @@ graph TB
 - **Node.js** and npm/pnpm installed
 - **Docker** (for N8N)
 - **VS Code** (recommended)
+- **Claude API Key** (for N8N workflow automation)
 
 ### Quick Start
 
@@ -110,6 +111,23 @@ graph TB
    - Claims App: `http://localhost:4004/app/claims/`
    - Beers App: `http://localhost:4004/app/beers/`
    - Deliveries App: `http://localhost:4004/app/deliveries/`
+   
+   Alternatively, access all applications through the [UI5 Launchpad](http://localhost:4004/launchpad#Shell-home)
+
+   **Authentication:** You will be prompted to authenticate when accessing the applications. Credentials are maintained in `package.json`, but you can simply use:
+   - **Username:** `admin`
+   - **Password:** `admin`
+
+   > **Note:** In order to submit claims for agent review in N8N, you need to set up N8N as described in the [N8N section](#n8n) below.
+
+4. **Update Claude API Key**
+
+   Configure your Claude API key for N8N workflow automation:
+   ```bash
+   pnpm run n8n:import:creds:beer_demo_anthropic
+   ```
+   
+   This will import the Claude credentials needed for the N8N workflows. Ensure your API key is valid and has the necessary permissions.
 
 ### Project Structure
 
@@ -130,9 +148,6 @@ File or Folder | Purpose
 - Sample test data is in `test/data/`
 - Use `cds watch` for live reloading during development
 
-## Learn More
-
-Learn more about CAP at <https://cap.cloud.sap>.
 
 ## N8N
 ### Initial Setup
@@ -151,14 +166,14 @@ docker volume ls
 
 1. **Start the N8N Container**
 
-   Use the npm script to start N8N in the background:
+   Use the npm script to start N8N:
    ```bash
    pnpm run n8n:start
    ```
 
    Or manually with Docker (replace timezone as needed):
    ```bash
-   docker run -d \
+   docker run -it --rm \
     --name n8n_beer_demo \
     -p 5678:5678 \
     -e GENERIC_TIMEZONE="Australia/Brisbane" \
@@ -168,6 +183,8 @@ docker volume ls
     -v n8n_data:/home/node/.n8n \
     docker.n8n.io/n8nio/n8n
    ```
+
+   **Note:** The `-it` flags enable interactive terminal mode, which allows VS Code to port forward the remote container as localhost for seamless local development access.
 
 2. **First Time Setup - Import Workflows & Credentials**
 
@@ -181,7 +198,6 @@ docker volume ls
    ```bash
    pnpm run n8n:import:wf
    pnpm run n8n:import:creds:beer_demo_user
-   pnpm run n8n:import:creds:beer_claims_header_auth
    ```
 
 3. **Access N8N**
@@ -205,5 +221,13 @@ pnpm run n8n:export:wf
 pnpm run n8n:export:creds
 ```
 
-## Beer Links
-https://www.bjcp.org/education-training/education-resources/beer-faults/
+## Documentation
+
+For detailed documentation, please refer to:
+
+- [UI5 Applications Documentation](./docs/ui5-applications.md) - Guide to the SAPUI5 Claims, Beers, and Deliveries applications
+- [N8N Workflow Documentation](./docs/n8n-flow.md) - Details on the AI-powered claim assessment workflow
+
+## Learn More
+
+Learn more about CAP at <https://cap.cloud.sap>.
