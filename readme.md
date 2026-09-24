@@ -87,6 +87,7 @@ graph TB
 - **Node.js** and npm/pnpm installed
 - **Docker** (for N8N)
 - **VS Code** (recommended)
+- **Claude API Key** (for N8N workflow automation)
 
 ### Quick Start
 
@@ -112,6 +113,15 @@ graph TB
    - Deliveries App: `http://localhost:4004/app/deliveries/`
 
    > **Note:** In order to submit claims for agent review in N8N, you need to set up N8N as described in the [N8N section](#n8n) below.
+
+4. **Update Claude API Key**
+
+   Configure your Claude API key for N8N workflow automation:
+   ```bash
+   pnpm run n8n:import:creds:beer_demo_anthropic
+   ```
+   
+   This will import the Claude credentials needed for the N8N workflows. Ensure your API key is valid and has the necessary permissions.
 
 ### Project Structure
 
