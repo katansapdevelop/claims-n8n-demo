@@ -3,4 +3,3 @@ ID,claim_id,type_id,date_of_claim,description,claim_value,delivery_id,claim_date
 3b241101-e2bb-4255-8caf-4136c566a980,2000000002,QC,2026-02-01,"Beer has expired",48.90,223e4567-e89b-12d3-a456-426614174000,44,1,,,58.90,AUD,00007,,
 3b241101-e2bb-4255-8caf-4136c566a981,2000000003,QC,2026-03-01,"Excessive sediment and haze in beer",91.50,323e4567-e89b-12d3-a456-426614174000,45,1,,,101.50,AUD,00001,,
 3b241101-e2bb-4255-8caf-4136c566a982,2000000004,SH,2026-04-01,"Cans damaged in transit and have dents",32.75,323e4567-e89b-12d3-a456-426614174000,44,1,,,42.75,AUD,88888,,
-3b241101-e2bb-4255-8caf-4136c566a983,2000000005,PK,2026-05-01,"Damaged bottle labels and misaligned caps",105.25,523e4567-e89b-12d3-a456-426614174000,44,1,,,115.25,AUD,99999,,
