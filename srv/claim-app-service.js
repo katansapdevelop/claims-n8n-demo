@@ -168,21 +168,25 @@ class ClaimAppService extends cds.ApplicationService {
            attachmentEvidence.stream = await streamToBase64(await getAttachmentStream(attachmentEvidence));
       }
 
-      const n8nresponse = await n8n.trigger({
-        path: "submitClaimReview",
-        payload: claim,
-      })
+      try{
+        const n8nresponse = await n8n.trigger({
+          path: "submitClaimReview",
+          payload: claim,
+        })
 
-      const claimId = req.params[0].ID;
-      const agent_approval_outcome = n8nresponse.outcome;
-      const agent_approval_report = n8nresponse.report;
+        const claimId = req.params[0].ID;
+        const agent_approval_outcome = n8nresponse.outcome;
+        const agent_approval_report = n8nresponse.report;
 
-      LOG.info("Updating the agent assessment for claim " + claimId);
-      await UPDATE("ls.claims.Claims", { ID: claimId }).with({
-        agent_approval_outcome: agent_approval_outcome,
-        agent_approval_report: agent_approval_report,
-      });
-
+        LOG.info("Updating the agent assessment for claim " + claimId);
+        await UPDATE("ls.claims.Claims", { ID: claimId }).with({
+          agent_approval_outcome: agent_approval_outcome,
+          agent_approval_report: agent_approval_report,
+        });
+      } catch (error) {
+        //The claim submission will continue even if the agent assessment fails
+        LOG.error("Agent Assessment Error: " + error.message);
+      }
 
 
       const response = await updateClaimStatus(
