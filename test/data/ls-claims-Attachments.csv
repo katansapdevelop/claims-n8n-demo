@@ -2,3 +2,5 @@ ID,claim_ID,name,contentType,createdBy,objectId,contentLength,type_ID
 4b241101-e2bb-4255-8caf-4136c566a979,3b241101-e2bb-4255-8caf-4136c566a979,OldMoney1.jpg,image/jpeg,claimant@test.com,_sF3VHMtBWzDpk69dM4TDaNoj2j8eOm_9oCJujUuA5o,361000,LABEL
 5b241101-e2bb-4255-8caf-4136c566a979,3b241101-e2bb-4255-8caf-4136c566a979,OldMoney2.jpg,image/jpeg,claimant@test.com,_sF3VHMtBWzDpk69dM4TDaNoj2j8eOm_9oCJujUuA5o,140000,DAMAGE
 4b483a38-24aa-44fe-a570-71c2fcd0965d,3b241101-e2bb-4255-8caf-4136c566a981,ColaCanCrushed.jpg,image/jpeg,claimant@test.com,_sF3VHMtBWzDpk69dM4TDaNoj2j8eOm_9oCJujUuA5o,140000,DAMAGE
+899eada9-8052-425b-9ae6-d9a3a3288051,3b241101-e2bb-4255-8caf-4136c566a982,BrewskiV2.jpg,image/jpeg,claimant@test.com,_sF3VHMtBWzDpk69dM4TDaNoj2j8eOm_9oCJujUuA5o,361000,LABEL
+bed102b5-4d8a-4875-a19c-47ebd68a43d8,3b241101-e2bb-4255-8caf-4136c566a982,BrewskiV1.jpg,image/jpeg,claimant@test.com,_sF3VHMtBWzDpk69dM4TDaNoj2j8eOm_9oCJujUuA5o,140000,DAMAGE
