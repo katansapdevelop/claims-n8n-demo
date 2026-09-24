@@ -1,5 +1,5 @@
 code;name;descr;symbol;minorUnit
 AUD;Australian Dollar;Australian Dollar;$;2
-NZD;New Zealand Dollar;New Zealand Dollar;$;2
-THB;Thai Baht;Thai Baht;฿;2
 USD;United States Dollar;United States Dollar;$;2
+GBP;British Pound;British Pound;£;2
+INR;Indian Rupee;Indian Rupee;₹;2
