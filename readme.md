@@ -148,9 +148,6 @@ File or Folder | Purpose
 - Sample test data is in `test/data/`
 - Use `cds watch` for live reloading during development
 
-## Learn More
-
-Learn more about CAP at <https://cap.cloud.sap>.
 
 ## N8N
 ### Initial Setup
@@ -224,5 +221,13 @@ pnpm run n8n:export:wf
 pnpm run n8n:export:creds
 ```
 
-## Beer Links
-https://www.bjcp.org/education-training/education-resources/beer-faults/
+## Documentation
+
+For detailed documentation, please refer to:
+
+- [UI5 Applications Documentation](./docs/ui5-applications.md) - Guide to the SAPUI5 Claims, Beers, and Deliveries applications
+- [N8N Workflow Documentation](./docs/n8n-flow.md) - Details on the AI-powered claim assessment workflow
+
+## Learn More
+
+Learn more about CAP at <https://cap.cloud.sap>.
