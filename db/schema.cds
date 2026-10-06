@@ -125,7 +125,8 @@ entity Claims : managed, cuid {
   agent_approval_outcome   : Decimal(3,0)   @Common.Label: 'Agent Assessment Outcome';
   agent_approval_report    : String         @Common.Label: 'Agent Approval Report';  
   agent_approval_model     : String(100)    @Common.Label: 'Model Name';
-  agent_approvals_cost     : Decimal(4, 4)  @Common.Label: 'Agent Approvals Cost (USD)';
+  agent_approvals_cost     : Decimal(4, 4)  @Common.Label: 'Agent Approvals Cost';
+  agent_approvals_currency : Currency       @Common.Label: 'Agent Approvals Currency'  @Common.IsCurrency;
   // Associations & Compositions
   comments                 : Composition of many Comments
                                on comments.claim = $self;

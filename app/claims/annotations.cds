@@ -251,6 +251,12 @@ annotate service.Claims with @(
             Target : '@UI.DataPoint#agent_approval_outcome',
             @UI.Hidden: (agent_approval_outcome == null ),
         },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID : 'agent_approvals_cost',
+            Target : '@UI.DataPoint#agent_approvals_cost',
+            @UI.Hidden: (agent_approval_outcome == null ),
+        },
     ],
     UI.FieldGroup #Status : {
         $Type : 'UI.FieldGroupType',
@@ -357,17 +363,14 @@ annotate service.Claims with @(
         Data : [
             {
                 $Type : 'UI.DataField',
-                Value : agent_approval_model,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : agent_approvals_cost,
-            },
-            {
-                $Type : 'UI.DataField',
                 Value : agent_approval_report
             },
         ],
+    },
+    UI.DataPoint #agent_approvals_cost : {
+        $Type : 'UI.DataPointType',
+        Value : agent_approvals_cost,
+        Title : 'Agent Costs',
     },
 );
 
@@ -924,5 +927,9 @@ annotate service.Pallets with {
 
 annotate service.ClaimPallets with {
     beer_name @Common.FieldControl : #ReadOnly
+};
+
+annotate service.Claims with {
+    agent_approvals_cost @Measures.Unit : agent_approvals_currency_code
 };
 

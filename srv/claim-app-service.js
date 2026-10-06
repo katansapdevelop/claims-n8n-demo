@@ -201,7 +201,8 @@ class ClaimAppService extends cds.ApplicationService {
           agent_approval_outcome: n8nresponse?.outcome,
           agent_approval_report: n8nresponse?.report,
           agent_approval_model: n8nresponse?.model,
-          agent_approvals_cost: new_agent_approvals_cost
+          agent_approvals_cost: new_agent_approvals_cost,
+          agent_approvals_currency_code: 'USD',
         });
       } catch (error) {
         //The claim submission will continue even if the agent assessment fails
