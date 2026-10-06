@@ -1,0 +1,5 @@
+model,description,tokenPriceBasis,tokenPriceInput,tokenPriceOutput,FiveMinCachePrice,OneHourCachePrice,HitsAndRefreshesPrice
+"claude-fable-5-1","Claude Fable 5.1",1000000,10.00,50.00,12.50,20.00,0.25
+"claude-haiku-4-5-20251001","Claude Haiku 4.5",1000000,1.00,5.00,2.50,4.00,0.20
+"claude-sonnet-5-5","Claude Sonnet 5.5",1000000,2.00,10.00,2.50,4.00,0.20
+"claude-opus-5-5","Claude Opus 5.5",1000000,4.00,20.00,5.00,8.00,0.20

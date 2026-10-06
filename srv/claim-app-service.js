@@ -175,13 +175,33 @@ class ClaimAppService extends cds.ApplicationService {
         })
 
         const claimId = req.params[0].ID;
-        const agent_approval_outcome = n8nresponse.outcome;
-        const agent_approval_report = n8nresponse.report;
 
+        LOG.info("Reading previous costs for claim " + claimId);
+        const previousAgentCosts = await SELECT.one.from("ls.claims.Claims").columns((claim) => {
+          claim.agent_approvals_cost;
+        }).where({ ID: claimId });
+
+        LOG.info("Reading claim model for " + n8nresponse?.model);
+        const claimModel = await SELECT.one.from("ls.claims.config.ClaudeAIModels").columns((model) => {
+          model`.*`
+        }).where({ model: n8nresponse?.model });
+        LOG.debug("Claim model retrieved: " + JSON.stringify(claimModel)); 
+
+        LOG.info("Calculating costs for claim " + claimId);
+        const inputTokenCost = (n8nresponse?.usage.input_tokens / claimModel?.tokenPriceBasis) * claimModel?.tokenPriceInput ?? 0;
+        const outputTokenCost = (n8nresponse?.usage.output_tokens / claimModel?.tokenPriceBasis) * claimModel?.tokenPriceOutput ?? 0;
+        const fiveMinCacheCost = (n8nresponse?.usage.cache_creation.ephemeral_5m_input_tokens / claimModel?.tokenPriceBasis) * claimModel?.FiveMinCachePrice ?? 0;
+        const oneHourCacheCost = (n8nresponse?.usage.cache_creation.ephemeral_1h_input_tokens / claimModel?.tokenPriceBasis) * claimModel?.OneHourCachePrice ?? 0;
+        const cacheReadCost = (n8nresponse?.usage.cache_read_input_tokens / claimModel?.tokenPriceBasis) * claimModel?.HitsAndRefreshesPrice ?? 0;
+        
+        let new_agent_approvals_cost = inputTokenCost + outputTokenCost + fiveMinCacheCost + oneHourCacheCost + cacheReadCost + ( previousAgentCosts?.agent_approvals_cost ?? 0 );
+      
         LOG.info("Updating the agent assessment for claim " + claimId);
         await UPDATE("ls.claims.Claims", { ID: claimId }).with({
-          agent_approval_outcome: agent_approval_outcome,
-          agent_approval_report: agent_approval_report,
+          agent_approval_outcome: n8nresponse?.outcome,
+          agent_approval_report: n8nresponse?.report,
+          agent_approval_model: n8nresponse?.model,
+          agent_approvals_cost: new_agent_approvals_cost
         });
       } catch (error) {
         //The claim submission will continue even if the agent assessment fails

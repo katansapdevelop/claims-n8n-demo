@@ -357,6 +357,14 @@ annotate service.Claims with @(
         Data : [
             {
                 $Type : 'UI.DataField',
+                Value : agent_approval_model,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : agent_approvals_cost,
+            },
+            {
+                $Type : 'UI.DataField',
                 Value : agent_approval_report
             },
         ],

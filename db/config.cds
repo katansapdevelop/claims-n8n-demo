@@ -29,4 +29,15 @@ entity CurrencyConversion : cuid, managed {
   validTo      : Timestamp      @Common.Label: 'Valid To';
 }
 
+@Common.Label: 'Claude AI Models'
+entity ClaudeAIModels {
+  key model   : String(100) @Common.Label: 'Model Name';
+  description : String(500) @Common.Label: 'Description';
+  tokenPriceBasis : Integer @Common.Label: 'Token Price Basis';
+  tokenPriceInput : Decimal(10, 2) @Common.Label: 'Token Price Input';
+  tokenPriceOutput : Decimal(10, 2) @Common.Label: 'Token Price Output';
+  FiveMinCachePrice : Decimal(10, 2) @Common.Label: '5m Cache Price';
+  OneHourCachePrice : Decimal(10, 2) @Common.Label: '1h Cache Price';
+  HitsAndRefreshesPrice : Decimal(10, 2) @Common.Label: 'Hits and Refreshes Price';
 
+}
