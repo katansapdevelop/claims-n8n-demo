@@ -227,11 +227,14 @@ class ClaimAppService extends cds.ApplicationService {
 
       if (agentAssessmentOutcome < 25){
 
+        // Wait for a short period before updating the claim status to ensure any previous operations have completed
+        await new Promise(resolve => setTimeout(resolve, 500)); 
+
         const response = await updateClaimStatus(
           req.params[0].ID,
           claim_statuses.INFO_REQ,
           "Agent Asssessment Failed: More Information Requested",
-          claimActions.REQUEST_INFO
+          claimActions.AGENT_REJECT
         );
 
         message = `The agent assessment outcome is below the acceptable threshold of 25`;

@@ -7,4 +7,5 @@ id,name,descr,Icon
 5,Send To Brewer,Send To Brewer,sap-icon://paper-plane
 6,Brewer Accepted,Brewer Accepted,sap-icon://employee-approvals
 7,Brewer Rejected,Brewer Rejected,sap-icon://employee-rejections
-8,Complete,Complete,sap-icon://complete
+8,Complete,Complete,sap-icon://complete,
+9,AI Agent Rejected - Request More Info,Rejected by Agent Assessment,sap-icon://alert

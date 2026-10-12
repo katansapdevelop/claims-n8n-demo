@@ -29,6 +29,7 @@ export const claimActions = {
   BREWER_ACCEPT: 6,
   BREWER_REJECT: 7,
   COMPLETE: 8,
+  AGENT_REJECT: 9
 };
 
 let _claimTypes = null;
@@ -289,7 +290,7 @@ export const updateClaimStatus = async (claimId, statusId, statusText, claimActi
 
 const _claim_status_previous_qc = {
   1: [null],
-  2: [1, 6, 3],
+  2: [1, 6, 3, 9],
   3: [2],
   4: [2],
   5: [2],
@@ -300,7 +301,7 @@ const _claim_status_previous_qc = {
 
 const _claim_status_previous = {
   1: [null],
-  2: [1, 3],
+  2: [1, 3, 9],
   3: [2],
   5: [2],
   7: [2],
