@@ -23,3 +23,5 @@ logs/
 
 .env
 .env.*  
+test/sample/invoices/*.html
+app/sampleinvoices
