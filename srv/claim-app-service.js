@@ -212,7 +212,8 @@ class ClaimAppService extends cds.ApplicationService {
         LOG.info("Updating the agent assessment for claim " + claimId);
         await UPDATE("ls.claims.Claims", { ID: claimId }).with({
           agent_approval_outcome: n8nresponse?.outcome,
-          agent_approval_report: n8nresponse?.report,
+          agent_approval_summary: n8nresponse?.report.summary,
+          agent_approval_explanation: n8nresponse?.report.explanation,
           agent_approval_model: n8nresponse?.model,
           agent_approvals_cost: new_agent_approvals_cost,
           agent_approvals_currency_code: 'USD',
@@ -226,9 +227,6 @@ class ClaimAppService extends cds.ApplicationService {
 
 
       if (agentAssessmentOutcome < 25){
-
-        // Wait for a short period before updating the claim status to ensure any previous operations have completed
-        await new Promise(resolve => setTimeout(resolve, 500)); 
 
         const response = await updateClaimStatus(
           req.params[0].ID,

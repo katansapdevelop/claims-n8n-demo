@@ -224,7 +224,7 @@
                       "template": "com.logicalstarconsulting.claims.ext.fragment.AuditLogTimeLine",
                       "position": {
                         "placement": "After",
-                        "anchor": "AgentAssessment"
+                        "anchor": "Attachment"
                       },
                       "title": "Audit Log"
                     },

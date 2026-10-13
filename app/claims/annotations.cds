@@ -81,10 +81,23 @@ annotate service.Claims with @(
             Target : 'attachments/@UI.LineItem#Attachment',
         },
         {
-            $Type : 'UI.ReferenceFacet',
+            $Type : 'UI.CollectionFacet',
             Label : 'Agent Assessment',
-            ID : 'AgentAssessment',
-            Target : '@UI.FieldGroup#AgentAssessment',
+            ID : 'Test',
+            Facets : [
+                {
+                    $Type : 'UI.ReferenceFacet',
+                    Label : 'Summary',
+                    ID : 'AgentAssessment',
+                    Target : '@UI.FieldGroup#AgentAssessment'
+                },
+                {
+                    $Type : 'UI.ReferenceFacet',
+                    Label : 'Explanation',
+                    ID : 'Explanation',
+                    Target : '@UI.FieldGroup#Explanation',
+                },
+            ],
             @UI.Hidden: (agent_approval_outcome == null),
         },
     ],
@@ -363,7 +376,8 @@ annotate service.Claims with @(
         Data : [
             {
                 $Type : 'UI.DataField',
-                Value : agent_approval_report
+                Value : agent_approval_summary,
+                Label : 'Approval Summary',
             },
         ],
     },
@@ -371,6 +385,16 @@ annotate service.Claims with @(
         $Type : 'UI.DataPointType',
         Value : agent_approvals_cost,
         Title : 'Agent Costs',
+    },
+    UI.FieldGroup #Explanation : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : agent_approval_explanation,
+                Label : 'Approval Explanation',
+            },
+        ],
     },
 );
 
@@ -931,5 +955,13 @@ annotate service.ClaimPallets with {
 
 annotate service.Claims with {
     agent_approvals_cost @Measures.Unit : agent_approvals_currency_code
+};
+
+annotate service.Claims with {
+    agent_approval_explanation @UI.MultiLineText : true
+};
+
+annotate service.Claims with {
+    agent_approval_summary @UI.MultiLineText : true
 };
 
