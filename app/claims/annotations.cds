@@ -828,12 +828,6 @@ annotate service.Attachments with {
     )
 };
 
-annotate service.Claims with {
-    agent_approval_report @(
-        UI.MultiLineText : true,
-        Common.FieldControl : #ReadOnly
-    )
-};
 
 annotate service.Deliveries with {
     delivery_id @(
