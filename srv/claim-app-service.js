@@ -132,8 +132,21 @@ class ClaimAppService extends cds.ApplicationService {
     this.on("submitForReview", Claims, async (req) => {
       await validateBeforeSubmitForReview(req);
 
+      const response = await updateClaimStatus(
+        req.params[0].ID,
+        claim_statuses.PENDING_REVIEW,
+        "Submit for Review",
+        claimActions.SUBMIT_REVIEW
+      );
+
+      let message = response.success ? `The claim has been submitted for review` : response.message;
+
+
+
       // Added programatically instead of via bound action so the claim ui is refreshed after processing is completed
-      const n8n = await cds.connect.to("n8n")
+      const n8n = await cds.connect.to("n8n");
+
+      let agentAssessmentOutcome = null;
 
       const claim = await SELECT.one
           .from("ls.claims.Claims")
@@ -175,29 +188,58 @@ class ClaimAppService extends cds.ApplicationService {
         })
 
         const claimId = req.params[0].ID;
-        const agent_approval_outcome = n8nresponse.outcome;
-        const agent_approval_report = n8nresponse.report;
 
+        LOG.info("Reading previous costs for claim " + claimId);
+        const previousAgentCosts = await SELECT.one.from("ls.claims.Claims").columns((claim) => {
+          claim.agent_approvals_cost;
+        }).where({ ID: claimId });
+
+        LOG.info("Reading claim model for " + n8nresponse?.model);
+        const claimModel = await SELECT.one.from("ls.claims.config.ClaudeAIModels").columns((model) => {
+          model`.*`
+        }).where({ model: n8nresponse?.model });
+        LOG.debug("Claim model retrieved: " + JSON.stringify(claimModel)); 
+
+        LOG.info("Calculating costs for claim " + claimId);
+        const inputTokenCost = (n8nresponse?.usage.input_tokens / claimModel?.tokenPriceBasis) * claimModel?.tokenPriceInput ?? 0;
+        const outputTokenCost = (n8nresponse?.usage.output_tokens / claimModel?.tokenPriceBasis) * claimModel?.tokenPriceOutput ?? 0;
+        const fiveMinCacheCost = (n8nresponse?.usage.cache_creation.ephemeral_5m_input_tokens / claimModel?.tokenPriceBasis) * claimModel?.FiveMinCachePrice ?? 0;
+        const oneHourCacheCost = (n8nresponse?.usage.cache_creation.ephemeral_1h_input_tokens / claimModel?.tokenPriceBasis) * claimModel?.OneHourCachePrice ?? 0;
+        const cacheReadCost = (n8nresponse?.usage.cache_read_input_tokens / claimModel?.tokenPriceBasis) * claimModel?.HitsAndRefreshesPrice ?? 0;
+        
+        let new_agent_approvals_cost = Math.round((inputTokenCost + outputTokenCost + fiveMinCacheCost + oneHourCacheCost + cacheReadCost + ( previousAgentCosts?.agent_approvals_cost ?? 0 )) * 10000) / 10000;
+      
         LOG.info("Updating the agent assessment for claim " + claimId);
         await UPDATE("ls.claims.Claims", { ID: claimId }).with({
-          agent_approval_outcome: agent_approval_outcome,
-          agent_approval_report: agent_approval_report,
+          agent_approval_outcome: n8nresponse?.outcome,
+          agent_approval_summary: n8nresponse?.report.summary,
+          agent_approval_explanation: n8nresponse?.report.explanation,
+          agent_approval_model: n8nresponse?.model,
+          agent_approvals_cost: new_agent_approvals_cost,
+          agent_approvals_currency_code: 'USD',
         });
+
+        agentAssessmentOutcome = n8nresponse?.outcome;
       } catch (error) {
         //The claim submission will continue even if the agent assessment fails
         LOG.error("Agent Assessment Error: " + error.message);
       }
 
 
-      const response = await updateClaimStatus(
-        req.params[0].ID,
-        claim_statuses.PENDING_REVIEW,
-        "Submit for Review",
-        claimActions.SUBMIT_REVIEW
-      );
-      const message = response.success
-        ? `The claim has been submitted for review`
-        : response.message;
+      if (agentAssessmentOutcome < 25){
+
+        const response = await updateClaimStatus(
+          req.params[0].ID,
+          claim_statuses.INFO_REQ,
+          "Agent Asssessment Failed: More Information Requested",
+          claimActions.AGENT_REJECT
+        );
+
+        message = `The agent assessment outcome is below the acceptable threshold of 25`;
+      }
+
+
+      
       req.notify(message);
     });
 

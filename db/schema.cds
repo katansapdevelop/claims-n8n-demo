@@ -112,18 +112,22 @@ entity Pallets : managed, cuid {
 // Claims
 @Common.Label: 'Claims'
 entity Claims : managed, cuid {
-  claim_id                 : String(10)     @Common.Label: 'Claim Id';
-  date_of_claim            : Date           @Common.Label: 'Date of Claim';
-  description              : String(300)    @Common.Label: 'Description';
-  total_claim_value        : Decimal(15, 2) @Common.Label: 'Total Claim Value' default 0;
-  claim_value              : Decimal(15, 2) @Common.Label: 'Claim Value';
-  claim_currency           : Currency       @Common.Label: 'Claim Currency'  @Common.IsCurrency;
-  claim_date_week_number   : Integer        @Common.Label: 'Claim Date Week Number';
-  credit_note_id           : String(10)     @Common.Label: 'Credit Note Id';
-  payment_deduction_doc_id : String(10)     @Common.Label: 'Payment Deduction Doc Id';
-  workflow_id              : UUID           @Common.Label: 'Workflow Id';
-  agent_approval_outcome   : Decimal(3,0)   @Common.Label: 'Agent Assessment Outcome';
-  agent_approval_report    : String         @Common.Label: 'Agent Approval Report';  
+  claim_id                    : String(10)     @Common.Label: 'Claim Id';
+  date_of_claim               : Date           @Common.Label: 'Date of Claim';
+  description                 : String(300)    @Common.Label: 'Description';
+  total_claim_value           : Decimal(15, 2) @Common.Label: 'Total Claim Value' default 0;
+  claim_value                 : Decimal(15, 2) @Common.Label: 'Claim Value';
+  claim_currency              : Currency       @Common.Label: 'Claim Currency'  @Common.IsCurrency;
+  claim_date_week_number      : Integer        @Common.Label: 'Claim Date Week Number';
+  credit_note_id              : String(10)     @Common.Label: 'Credit Note Id';
+  payment_deduction_doc_id    : String(10)     @Common.Label: 'Payment Deduction Doc Id';
+  workflow_id                 : UUID           @Common.Label: 'Workflow Id';
+  agent_approval_outcome      : Decimal(3,0)   @Common.Label: 'Agent Assessment Outcome';
+  agent_approval_summary      : String         @Common.Label: 'Agent Approval Summary';  
+  agent_approval_explanation  : String         @Common.Label: 'Agent Approval Explanation';  
+  agent_approval_model        : String(100)    @Common.Label: 'Model Name';
+  agent_approvals_cost        : Decimal(4, 4)  @Common.Label: 'Agent Approvals Cost';
+  agent_approvals_currency    : Currency       @Common.Label: 'Agent Approvals Currency'  @Common.IsCurrency;
   // Associations & Compositions
   comments                 : Composition of many Comments
                                on comments.claim = $self;

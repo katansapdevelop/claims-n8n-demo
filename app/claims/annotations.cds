@@ -80,13 +80,6 @@ annotate service.Claims with @(
             ID : 'Attachment',
             Target : 'attachments/@UI.LineItem#Attachment',
         },
-        {
-            $Type : 'UI.ReferenceFacet',
-            Label : 'Agent Assessment',
-            ID : 'AgentAssessment',
-            Target : '@UI.FieldGroup#AgentAssessment',
-            @UI.Hidden: (agent_approval_outcome == null),
-        },
     ],
     UI.FieldGroup #General : {
         $Type : 'UI.FieldGroupType',
@@ -251,6 +244,12 @@ annotate service.Claims with @(
             Target : '@UI.DataPoint#agent_approval_outcome',
             @UI.Hidden: (agent_approval_outcome == null ),
         },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID : 'agent_approvals_cost',
+            Target : '@UI.DataPoint#agent_approvals_cost',
+            @UI.Hidden: (agent_approval_outcome == null ),
+        },
     ],
     UI.FieldGroup #Status : {
         $Type : 'UI.FieldGroupType',
@@ -352,12 +351,36 @@ annotate service.Claims with @(
         Visualization : #Progress,
         Description : '',
     },
+    
     UI.FieldGroup #AgentAssessment : {
         $Type : 'UI.FieldGroupType',
         Data : [
             {
                 $Type : 'UI.DataField',
-                Value : agent_approval_report
+                Value : agent_approval_summary,
+                Label : 'Summary',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : agent_approval_explanation,
+                Label : 'Explanation',
+                @UI.PartOfPreview : false,
+            },
+        ],
+    },
+
+    UI.DataPoint #agent_approvals_cost : {
+        $Type : 'UI.DataPointType',
+        Value : agent_approvals_cost,
+        Title : 'Agent Costs',
+    },
+    UI.FieldGroup #Explanation : {
+        $Type : 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type : 'UI.DataField',
+                Value : agent_approval_explanation,
+                Label : 'Approval Explanation',
             },
         ],
     },
@@ -793,12 +816,6 @@ annotate service.Attachments with {
     )
 };
 
-annotate service.Claims with {
-    agent_approval_report @(
-        UI.MultiLineText : true,
-        Common.FieldControl : #ReadOnly
-    )
-};
 
 annotate service.Deliveries with {
     delivery_id @(
@@ -916,5 +933,23 @@ annotate service.Pallets with {
 
 annotate service.ClaimPallets with {
     beer_name @Common.FieldControl : #ReadOnly
+};
+
+annotate service.Claims with {
+    agent_approvals_cost @Measures.Unit : agent_approvals_currency_code
+};
+
+annotate service.Claims with {
+    agent_approval_explanation @(
+        UI.MultiLineText : true,
+        Common.FieldControl : #ReadOnly,
+    )
+};
+
+annotate service.Claims with {
+    agent_approval_summary @(
+        UI.MultiLineText : true,
+        Common.FieldControl : #ReadOnly,
+    )
 };
 
