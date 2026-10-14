@@ -235,6 +235,15 @@
                         "anchor": "Defects1"
                       },
                       "title": "Impacted Pallets"
+                    },
+                    "AgentAssessment": {
+                      "template": "com.logicalstarconsulting.claims.ext.fragment.AgentAssessment",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "AuditLogTimeLine"
+                      },
+                      "title": "Agent Assessment",
+                      "visible": "{= %{agent_approval_outcome} > 0 }"
                     }
                   }
                 }
