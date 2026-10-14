@@ -5,11 +5,15 @@
 			<f:ColumnLayout id="agentAssessmentColumnLayout" columnsM="1" columnsL="1" columnsXL="1" labelCellsLarge="1" />
 		</f:layout>
 		<f:formContainers>
-			<f:FormContainer id="agentAssessmentFormContainer">
+			<f:FormContainer id="agentAssessmentFormContainerSummary">
 				<f:formElements>
 					<macros:FormElement metaPath="agent_approval_summary" id="formElementIdWithLabel" label="Summary">
 						<TextArea id="agentAssessmentSummaryTextArea" value="{agent_approval_summary}" growing="true" editable="false" />
 					</macros:FormElement>
+				</f:formElements>
+			</f:FormContainer>
+			<f:FormContainer id="agentAssessmentFormContainerExplanation" expandable="true" title="Show More" expanded="false">
+				<f:formElements>
 					<macros:FormElement metaPath="agent_approval_explanation" id="formElementDescriptionWithLabel" label="Explanation" >
 						<TextArea id="agentAssessmentExplanationTextArea" value="{agent_approval_explanation}" growing="true" editable="false" />
 					</macros:FormElement>
