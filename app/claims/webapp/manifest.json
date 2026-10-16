@@ -131,7 +131,13 @@
                   },
                   "columns": {
                     "DataField::type_id": {
-                      "width": "15rem"
+                      "width": "10rem"
+                    },
+                    "DataField::status::descr": {
+                      "width": "8rem"
+                    },
+                    "DataField::delivery::brewer::name": {
+                      "width": "14rem"
                     }
                   }
                 }
