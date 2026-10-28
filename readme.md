@@ -7,6 +7,10 @@
 [![SAP CAP](https://img.shields.io/badge/SAP-CAP-0066ff)](https://cap.cloud.sap)
 [![N8N Integration](https://img.shields.io/badge/N8N-Workflow%20Automation-red)](https://n8n.io/)
 
+
+![Claim Demo Video](docs/images/BeerClaimDemo1.gif)
+
+
 ## About
 
 This is a comprehensive claims management system built on SAP Cloud Application Programming (CAP) model with integration to N8N for workflow automation. The project demonstrates a multi-app architecture with support for managing beer claims, deliveries, and related configurations.
