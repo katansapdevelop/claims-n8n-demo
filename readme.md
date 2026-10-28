@@ -8,7 +8,7 @@
 [![N8N Integration](https://img.shields.io/badge/N8N-Workflow%20Automation-red)](https://n8n.io/)
 
 
-<video src="https://github.com/katansapdevelop/claims-n8n-demo/releases/download/assets/BeerClaimDemo1.mp4" controls></video>
+![Claim Demo Video](docs/images/BeerClaimDemo1.gif)
 
 
 ## About
