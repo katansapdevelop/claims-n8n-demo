@@ -51,7 +51,7 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "^12.4.1",
+      "version": "^12.16.1",
       "onFail": "download"
     }
   },
@@ -71,9 +71,9 @@
         "credentials": {
           "url": "http://localhost:5678",
           "webhookAuth": {
-              "type": "basic",
-              "username": "n8n_wf_user",
-              "password": "n8n_wf_user"
+            "type": "basic",
+            "username": "n8n_wf_user",
+            "password": "n8n_wf_user"
           }
         }
       },

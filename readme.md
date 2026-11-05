@@ -122,16 +122,12 @@ graph TB
    - **Username:** `admin`
    - **Password:** `admin`
 
-   > **Note:** In order to submit claims for agent review in N8N, you need to set up N8N as described in the [N8N section](#n8n) below.
-
-4. **Update Claude API Key**
-
-   Configure your Claude API key for N8N workflow automation:
-   ```bash
-   pnpm run n8n:import:creds:beer_demo_anthropic
-   ```
    
-   This will import the Claude credentials needed for the N8N workflows. Ensure your API key is valid and has the necessary permissions.
+
+4. **Setup N8N**
+
+   In order to submit claims for agent review in N8N, you need to set up N8N as described in the [N8N section](#n8n) below.
+
 
 ### Project Structure
 
@@ -170,12 +166,12 @@ docker volume ls
 
 1. **Start the N8N Container**
 
-   Use the npm script to start N8N:
+   Use the npm script to start N8N (replace timezone with your own Time Zone in the [package.json](package.json)):
    ```bash
    pnpm run n8n:start
    ```
 
-   Or manually with Docker (replace timezone as needed):
+   Alternatively you can manually with Docker (replace timezone with your own Time Zone):
    ```bash
    docker run -it --rm \
     --name n8n_beer_demo \
@@ -208,10 +204,18 @@ docker volume ls
 
    After logging into N8N, you'll need to complete the following setup steps:
 
+   a. **Update Beer Anthropic User Credentials** (for testing):
+      - Go to Overview Page > Credentials
+      - Find and edit the "Beer Demo Anthropic" basic auth credential
+      - Update the `API Key` to use an API key you have created in your Claude account
+        - Claude is PAYG and 20 USD goes a long way for testing these flows
+      - Save the credential
+        - if it's correct you will get a message ``Connection tested successfully``
+
    a. **Update Beer Demo User Credentials** (for testing):
       - Go to Overview Page > Credentials
       - Find and edit the "Beer Demo User" basic auth credential
-      - Update it to use:
+      - Update it to use (you can use other credentials but also update the [package.json](package.json)):
         - **Username:** `n8n_wf_user`
         - **Password:** `n8n_wf_user`
       - Save the credential
